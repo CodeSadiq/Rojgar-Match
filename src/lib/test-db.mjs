@@ -7,10 +7,10 @@ async function testConnection() {
     console.log("Connecting to MongoDB...");
     await mongoose.connect(MONGODB_URI);
     console.log("Connected successfully!");
-    
+
     const collections = await mongoose.connection.db.listCollections().toArray();
     console.log("Collections:", collections.map(c => c.name));
-    
+
     await mongoose.disconnect();
   } catch (err) {
     console.error("Connection failed:", err);

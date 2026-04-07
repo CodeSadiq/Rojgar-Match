@@ -402,32 +402,45 @@ export default function ProfilePage() {
       <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
         <div className="max-w-[1000px] mx-auto space-y-12 animate-in fade-in duration-700">
 
-          {/* IDENTITY SECTION - CLEAN & READABLE */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-10 border-b border-gray-100">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-2">
-                {userProfile.fullName || 'Complete Your Profile'}
-              </h1>
-              <div className="flex items-center gap-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {userProfile.email}
-                </p>
+          {/* IDENTITY SECTION - PREMIUM PROFILE CARD */}
+          <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden group">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-navy/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700"></div>
+            
+            <div className="relative z-10 flex flex-col gap-5">
+              <div className="space-y-1">
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/40 mb-1">Profile</div>
+                <h1 className="text-3xl md:text-5xl font-black text-navy uppercase leading-[0.9] tracking-tighter">
+                  {userProfile.fullName || 'Citizen Profile'}
+                </h1>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                  <svg className="w-4 h-4 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <p className="text-sm font-bold text-navy/60">
+                    {userProfile.email}
+                  </p>
+                </div>
+
                 {completed && (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-green/10 text-green-600 rounded-full text-[10px] font-bold">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     Qualification Verified
                   </div>
                 )}
               </div>
             </div>
 
-            <button
-              onClick={handleLogout}
-              className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-600 transition-all whitespace-nowrap mb-4 md:mb-0"
-            >
-              Log out
-            </button>
-
+            <div className="relative z-10">
+              <button
+                onClick={handleLogout}
+                className="group/btn flex items-center gap-3 px-8 py-4 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 transition-all rounded-xl shadow-lg shadow-red-500/5 active:scale-95"
+              >
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Logout</span>
+                <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              </button>
+            </div>
           </div>
 
           {/* SIMPLIFIED FORM SECTION */}

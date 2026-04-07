@@ -3,6 +3,8 @@ export interface Qualification {
   level: number;
   branches: string[];
   extraConditions: string[];
+  streamRequired?: string | null;
+  institutionType?: string | null;
 }
 
 export interface CategoryVacancy {
@@ -21,6 +23,9 @@ export interface Post {
   prerequisite: string[];
   qualification: Qualification[];
   categoryWiseVacancy: CategoryVacancy;
+  appearingEligible: boolean;
+  appearingConditions: string | null;
+  qualificationNote: string | null;
 }
 
 export interface AgeRelaxation {

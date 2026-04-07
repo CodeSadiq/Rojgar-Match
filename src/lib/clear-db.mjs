@@ -7,11 +7,11 @@ async function clearJobs() {
     console.log("Connecting to MongoDB...");
     await mongoose.connect(MONGODB_URI);
     console.log("Connected successfully!");
-    
+
     const db = mongoose.connection.db;
     const result = await db.collection('jobs').deleteMany({});
     console.log(`Deleted ${result.deletedCount} jobs from the collection.`);
-    
+
     await mongoose.disconnect();
     console.log("Disconnected.");
   } catch (err) {
