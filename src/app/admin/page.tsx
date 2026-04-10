@@ -12,6 +12,7 @@ export default function AdminPage() {
   const [success, setSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isInjectorOpen, setIsInjectorOpen] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true);
 
   const handleUpdate = (path: string, value: any) => {
     setJobData((prev: any) => {
@@ -157,29 +158,56 @@ export default function AdminPage() {
         </div>
       </nav>      <main className="max-w-[1500px] mx-auto px-6 py-10">
         <div className="flex flex-col gap-8">
-          
+
           {/* UNIFIED COMMAND CENTER */}
-          <div className="bg-white rounded-[24px] lg:rounded-[40px] border-2 border-gray-100 shadow-2xl overflow-hidden flex flex-col min-h-[500px] lg:min-h-[850px] text-navy-dark">
-            
+          <div className="bg-white rounded-[24px] lg:rounded-[40px] border-2 border-gray-100 shadow-2xl overflow-hidden flex flex-col min-h-[120px] text-navy-dark transition-all duration-500">
+
             {/* UNIFIED HEADER */}
-            <header className="p-4 lg:p-8 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="flex flex-col gap-1">
+            <header className={`${isHeaderCollapsed ? 'p-2 lg:px-6 h-[52px]' : 'p-4 lg:p-6'} border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative transition-all duration-300`}>
+              <div
+                onClick={() => {
+                  const newState = !isHeaderCollapsed;
+                  setIsHeaderCollapsed(newState);
+                  setIsInjectorOpen(!newState);
+                }}
+                className="flex-1 flex flex-col gap-1 cursor-pointer group select-none"
+              >
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-2 rounded-full ${isInjectorOpen ? 'bg-navy animate-pulse' : 'bg-gray-300'}`}></div>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/70">JSON Injection Protocol</h2>
+                  <h2 className={`text-[10px] font-black uppercase tracking-[0.3em] transition-all ${isHeaderCollapsed ? 'text-navy' : 'text-navy/50'}`}>
+                    {isHeaderCollapsed ? 'Job Creation Portal' : 'New Recruitment Setup'}
+                  </h2>
+                  {isHeaderCollapsed && (
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 py-0.5 bg-gray-100 rounded border border-gray-200 ml-2">Click to Start New Post</span>
+                  )}
                 </div>
-                <h2 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
-                  Comprehensive Data Profile
-                </h2>
-                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Real-time object profiling</div>
+
+                <div className={`transition-all duration-500 overflow-hidden ${isHeaderCollapsed ? 'max-h-0 opacity-0' : 'max-h-40 opacity-100 mt-1'}`}>
+                  <h2 className="text-xl font-black uppercase tracking-tighter">
+                    Recruitment Data Manager
+                  </h2>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Easily paste and preview your job data before publishing</div>
+                </div>
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
+                {/* Secondary buttons - hide when collapsed to keep it simple */}
+                {!isHeaderCollapsed && (
+                  <button
+                    onClick={() => setIsInjectorOpen(!isInjectorOpen)}
+                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border-2 ${isInjectorOpen ? 'bg-navy text-white border-navy' : 'bg-white text-navy border-gray-100 hover:border-navy/20'}`}
+                  >
+                    {isInjectorOpen ? 'CLOSE CONSOLE' : 'OPEN INJECTOR'}
+                  </button>
+                )}
                 <button
-                  onClick={() => setIsInjectorOpen(!isInjectorOpen)}
-                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border-2 ${isInjectorOpen ? 'bg-navy text-white border-navy' : 'bg-white text-navy border-gray-100 hover:border-navy/20'}`}
+                  onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all text-navy"
+                  title={isHeaderCollapsed ? "Expand Header" : "Collapse Header"}
                 >
-                  {isInjectorOpen ? 'CLOSE CONSOLE' : 'OPEN INJECTOR'}
+                  <svg className={`w-3 h-3 transition-transform duration-300 ${isHeaderCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7" />
+                  </svg>
                 </button>
                 <div className="h-6 w-[1px] bg-gray-200 hidden md:block"></div>
                 <button
@@ -197,7 +225,7 @@ export default function AdminPage() {
             </header>
 
             <div className="flex-1 flex flex-col overflow-hidden bg-white">
-              
+
               {/* COLLAPSIBLE INJECTOR BUFFER */}
               {isInjectorOpen && (
                 <div className="p-4 lg:p-8 bg-gray-50/30 border-b border-gray-100 animate-in slide-in-from-top-4 duration-500">
@@ -235,10 +263,10 @@ export default function AdminPage() {
               {/* LIVE PREVIEW REGION */}
               <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {!jobData ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-10 grayscale py-32 lg:py-48">
-                    <div className="text-7xl mb-6">📑</div>
-                    <h3 className="text-xl font-black uppercase tracking-[0.3em] mb-2">IDLE STATE</h3>
-                    <p className="text-[10px] font-bold max-w-[250px] uppercase tracking-widest leading-relaxed">Awaiting valid JSON injection to initialize visual protocol</p>
+                  <div className={`flex flex-col items-center justify-center text-center opacity-10 grayscale transition-all duration-500 overflow-hidden ${(!isInjectorOpen && isHeaderCollapsed) ? 'h-0 py-0' : 'py-12 lg:py-20'}`}>
+                    <div className="text-4xl mb-4">📑</div>
+                    <h3 className="text-sm font-black uppercase tracking-[0.3em] mb-1">IDLE STATE</h3>
+                    <p className="text-[9px] font-bold max-w-[200px] uppercase tracking-widest leading-relaxed">Awaiting valid JSON injection</p>
                   </div>
                 ) : (
                   <div className="relative animate-in fade-in duration-700">
