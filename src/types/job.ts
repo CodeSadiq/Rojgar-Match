@@ -1,13 +1,7 @@
 export interface Qualification {
-  name: string;
-  level: number;
-  branches: string[];
-  extraConditions: string[];
-  streamRequired?: string | null;
-  institutionType?: string | null;
-  minExperienceYears?: number | null;
-  minMarksPercent?: number | null;
-  compulsorySubjects?: string[];
+  course: string[];
+  branch: string[];
+  extraQualificationText: string;
 }
 
 export interface EducationRequirement {
@@ -30,7 +24,7 @@ export interface Post {
   totalVacancy: number | null;
   minQualificationLevel: number | null;
   prerequisite: string[];
-  qualification: Qualification[];
+  qualification: Qualification;
   educationRequirementForMatch: EducationRequirement[];
   categoryWiseVacancy: CategoryVacancy;
   appearingEligible: boolean;
@@ -109,7 +103,7 @@ export interface JobPost {
   posts: Post[];
   totalVacancy: number | null;
   categoryWiseVacancyTotal: CategoryVacancy;
-  qualification: Qualification[];
+  qualification: Qualification;
   ageLimit: AgeLimit;
   categoryEligibility: string[];
   pwdEligible: boolean;

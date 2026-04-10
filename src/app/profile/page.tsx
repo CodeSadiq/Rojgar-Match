@@ -9,7 +9,6 @@ const QUAL_TREE = [
   { level: 1, name: "10th", label: "10th / Matriculation", branches: [] },
   {
     level: 2, name: "12th", label: "12th / Intermediate / HSC", branches: [
-      { value: "any", label: "Any Stream" },
       { value: "Science (PCM)", label: "Science – PCM (Physics, Chemistry, Maths)" },
       { value: "Science (PCB)", label: "Science – PCB (Physics, Chemistry, Biology)" },
       { value: "Commerce", label: "Commerce" },
@@ -70,13 +69,11 @@ const QUAL_TREE = [
       { value: "Medical Lab Technology", label: "Medical Lab Technology (DMLT)" },
       { value: "Hotel Management", label: "Hotel Management" },
       { value: "Fashion Design", label: "Fashion Design" },
-      { value: "any", label: "Any / Relevant Branch" },
     ]
   },
   { level: 3, name: "GNM", label: "GNM (General Nursing & Midwifery)", branches: [] },
   { level: 3, name: "ANM", label: "ANM (Auxiliary Nurse Midwife)", branches: [] },
   { level: 3, name: "D.Pharm", label: "D.Pharm (Diploma in Pharmacy)", branches: [] },
-  { level: 4, name: "Graduate", label: "Graduate – Any Degree", branches: [{ value: "any", label: "Any Discipline" }] },
   {
     level: 4, name: "B.Tech", label: "B.Tech / BE (Engineering)", branches: [
       { value: "CSE", label: "CSE" },
@@ -112,7 +109,6 @@ const QUAL_TREE = [
       { value: "Biomedical", label: "Biomedical" },
       { value: "Food Technology", label: "Food Technology" },
       { value: "Nanotechnology", label: "Nanotechnology" },
-      { value: "any", label: "Any / Relevant Branch" },
     ]
   },
   {
@@ -135,7 +131,6 @@ const QUAL_TREE = [
       { value: "Forensic Science", label: "Forensic Science" },
       { value: "Agriculture", label: "Agriculture" },
       { value: "Nursing", label: "Nursing (B.Sc Nursing)" },
-      { value: "any", label: "Any Science Subject" },
     ]
   },
   {
@@ -171,7 +166,6 @@ const QUAL_TREE = [
       { value: "Physical Education", label: "Physical Education" },
       { value: "Library Science", label: "Library Science" },
       { value: "Education", label: "Education" },
-      { value: "any", label: "Any Arts Subject" },
     ]
   },
   {
@@ -183,7 +177,6 @@ const QUAL_TREE = [
       { value: "Marketing", label: "Marketing" },
       { value: "Human Resource", label: "Human Resource" },
       { value: "International Business", label: "International Business" },
-      { value: "any", label: "Any Commerce Subject" },
     ]
   },
   { level: 4, name: "BCA", label: "BCA (Computer Applications)", branches: [{ value: "Computer Applications", label: "Computer Applications" }] },
@@ -197,15 +190,14 @@ const QUAL_TREE = [
       { value: "Hospital Management", label: "Hospital Management" },
       { value: "Aviation Management", label: "Aviation Management" },
       { value: "Hotel Management", label: "Hotel Management" },
-      { value: "any", label: "Any Specialisation" },
     ]
   },
   { level: 4, name: "B.Pharm", label: "B.Pharm (Pharmacy)", branches: [{ value: "Pharmacy", label: "Pharmacy" }] },
-  { level: 4, name: "MBBS", label: "MBBS (Medicine)", branches: [{ value: "any", label: "Medicine" }] },
-  { level: 4, name: "BDS", label: "BDS (Dental Surgery)", branches: [{ value: "any", label: "Dental" }] },
-  { level: 4, name: "BAMS", label: "BAMS (Ayurvedic Medicine)", branches: [{ value: "any", label: "Ayurveda" }] },
-  { level: 4, name: "BHMS", label: "BHMS (Homeopathic Medicine)", branches: [{ value: "any", label: "Homeopathy" }] },
-  { level: 4, name: "BUMS", label: "BUMS (Unani Medicine)", branches: [{ value: "any", label: "Unani" }] },
+  { level: 4, name: "MBBS", label: "MBBS (Medicine)", branches: [] },
+  { level: 4, name: "BDS", label: "BDS (Dental Surgery)", branches: [] },
+  { level: 4, name: "BAMS", label: "BAMS (Ayurvedic Medicine)", branches: [] },
+  { level: 4, name: "BHMS", label: "BHMS (Homeopathic Medicine)", branches: [] },
+  { level: 4, name: "BUMS", label: "BUMS (Unani Medicine)", branches: [] },
   { level: 4, name: "B.Sc Nursing", label: "B.Sc Nursing", branches: [{ value: "Nursing", label: "Nursing" }] },
   { level: 4, name: "LLB", label: "LLB / BA LLB (Law)", branches: [{ value: "Law", label: "Law" }] },
   { level: 4, name: "B.Ed", label: "B.Ed (Education)", branches: [{ value: "Education", label: "Education" }] },
@@ -213,7 +205,6 @@ const QUAL_TREE = [
   { level: 4, name: "CA", label: "CA (Chartered Accountant)", branches: [{ value: "CA", label: "Chartered Accountancy" }] },
   { level: 4, name: "CS", label: "CS (Company Secretary)", branches: [{ value: "CS", label: "Company Secretaryship" }] },
   { level: 4, name: "CMA", label: "CMA / ICWA (Cost Accountant)", branches: [{ value: "CMA", label: "Cost Management Accountancy" }] },
-  { level: 5, name: "Post Graduate", label: "Post Graduate – Any Master's", branches: [{ value: "any", label: "Any Discipline" }] },
   {
     level: 5, name: "M.Tech", label: "M.Tech / ME (Engineering PG)", branches: [
       { value: "CSE", label: "CSE" },
@@ -228,7 +219,6 @@ const QUAL_TREE = [
       { value: "Data Science", label: "Data Science" },
       { value: "VLSI", label: "VLSI" },
       { value: "Embedded Systems", label: "Embedded Systems" },
-      { value: "any", label: "Any Branch" },
     ]
   },
   {
@@ -241,7 +231,6 @@ const QUAL_TREE = [
       { value: "Information Technology", label: "IT Management" },
       { value: "Hospital Management", label: "Hospital Management" },
       { value: "International Business", label: "International Business" },
-      { value: "any", label: "Any Specialisation" },
     ]
   },
   {
@@ -259,7 +248,6 @@ const QUAL_TREE = [
       { value: "Forensic Science", label: "Forensic Science" },
       { value: "Geology", label: "Geology" },
       { value: "Geography", label: "Geography" },
-      { value: "any", label: "Any Science Subject" },
     ]
   },
   {
@@ -274,7 +262,6 @@ const QUAL_TREE = [
       { value: "Hindi", label: "Hindi" },
       { value: "Journalism", label: "Journalism / Mass Communication" },
       { value: "Social Work", label: "Social Work" },
-      { value: "any", label: "Any Arts Subject" },
     ]
   },
   {
@@ -282,7 +269,6 @@ const QUAL_TREE = [
       { value: "Accounting", label: "Accounting" },
       { value: "Finance", label: "Finance" },
       { value: "Taxation", label: "Taxation" },
-      { value: "any", label: "Any Commerce Subject" },
     ]
   },
   { level: 5, name: "MCA", label: "MCA (Computer Applications PG)", branches: [{ value: "Computer Applications", label: "Computer Applications" }] },
@@ -290,7 +276,7 @@ const QUAL_TREE = [
   { level: 5, name: "M.Ed", label: "M.Ed (Education PG)", branches: [{ value: "Education", label: "Education" }] },
   { level: 5, name: "M.Pharm", label: "M.Pharm (Pharmacy PG)", branches: [{ value: "M.Pharm", label: "Pharmacy" }] },
   { level: 5, name: "M.Arch", label: "M.Arch (Architecture PG)", branches: [{ value: "Architecture", label: "Architecture" }] },
-  { level: 6, name: "PhD", label: "PhD / Doctorate", branches: [{ value: "any", label: "Any Discipline" }] },
+  { level: 6, name: "PhD", label: "PhD / Doctorate", branches: [] },
 ];
 
 const LEVEL_GROUPS = [

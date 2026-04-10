@@ -11,6 +11,7 @@ export default function AdminPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isInjectorOpen, setIsInjectorOpen] = useState(false);
 
   const handleUpdate = (path: string, value: any) => {
     setJobData((prev: any) => {
@@ -154,76 +155,93 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-      </nav>
+      </nav>      <main className="max-w-[1500px] mx-auto px-6 py-10">
+        <div className="flex flex-col gap-8">
+          
+          {/* UNIFIED COMMAND CENTER */}
+          <div className="bg-white rounded-[24px] lg:rounded-[40px] border-2 border-gray-100 shadow-2xl overflow-hidden flex flex-col min-h-[500px] lg:min-h-[850px] text-navy-dark">
+            
+            {/* UNIFIED HEADER */}
+            <header className="p-4 lg:p-8 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${isInjectorOpen ? 'bg-navy animate-pulse' : 'bg-gray-300'}`}></div>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/70">JSON Injection Protocol</h2>
+                </div>
+                <h2 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
+                  Comprehensive Data Profile
+                </h2>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Real-time object profiling</div>
+              </div>
 
-      <main className="max-w-[1500px] mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              <div className="flex items-center gap-3 flex-wrap">
+                <button
+                  onClick={() => setIsInjectorOpen(!isInjectorOpen)}
+                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border-2 ${isInjectorOpen ? 'bg-navy text-white border-navy' : 'bg-white text-navy border-gray-100 hover:border-navy/20'}`}
+                >
+                  {isInjectorOpen ? 'CLOSE CONSOLE' : 'OPEN INJECTOR'}
+                </button>
+                <div className="h-6 w-[1px] bg-gray-200 hidden md:block"></div>
+                <button
+                  onClick={() => jobData && setIsEditing(!isEditing)}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${isEditing ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isEditing ? 'bg-white animate-pulse' : 'bg-gray-400'}`}></span>
+                  {isEditing ? 'Editing Mode' : 'View Mode'}
+                </button>
+                <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${jobData ? 'bg-green text-white shadow-lg shadow-green/20' : 'bg-gray-100 text-gray-400'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${jobData ? 'bg-white animate-pulse' : 'bg-gray-300'}`}></span>
+                  {jobData ? 'Ready' : 'Idle'}
+                </div>
+              </div>
+            </header>
 
-          {/* LEFT: JSON EDITOR */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-[24px] lg:rounded-[32px] border-2 border-gray-100 p-4 lg:p-8 shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:rotate-12 transition-transform duration-700">📄</div>
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 flex items-center gap-2">
-                <span className="w-2 h-2 bg-navy rounded-full"></span> Paste Job JSON
-              </h2>
-              <textarea
-                value={jsonInput}
-                onChange={(e) => setJsonInput(e.target.value)}
-                className="w-full h-[300px] lg:h-[500px] bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 lg:p-6 font-mono text-[13px] text-navy focus:border-navy focus:bg-white outline-none transition-all resize-none mb-6 custom-scrollbar placeholder:text-gray-300"
-                placeholder='{ "title": "SSC CGL 2026", "org": "Staff Selection Commission", "salary": "₹44,900", "location": "All India", "lastDate": "25 May 2025", "qual": "...", "process": "...", "tags": ["SSC", "Graduate"] }'
-              />
-              <button
-                onClick={handleParse}
-                className="w-full py-5 bg-navy text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-navy-dark active:scale-95 transition-all shadow-xl shadow-navy/20"
-              >
-                Parse & Preview JSON
-              </button>
-              {error && (
-                <div className="mt-4 p-4 bg-red/5 border border-red/10 rounded-xl text-red text-xs font-bold animate-in fade-in slide-in-from-top-2">
-                  Error: {error}
+            <div className="flex-1 flex flex-col overflow-hidden bg-white">
+              
+              {/* COLLAPSIBLE INJECTOR BUFFER */}
+              {isInjectorOpen && (
+                <div className="p-4 lg:p-8 bg-gray-50/30 border-b border-gray-100 animate-in slide-in-from-top-4 duration-500">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-9 flex flex-col gap-4">
+                      <textarea
+                        value={jsonInput}
+                        onChange={(e) => setJsonInput(e.target.value)}
+                        className="w-full h-[200px] bg-white border-2 border-gray-100 rounded-2xl p-6 font-mono text-[13px] text-navy focus:border-navy outline-none transition-all resize-none shadow-inner custom-scrollbar"
+                        placeholder='{ "title": "SSC CGL 2026", "org": "Staff Selection Commission", "salary": "₹44,900", "location": "All India", "lastDate": "25 May 2025", "qual": "...", "process": "...", "tags": ["SSC", "Graduate"] }'
+                      />
+                    </div>
+                    <div className="lg:col-span-3 flex flex-col gap-4">
+                      <button
+                        onClick={handleParse}
+                        className="w-full py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-navy-dark active:scale-95 transition-all shadow-xl shadow-navy/20"
+                      >
+                        Parse JSON ➜
+                      </button>
+                      <div className="bg-white/50 border border-navy/5 rounded-2xl p-4 flex-1">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-navy/30 leading-relaxed italic">
+                          Authorized personnel only. Schema validation active.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {error && (
+                    <div className="mt-4 p-4 bg-red/5 border border-red/10 rounded-xl text-red text-[11px] font-bold">
+                      PROTOCOL ERROR: {error}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
 
-            <div className="bg-navy/5 border border-navy/10 rounded-2xl p-6">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-navy/40 leading-relaxed">
-                Authorized personnel only — All data injection attempts are logged via automated verification protocols. Verify JSON schema before parsing.
-              </p>
-            </div>
-          </div>
-
-          {/* RIGHT: REAL-TIME PREVIEW */}
-          <div className="lg:col-span-8">
-            <div className="bg-white rounded-[24px] lg:rounded-[40px] border-2 border-gray-100 shadow-xl overflow-hidden flex flex-col min-h-[500px] lg:min-h-[850px] text-navy-dark">
-              <header className="p-4 lg:p-8 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-black uppercase tracking-tighter">Comprehensive Data Profile</h2>
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Real-time object profiling</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${isEditing ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${isEditing ? 'bg-white animate-pulse' : 'bg-gray-400'}`}></span>
-                    {isEditing ? 'Editing Mode' : 'View Mode'}
-                  </button>
-                  <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${jobData ? 'bg-green text-white shadow-lg shadow-green/20' : 'bg-gray-100 text-gray-400'}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${jobData ? 'bg-white animate-pulse' : 'bg-gray-300'}`}></span>
-                    {jobData ? 'Ready' : 'Idle'}
-                  </div>
-                </div>
-              </header>
-
-              <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+              {/* LIVE PREVIEW REGION */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {!jobData ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-10 py-40 grayscale">
-                    <div className="text-8xl mb-6">📑</div>
-                    <h3 className="text-2xl font-black uppercase tracking-[0.2em] mb-2">IDLE STATE</h3>
-                    <p className="text-xs font-bold max-w-[300px] uppercase tracking-widest">Awaiting valid JSON injection to initialize visual protocol</p>
+                  <div className="h-full flex flex-col items-center justify-center text-center opacity-10 grayscale py-32 lg:py-48">
+                    <div className="text-7xl mb-6">📑</div>
+                    <h3 className="text-xl font-black uppercase tracking-[0.3em] mb-2">IDLE STATE</h3>
+                    <p className="text-[10px] font-bold max-w-[250px] uppercase tracking-widest leading-relaxed">Awaiting valid JSON injection to initialize visual protocol</p>
                   </div>
                 ) : (
-                  <div className="relative">
+                  <div className="relative animate-in fade-in duration-700">
                     <RecruitmentPreview
                       job={jobData}
                       editable={isEditing}
@@ -233,7 +251,7 @@ export default function AdminPage() {
                     />
 
                     {/* Floating Apply Action */}
-                    <div className="sticky bottom-0 left-0 w-full p-4 lg:p-8 bg-gradient-to-t from-white via-white/90 to-transparent pt-12 lg:pt-20">
+                    <div className="sticky bottom-0 left-0 w-full p-4 lg:p-8 bg-gradient-to-t from-white via-white/100 to-transparent pt-12 lg:pt-24 mt-[-80px] z-10">
                       <button
                         onClick={handlePublish}
                         disabled={isPublishing || success}
@@ -250,13 +268,14 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
-
         </div>
       </main>
-
       <footer className="py-24 text-center opacity-20">
         <div className="text-[11px] font-black uppercase tracking-[0.5em] text-navy">ADMIN VERIFICATION LAYER — 2026 OFFICIAL PORTAL</div>
       </footer>
     </div>
   );
 }
+
+
+

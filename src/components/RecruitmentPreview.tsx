@@ -299,24 +299,66 @@ function hasCategoryData(catObj: any): boolean {
     return Object.values(catObj).some((v) => v !== null && v !== undefined);
 }
 
+// ── QUALIFICATION LABEL ───────────────────────────────────────────────────────
+// Supports:
+//   v9 (new): posts[].qualification = { course: string[], branch: string[], extraQualificationText: string }
+//   v8 (legacy): posts[].qualification = array of objects with name/level/branches/...
 function qualLabel(q: any): string {
-    const branch =
-        q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any")
-            ? ` in ${q.branches.join(" / ")}`
+    if (!q) return "Not specified";
+    if (typeof q === "string") return q;
+
+    // ── v9 schema: single object with course / branch / extraQualificationText ──
+    if (q.course !== undefined) {
+        const courseStr = Array.isArray(q.course)
+            ? q.course.join(" / ")
+            : String(q.course);
+
+        const validBranches = Array.isArray(q.branch)
+            ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any")
+            : [];
+        const branchStr = validBranches.length > 0
+            ? ` in ${validBranches.join(", ")}`
             : "";
-    const extras: string[] = [];
-    if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
-    if (q.compulsorySubjects?.length) extras.push(`Compulsory: ${q.compulsorySubjects.join(", ")}`);
-    if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
-    if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
-    q.extraConditions
-        ?.filter((ec: string) => !ec.toLowerCase().includes("final year"))
-        .forEach((ec: string) => extras.push(ec));
-    return `${q.name}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+
+        const extra = q.extraQualificationText?.trim() || "";
+        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
+    }
+
+    // ── v8 legacy schema: single qualification object (name / branches / ...) ──
+    if (q.name !== undefined) {
+        const branch =
+            q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any")
+                ? ` in ${q.branches.join(" / ")}`
+                : "";
+        const extras: string[] = [];
+        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
+        if (q.compulsorySubjects?.length) extras.push(`Compulsory: ${q.compulsorySubjects.join(", ")}`);
+        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
+        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
+        q.extraConditions
+            ?.filter((ec: string) => !ec.toLowerCase().includes("final year"))
+            .forEach((ec: string) => extras.push(ec));
+        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+    }
+
+    return "Not specified";
 }
 
+// ── FINGERPRINT ───────────────────────────────────────────────────────────────
+// Produces a stable key for grouping posts that share identical qualification details.
 function qualFingerprint(p: any): string {
-    const quals: any[] = p.qualification || [];
+    const qual = p.qualification;
+
+    // v9: single object
+    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
+        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
+        const extraKey = qual.extraQualificationText?.trim() || "";
+        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
+    }
+
+    // v8 legacy: array of qualification objects
+    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
     return (
         quals.map(qualLabel).join(" | ") +
         "|note:" + (p.qualificationNote || "") +
@@ -324,8 +366,11 @@ function qualFingerprint(p: any): string {
     );
 }
 
+// ── GROUP POSTS ───────────────────────────────────────────────────────────────
 interface QualGroup {
-    qualText: string;
+    // One display label per unique qualification "path" (for OR rendering)
+    qualTexts: string[];
+    // Legacy v8 qualificationNote (null in v9 — extraQualificationText is already in qualTexts)
     qualNote: string | null;
     appearingNote: string | null;
     posts: any[];
@@ -333,11 +378,28 @@ interface QualGroup {
 
 function groupPostsByQual(posts: any[]): QualGroup[] {
     const map = new Map<string, QualGroup>();
+
     for (const p of posts) {
         const fp = qualFingerprint(p);
+
         if (!map.has(fp)) {
+            const qual = p.qualification;
+            let qualTexts: string[] = [];
+
+            if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+                // ── v9: single object → one label string ──
+                const label = qualLabel(qual);
+                qualTexts = label ? [label] : ["Not specified"];
+            } else {
+                // ── v8 legacy: array of objects → one label per object ──
+                const rawQuals = Array.isArray(qual) ? qual : (qual ? [qual] : []);
+                qualTexts = rawQuals.map(qualLabel).filter(Boolean);
+                if (qualTexts.length === 0) qualTexts = ["Not specified"];
+            }
+
             map.set(fp, {
-                qualText: (p.qualification || []).map(qualLabel).join(" OR ") || "Not specified",
+                qualTexts,
+                // qualificationNote only exists in v8; v9 puts everything in extraQualificationText
                 qualNote: p.qualificationNote || null,
                 appearingNote: p.appearingEligible
                     ? (p.appearingConditions || "Appearing candidates are eligible")
@@ -345,8 +407,10 @@ function groupPostsByQual(posts: any[]): QualGroup[] {
                 posts: [],
             });
         }
+
         map.get(fp)!.posts.push(p);
     }
+
     return Array.from(map.values());
 }
 
@@ -427,6 +491,7 @@ export default function RecruitmentPreview({
         feeMap[k].push(CAT_LABELS[cat] || cat.toUpperCase());
     });
 
+    // Build rawPosts — handle both v9 (no root-level qualification array) and v8
     const rawPosts: any[] =
         (job.posts || []).length > 0
             ? job.posts
@@ -593,16 +658,36 @@ export default function RecruitmentPreview({
                                             ))}
                                             {pi === 0 && (
                                                 <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
-                                                    <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.4 }}>
-                                                        {grp.qualText}
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                                        {grp.qualTexts.map((qt, qIdx) => (
+                                                            <React.Fragment key={qIdx}>
+                                                                <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.5 }}>
+                                                                    {qt}
+                                                                </div>
+                                                                {qIdx < grp.qualTexts.length - 1 && (
+                                                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                                        <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
+                                                                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--ink-muted)", background: "var(--paper-alt)", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)", letterSpacing: "0.1em" }}>OR</span>
+                                                                        <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
+                                                                    </div>
+                                                                )}
+                                                            </React.Fragment>
+                                                        ))}
                                                     </div>
+
+                                                    {/* Appearing eligibility note */}
                                                     {grp.appearingNote && (
-                                                        <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 4 }}>
+                                                        <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 12, paddingTop: 8, borderTop: "1px dashed var(--border)" }}>
                                                             {grp.appearingNote}
                                                         </div>
                                                     )}
+
+                                                    {/*
+                                                      v8 legacy: qualificationNote rendered as amber callout.
+                                                      v9: extraQualificationText is already embedded inside qualTexts — no separate block needed.
+                                                    */}
                                                     {grp.qualNote && (
-                                                        <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 6, borderLeft: "2px solid var(--amber)", paddingLeft: 8 }}>
+                                                        <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 8, borderLeft: "3px solid var(--amber)", paddingLeft: 10, background: "var(--amber-bg)", padding: "8px 10px", borderRadius: "0 4px 4px 0" }}>
                                                             <strong>Note:</strong> {grp.qualNote}
                                                         </div>
                                                     )}

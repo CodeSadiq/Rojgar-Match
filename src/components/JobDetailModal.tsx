@@ -1,15 +1,78 @@
 'use client';
 
-import React from 'react';
-import { Job } from '@/lib/data';
+import { JobPost, Post } from '@/types/job';
+
+// ── QUALIFICATION HELPERS ───────────────────────────────────────────────────
+function qualLabel(q: any): string {
+    if (!q) return "Not specified";
+    if (typeof q === "string") return q;
+
+    if (q.course !== undefined) {
+        const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
+        const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
+        const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
+        const extra = q.extraQualificationText?.trim() || "";
+        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
+    }
+
+    if (q.name !== undefined) {
+        const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
+        const extras: string[] = [];
+        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
+        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
+        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
+        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+    }
+    return "Not specified";
+}
+
+function qualFingerprint(p: any): string {
+    const qual = p.qualification;
+    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
+        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
+        const extraKey = qual.extraQualificationText?.trim() || "";
+        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
+    }
+    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
+    return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
+}
+
+interface QualGroup {
+    qualTexts: string[];
+    appearingNote: string | null;
+    posts: any[];
+}
+
+function groupPostsByQual(posts: any[]): QualGroup[] {
+    const map = new Map<string, QualGroup>();
+    for (const p of posts) {
+        const fp = qualFingerprint(p);
+        if (!map.has(fp)) {
+            const qual = p.qualification;
+            let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
+            if (qualTexts.length === 0) qualTexts = ["Not specified"];
+            map.set(fp, {
+                qualTexts,
+                appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
+                posts: [],
+            });
+        }
+        map.get(fp)!.posts.push(p);
+    }
+    return Array.from(map.values());
+}
 
 interface JobDetailModalProps {
-  job: Job | null;
+  job: JobPost | null;
   onClose: () => void;
 }
 
 export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
   if (!job) return null;
+
+  const rawPosts = (job.posts || []).length > 0 ? job.posts : [{ name: "General", qualification: job.qualification }];
+  const postGroups = groupPostsByQual(rawPosts);
 
   return (
     <div className="fixed inset-0 bg-navy-dark/45 backdrop-blur-sm z-[200] flex items-center justify-center p-5 transition-opacity duration-250 animate-in fade-in">
@@ -56,20 +119,7 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
           <section>
             <div className="text-xs font-bold uppercase tracking-widest text-text-m mb-2.5">Qualification</div>
             <div className="text-[13.5px] text-text-b leading-relaxed">
-              {job.qualification && job.qualification.length > 0 ? (
-                <ul className="list-disc pl-4 space-y-1">
-                  {job.qualification.map((q: any, i: number) => (
-                    <li key={i}>
-                      <span className="font-bold">{q.name}</span>
-                      {q.extraConditions?.length > 0 && (
-                        <span className="text-[12px] opacity-75 italic block">
-                          (Special conditions: {q.extraConditions.join(', ')})
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : job.qual}
+              {qualLabel(job.qualification)}
             </div>
           </section>
 
@@ -127,39 +177,38 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {[
-                    { post: "Assistant Officer", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector of Income Tax", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector (Central Excise)", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector (Preventive Officer)", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector (Examiner)", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Assistant Enforcement Officer", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Sub Inspector", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector Posts", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Inspector", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Section Head", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Executive Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Research Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Divisional Accountant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Sub-Inspector (NIA)", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Sub-Inspector/Junior Intelligence Officer", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Junior Statistical Officer", count: "Appearing Eligible", qual: "Bachelor's Degree in Statistics. Note: Candidates must have at least 60% marks in Mathematics at 12th standard, OR Statistics as a main subject at degree level." },
-                    { post: "Statistical Investigator Grade-II", count: "Appearing Eligible", qual: "Bachelor's Degree with Statistics studied across all years/semesters of the degree course." },
-                    { post: "Office Superintendent", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Auditor", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Accountant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Postal Assistant/Sorting Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Senior Secretariat Assistant/Upper Division Clerks", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Senior Administrative Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Tax Assistant", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." },
-                    { post: "Sub-Inspector (CBN)", count: "Appearing Eligible", qual: "Must possess essential qualification as on 01-08-2025." }
-                  ].map((row, idx) => (
-                    <tr key={idx} className="hover:bg-surface/50 transition-colors">
-                      <td className="p-3 text-text-h font-medium border-r border-border">{row.post}</td>
-                      <td className="p-3 text-text-m border-r border-border">{row.count}</td>
-                      <td className="p-3 text-text-b leading-relaxed">{row.qual}</td>
-                    </tr>
+                  {postGroups.flatMap((grp, gi) => (
+                    grp.posts.map((p, pi) => (
+                      <tr key={`${gi}-${pi}`} className="hover:bg-surface/50 transition-colors">
+                        <td className="p-3 text-text-h font-medium border-r border-border">{p.name || "N/A"}</td>
+                        <td className="p-3 text-text-m border-r border-border" style={{ whiteSpace: "nowrap" }}>
+                          {p.totalVacancy != null ? p.totalVacancy.toLocaleString() : "—"}
+                        </td>
+                        {pi === 0 && (
+                          <td rowSpan={grp.posts.length} className="p-3 text-text-b leading-relaxed align-top">
+                            <div className="flex flex-col gap-2">
+                              {grp.qualTexts.map((qt, qIdx) => (
+                                <React.Fragment key={qIdx}>
+                                  <div className="font-semibold text-navy">{qt}</div>
+                                  {qIdx < grp.qualTexts.length - 1 && (
+                                    <div className="flex items-center gap-2 py-1">
+                                      <div className="flex-1 h-px bg-border"></div>
+                                      <span className="text-[9px] font-bold text-ink-muted px-1.5 py-0.5 border border-border rounded bg-surface">OR</span>
+                                      <div className="flex-1 h-px bg-border"></div>
+                                    </div>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                              {grp.appearingNote && (
+                                <div className="text-[11.5px] text-green font-semibold mt-1 pt-2 border-t border-dashed border-border">
+                                  {grp.appearingNote}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
                   ))}
                 </tbody>
               </table>

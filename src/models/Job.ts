@@ -5,25 +5,11 @@ const PostSchema = new mongoose.Schema({
   totalVacancy: { type: Number },
   minQualificationLevel: { type: Number },
   prerequisite: [String],
-  educationRequirementForMatch: [{
-    qualification: String,
-    level: Number,
-    branches: [String]
-  }],
+  educationRequirementForMatch: mongoose.Schema.Types.Mixed,
   appearingEligible: { type: Boolean, default: false },
   appearingConditions: { type: String },
   qualificationNote: { type: String },
-  qualification: [{
-    name: String,
-    level: Number,
-    branches: [String],
-    extraConditions: [String],
-    minExperienceYears: Number,
-    minMarksPercent: Number,
-    compulsorySubjects: [String],
-    streamRequired: String,
-    institutionType: String
-  }],
+  qualification: mongoose.Schema.Types.Mixed,
   categoryWiseVacancy: {
     general: Number,
     ews: Number,
@@ -52,17 +38,7 @@ const JobSchema = new mongoose.Schema({
     st: Number,
     pwd: Number
   },
-  qualification: [{
-    name: String,
-    level: Number,
-    branches: [String],
-    extraConditions: [String],
-    minExperienceYears: Number,
-    minMarksPercent: Number,
-    compulsorySubjects: [String],
-    streamRequired: String,
-    institutionType: String
-  }],
+  qualification: mongoose.Schema.Types.Mixed,
   ageLimit: {
     min: Number,
     max: Number,

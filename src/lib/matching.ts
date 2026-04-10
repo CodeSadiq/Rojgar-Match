@@ -51,6 +51,45 @@ const PROFESSIONAL_DEGREES: Record<string, string[]> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  QUALIFICATION FAMILIES
+//
+//  Groups specific professional/technical degrees by family.
+//  Matching rule: If a job requires 'b.tech', the candidate must have a
+//                 qualification that falls within the 'b.tech' family.
+// ─────────────────────────────────────────────────────────────────────────────
+const QUAL_FAMILIES: Record<string, string[]> = {
+  'b.tech': ['b.tech', 'be', 'm.tech', 'me', 'engineering'],
+  'm.tech': ['m.tech', 'me'],
+  'iti': ['iti'],
+  'diploma': ['diploma', 'polytechnic'],
+  'bca': ['bca', 'mca', 'computer applications'],
+  'mca': ['mca'],
+  'llb': ['llb', 'law', 'ba llb', 'llm'],
+  'llm': ['llm'],
+  'b.ed': ['b.ed', 'education', 'm.ed'],
+  'm.ed': ['m.ed'],
+  'mbbs': ['mbbs', 'medicine'],
+  'b.sc nursing': ['b.sc nursing', 'nursing'],
+  'gnm': ['gnm', 'nursing'],
+  'anm': ['anm', 'nursing'],
+  'b.pharm': ['b.pharm', 'pharmacy', 'm.pharm'],
+  'd.pharm': ['d.pharm', 'pharmacy'],
+  'ca': ['ca', 'chartered accountancy'],
+  'cs': ['cs', 'company secretaryship'],
+  'b.sc': ['b.sc', 'm.sc'],
+  'm.sc': ['m.sc'],
+  'b.com': ['b.com', 'm.com'],
+  'm.com': ['m.com'],
+  'ba': ['ba', 'ma'],
+  'ma': ['ma'],
+  'bba': ['bba', 'mba'],
+  'mba': ['mba'],
+};
+
+const GENERIC_QUALS = ['10th', '12th', 'graduate', 'post graduate', 'phd'];
+const COURSES_WITHOUT_BRANCHES = ['10th', 'matriculation', 'gnm', 'anm', 'd.pharm', 'high school'];
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  MODERATE MATCH: LEVEL GAP SAFETY WALL — HIGH STRICT MODE
 //
 //  Key   = candidate level
@@ -73,7 +112,7 @@ const PROFESSIONAL_DEGREES: Record<string, string[]> = {
 // ─────────────────────────────────────────────────────────────────────────────
 const MODERATE_MAX_JOB_LEVEL: Record<number, number> = {
   1: -1,
-  2: 3,
+  2: -1,
   3: 4,
   4: 5,
   5: 6,
@@ -156,20 +195,17 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): Post[
         eligiblePosts.push(post);
       }
     }
-  } else if (job.qualification && job.qualification.length > 0) {
+  } else if (job.qualification) {
     // No sub-posts: synthesise a virtual post from root-level data.
-    const virtualSegments: EducationSegment[] = job.qualification.map(q => ({
-      qualification: q.name,
-      level: q.level,
-      branches: q.branches ?? [],
-    }));
-
+    const qual = job.qualification as any;
+    const isV9 = !Array.isArray(qual) && qual.course !== undefined;
+    
     const virtualPost: Post = {
       name: job.title,
       totalVacancy: job.totalVacancy,
-      minQualificationLevel: Math.min(...job.qualification.map(q => q.level)),
+      minQualificationLevel: isV9 ? null : Math.min(...(Array.isArray(qual) ? qual : [qual]).map((q: any) => q.level || 1)),
       qualification: job.qualification,
-      educationRequirementForMatch: virtualSegments,
+      educationRequirementForMatch: [],
       prerequisite: [],
       categoryWiseVacancy: job.categoryWiseVacancyTotal,
       appearingEligible: false,
@@ -212,72 +248,97 @@ interface EvalResult {
 }
 
 function evaluatePost(candidate: CandidateProfile, post: Post): EvalResult {
+  const qual = post.qualification as any;
+
+  // ── v9 simplified match ──
+  if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+    const cCourse = candidate.qualification;
+    const cBranch = candidate.branch;
+
+    // RULE: candidate.course ∈ job.course
+    const isCourseMatch = Array.isArray(qual.course) && qual.course.includes(cCourse);
+    
+    // RULE/GOAL: (candidate.branch ∈ job.branch OR job.branch is empty)
+    const isBranchMatch = !qual.branch || qual.branch.length === 0 || (Array.isArray(qual.branch) && qual.branch.includes(cBranch));
+
+    if (isCourseMatch && isBranchMatch) {
+      return { qualifies: true, tier: 'exact', branchScore: 2 };
+    }
+    return { qualifies: false, tier: 'none', branchScore: 0 };
+  }
+
   const segments = getSegments(post);
   const candidateLevel = candidate.level ?? 0;
+  const candidateQual = (candidate.qualification || '').toLowerCase().trim();
 
   const minLevel = segments.length > 0
     ? Math.min(...segments.map(s => s.level))
     : (post.minQualificationLevel ?? 1);
 
   // ── Gate 1: Hard level floor ─────────────────────────────────────────────
-  // Candidate more than 1 level below the minimum → immediate reject.
-  if (candidateLevel < minLevel - 1) {
+  if (candidateLevel < minLevel) {
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
-  const isModerateLevel = candidateLevel === minLevel - 1;
-
-  // ── Gate 2: Moderate ceiling — HIGH STRICT ───────────────────────────────
-  // -1 ceiling = moderate completely disabled for this candidate level.
-  if (isModerateLevel) {
-    const ceiling = MODERATE_MAX_JOB_LEVEL[candidateLevel] ?? -1;
-    if (ceiling === -1 || minLevel > ceiling) {
-      return { qualifies: false, tier: 'none', branchScore: 0 };
-    }
-  }
-
-  // ── Gate 3: Professional degree gate ────────────────────────────────────
+  // ── Gate 2: Professional degree gate ────────────────────────────────────
   if (checkProfessionalGate(candidate, post, segments)) {
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
-  // ── Gate 4: Branch match across all reachable segments ──────────────────
+  // ── Gate 3: Qualification & Branch match across segments ─────────────────
   let bestBranchScore = 0;
-  let anySegmentReachable = false;
+  let matchedSegmentFound = false;
 
   for (const seg of segments) {
-    if (candidateLevel < seg.level - 1) continue;
-    anySegmentReachable = true;
-    const bs = scoreBranchMatch(candidate.branch, seg.branches);
-    if (bs > bestBranchScore) bestBranchScore = bs;
+    const jobQualName = seg.qualification.toLowerCase().trim();
+
+    // 1. Course Match (Qualification Name)
+    const isQualMatch = checkQualificationCompatibility(candidateQual, jobQualName, candidateLevel, seg.level);
+    if (!isQualMatch) continue;
+
+    // 2. Branch Match
+    let bs = 0;
+    const isNoBranchCourse = COURSES_WITHOUT_BRANCHES.some(c => jobQualName.includes(c));
+
+    if (isNoBranchCourse) {
+      bs = 2; // Treat as exact match for branch-less courses like 10th
+    } else {
+      bs = scoreBranchMatch(candidate.branch, seg.branches);
+    }
+
+    if (bs > 0) {
+      matchedSegmentFound = true;
+      if (bs > bestBranchScore) bestBranchScore = bs;
+    }
     if (bestBranchScore === 2) break;
   }
 
-  if (!anySegmentReachable && !isModerateLevel) {
-    return { qualifies: false, tier: 'none', branchScore: 0 };
-  }
-
-  // ── Moderate path — HIGH STRICT ─────────────────────────────────────────
-  if (isModerateLevel) {
-    let moderateBranch = 0;
-    for (const seg of segments) {
-      moderateBranch = Math.max(moderateBranch, scoreBranchMatch(candidate.branch, seg.branches));
-    }
-
-    // Enforce per-level minimum branch score requirement.
-    const minBranchRequired = MODERATE_MIN_BRANCH_SCORE[candidateLevel] ?? 1;
-    if (moderateBranch >= minBranchRequired) {
-      return { qualifies: true, tier: 'moderate', branchScore: moderateBranch };
-    }
-    return { qualifies: false, tier: 'none', branchScore: 0 };
-  }
-
-  // ── Exact / over-qualified path ──────────────────────────────────────────
-  if (bestBranchScore > 0) {
+  if (matchedSegmentFound) {
     return { qualifies: true, tier: 'exact', branchScore: bestBranchScore };
   }
 
   return { qualifies: false, tier: 'none', branchScore: 0 };
+}
+
+/**
+ * Validates if the candidate's course is compatible with the job's required course.
+ */
+function checkQualificationCompatibility(cQual: string, jQual: string, cLevel: number, jLevel: number): boolean {
+  // If job asks for a generic level (e.g. "Graduate"), any candidate at that level or above passes.
+  if (GENERIC_QUALS.includes(jQual)) return cLevel >= jLevel;
+
+  // Exact name match
+  if (cQual === jQual || cQual.includes(jQual) || jQual.includes(cQual)) return true;
+
+  // Family check (e.g. M.Tech candidate matches B.Tech job)
+  for (const family in QUAL_FAMILIES) {
+    const members = QUAL_FAMILIES[family];
+    if (members.includes(jQual)) {
+      if (members.includes(cQual)) return true;
+    }
+  }
+
+  return false;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

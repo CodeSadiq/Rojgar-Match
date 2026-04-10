@@ -31,6 +31,9 @@ const IconArrow = () => (
 const IconExternalLink = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
 );
+const IconCheckGreen = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+);
 
 // ── STYLES ───────────────────────────────────────────────────────────────────
 const styles = `
@@ -51,6 +54,7 @@ const styles = `
     --crimson:    #7f1d1d;
     --gold-bg:    #fef3c7;
     --green:      #14532d;
+    --green-light: #f0fdf4;
     --blue:       #1e40af;
     --blue-bg:    #eff6ff;
     --amber-bg:   #fffbeb;
@@ -260,6 +264,114 @@ const styles = `
     font-size: 13px;
   }
 
+  /* ── QUALIFICATION DISPLAY (NEW) ── */
+  .jd-qual-container {
+    background: #fff;
+    padding: 0;
+  }
+
+  .jd-qual-block {
+    margin-bottom: 14px;
+  }
+
+  .jd-qual-block:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Course/Degree Name */
+  .jd-qual-course {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 15px;
+    margin-bottom: 5px;
+    display: inline-block;
+    padding: 3px 8px;
+    background: rgba(30, 58, 95, 0.06);
+    border-radius: 3px;
+  }
+
+  /* Branch/Specialization */
+  .jd-qual-branch {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin: 4px 0 4px 16px;
+    padding-left: 0;
+  }
+
+  .jd-qual-branch-label {
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .jd-qual-branch-list {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  /* Extra requirements (marks, experience, etc.) */
+  .jd-qual-extra {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin: 8px 0 0 16px;
+    padding-left: 10px;
+    border-left: 2px solid var(--border);
+    line-height: 1.5;
+  }
+
+  .jd-qual-extra-item {
+    margin: 2px 0;
+  }
+
+  /* Appearing eligibility badge */
+  .jd-qual-appearing {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--green-light);
+    color: var(--green);
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-top: 8px;
+    border: 1px solid #86efac;
+  }
+
+  .jd-qual-appearing svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Qualification note (amber warning box) */
+  .jd-qual-note {
+    font-size: 12px;
+    color: var(--amber);
+    background: var(--amber-bg);
+    border-left: 3px solid var(--amber);
+    padding: 8px 10px;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .jd-qual-note strong {
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* OR separator between multiple qualifications */
+  .jd-qual-separator {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    margin: 10px 0;
+    padding: 4px 0;
+  }
+
   /* ── COMMON QUAL NOTICE ── */
   .jd-qual-banner {
     background: var(--blue-bg);
@@ -272,15 +384,6 @@ const styles = `
     line-height: 1.6;
   }
   .jd-qual-banner strong { color: var(--blue); }
-  .jd-qual-note {
-    font-size: 13px;
-    color: var(--amber);
-    background: var(--amber-bg);
-    border-left: 3px solid var(--amber);
-    padding: 8px 12px;
-    margin-top: 6px;
-    line-height: 1.55;
-  }
 
   /* ── ELIGIBILITY BADGES ── */
   .jd-badges {
@@ -397,6 +500,8 @@ const styles = `
     .jd-table td { padding: 10px 12px; font-size: 15px; word-break: break-word; }
     .jd-table td.label { width: 140px; min-width: 140px; }
     .jd-apply { font-size: 18px; padding: 20px; margin-top: 32px; word-break: break-all; }
+    .jd-qual-course { font-size: 14px; }
+    .jd-qual-branch, .jd-qual-extra { font-size: 12px; }
   }
 `;
 
@@ -435,57 +540,60 @@ function hasCategoryData(catObj: any): boolean {
   return Object.values(catObj).some((v) => v !== null && v !== undefined);
 }
 
-// Compact one-line qualification string — no institution boilerplate
+// ── QUALIFICATION LABEL ───────────────────────────────────────────────────────
 function qualLabel(q: any): string {
-  const branch =
-    q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any")
-      ? ` in ${q.branches.join(" / ")}`
-      : "";
-  const extras: string[] = [];
-  if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
-  if (q.compulsorySubjects?.length) extras.push(`Compulsory: ${q.compulsorySubjects.join(", ")}`);
-  if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
-  if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
-  q.extraConditions
-    ?.filter((ec: string) => !ec.toLowerCase().includes("final year"))
-    .forEach((ec: string) => extras.push(ec));
-  return `${q.name}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+    if (!q) return "Not specified";
+    if (typeof q === "string") return q;
+
+    if (q.course !== undefined) {
+        const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
+        const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
+        const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
+        const extra = q.extraQualificationText?.trim() || "";
+        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
+    }
+
+    if (q.name !== undefined) {
+        const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
+        const extras: string[] = [];
+        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
+        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
+        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
+        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+    }
+    return "Not specified";
 }
 
-// Fingerprint a post's qualification for grouping
 function qualFingerprint(p: any): string {
-  const quals: any[] = p.qualification || [];
-  return (
-    quals.map(qualLabel).join(" | ") +
-    "|note:" + (p.qualificationNote || "") +
-    "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no")
-  );
-}
-
-interface QualGroup {
-  qualText: string;
-  qualNote: string | null;
-  appearingNote: string | null;
-  posts: any[];
+    const qual = p.qualification;
+    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
+        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
+        const extraKey = qual.extraQualificationText?.trim() || "";
+        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
+    }
+    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
+    return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
 }
 
 function groupPostsByQual(posts: any[]): QualGroup[] {
-  const map = new Map<string, QualGroup>();
-  for (const p of posts) {
-    const fp = qualFingerprint(p);
-    if (!map.has(fp)) {
-      map.set(fp, {
-        qualText: (p.qualification || []).map(qualLabel).join(" OR ") || "Not specified",
-        qualNote: p.qualificationNote || null,
-        appearingNote: p.appearingEligible
-          ? (p.appearingConditions || "Appearing candidates are eligible")
-          : null,
-        posts: [],
-      });
+    const map = new Map<string, QualGroup>();
+    for (const p of posts) {
+        const fp = qualFingerprint(p);
+        if (!map.has(fp)) {
+            const qual = p.qualification;
+            let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
+            if (qualTexts.length === 0) qualTexts = ["Not specified"];
+            map.set(fp, {
+                qualTexts,
+                qualNote: p.qualificationNote || null,
+                appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
+                posts: [],
+            });
+        }
+        map.get(fp)!.posts.push(p);
     }
-    map.get(fp)!.posts.push(p);
-  }
-  return Array.from(map.values());
+    return Array.from(map.values());
 }
 
 // ── PAGE COMPONENT ─────────────────────────────────────────────────────────────
@@ -544,7 +652,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         : [];
 
   const postGroups = groupPostsByQual(rawPosts);
-  const singleGroup = postGroups.length === 1; // all posts share same qual → show qual once
+  const singleGroup = postGroups.length === 1;
 
   const overallCatVac = job.categoryWiseVacancyTotal || {};
   const hasOverallCat = hasCategoryData(overallCatVac);
@@ -645,11 +753,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </table>
 
           {/* ══════════════════════════════════════════════════════════════════
-              POST-WISE VACANCY
-              Strategy: if all posts share the same qual, show it ONCE above
-              the table as a banner; the table then has no qual column at all,
-              keeping it dense and scan-friendly.
-              If posts differ, a subheader row groups each qual cluster.
+              POST-WISE VACANCY WITH IMPROVED QUALIFICATION DISPLAY
           ══════════════════════════════════════════════════════════════════ */}
           <div className="jd-section">
             <span className="jd-section-icon"><IconUsers /></span>
@@ -665,7 +769,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   {hasOverallCat && catCols.map(c => (
                     <th className="center" key={c} style={{ width: 50 }}>{CAT_LABELS[c]}</th>
                   ))}
-                  <th style={{ minWidth: 240 }}>Qualification Details</th>
+                  <th style={{ minWidth: 280 }}>Qualification Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -676,27 +780,43 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     return (
                       <tr key={`${gi}-${pi}`}>
                         <td>{p.name}</td>
-                        <td className="center mono bold" style={{ fontSize: 15 }}>
+                        <td className="center mono bold" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
                           {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
                         </td>
                         {hasOverallCat && catCols.map(c => (
                           <td key={c} className="center mono"
-                            style={{ color: hasPostCat && catVac[c] != null ? "var(--navy)" : "var(--ink-muted)" }}>
+                            style={{ color: hasPostCat && catVac[c] != null ? "var(--navy)" : "var(--ink-muted)", whiteSpace: "nowrap" }}>
                             {hasPostCat && catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
                           </td>
                         ))}
                         {pi === 0 && (
                           <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
-                            <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.4 }}>
-                              {grp.qualText}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                              {grp.qualTexts.map((qt, qIdx) => (
+                                <React.Fragment key={qIdx}>
+                                  <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.5 }}>
+                                    {qt}
+                                  </div>
+                                  {qIdx < grp.qualTexts.length - 1 && (
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
+                                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--ink-muted)", background: "var(--paper-alt)", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)", letterSpacing: "0.1em" }}>OR</span>
+                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
+                                    </div>
+                                  )}
+                                </React.Fragment>
+                              ))}
                             </div>
+
+                            {/* Appearing eligibility note */}
                             {grp.appearingNote && (
-                              <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 4 }}>
+                              <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 12, paddingTop: 8, borderTop: "1px dashed var(--border)" }}>
                                 {grp.appearingNote}
                               </div>
                             )}
+
                             {grp.qualNote && (
-                              <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 6, borderLeft: "2px solid var(--amber)", paddingLeft: 8 }}>
+                              <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 8, borderLeft: "3px solid var(--amber)", paddingLeft: 10, background: "var(--amber-bg)", padding: "8px 10px", borderRadius: "0 4px 4px 0" }}>
                                 <strong>Note:</strong> {grp.qualNote}
                               </div>
                             )}
@@ -710,11 +830,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 {/* Totals row */}
                 <tr className="tr-total">
                   <td>Total (All Posts)</td>
-                  <td className="center mono" style={{ fontSize: 15 }}>
+                  <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
                     {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
                   </td>
                   {hasOverallCat && catCols.map(c => (
-                    <td key={c} className="center mono">
+                    <td key={c} className="center mono" style={{ whiteSpace: "nowrap" }}>
                       {overallCatVac[c] != null ? overallCatVac[c].toLocaleString("en-IN") : "—"}
                     </td>
                   ))}
