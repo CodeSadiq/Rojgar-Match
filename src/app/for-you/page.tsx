@@ -89,15 +89,6 @@ export default function ForYouPage() {
         )}
       </main>
 
-      <footer className="bg-white border-t-2 border-gray-100 py-10 px-6 md:px-12">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-5 h-5 object-contain" /></div>
-            <strong className="text-[#1a3a8f] text-sm font-black leading-none uppercase">Rojgar Match</strong>
-          </div>
-          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 ROJGAR MATCH SYSTEM — OFFICIAL INDEX</p>
-        </div>
-      </footer>
     </div>
   );
 }

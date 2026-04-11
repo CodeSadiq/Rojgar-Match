@@ -400,19 +400,19 @@ export default function ProfilePage() {
       <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
         <div className="max-w-[1100px] mx-auto space-y-12 animate-in fade-in duration-700">
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
-            <div className="flex flex-col gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-navy">{userProfile.fullName || 'Citizen Profile'}</h1>
-                <p className="text-gray-500 text-sm mt-1">{userProfile.email}</p>
+          <div className="bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-8 shadow-sm text-center md:text-left">
+            <div className="flex flex-col items-center md:items-start gap-5">
+              <div className="space-y-1">
+                <h1 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
+                <p className="text-gray-400 text-sm md:text-base font-medium">{userProfile.email}</p>
               </div>
 
               {completed ? (
-                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100 w-fit">
+                <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-green-600 bg-green-50 px-4 py-1.5 rounded-full border border-green-100">
                   Qualification Recorded
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-50 px-3 py-1 rounded-full border border-red-100 w-fit">
+                <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-red-500 bg-red-50 px-4 py-1.5 rounded-full border border-red-100">
                   Qualification Not Recorded
                 </div>
               )}
@@ -420,9 +420,9 @@ export default function ProfilePage() {
 
             <button
               onClick={handleLogout}
-              className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest"
+              className="px-8 py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-red-100"
             >
-              Sign Out ⎆
+              Logout ⎆
             </button>
           </div>
 
@@ -531,9 +531,6 @@ export default function ProfilePage() {
             </section>
           </div>
 
-          <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest py-10">
-            GovRecruit Verification Baseline — Registry Sync v4.1
-          </p>
         </div>
       </main>
     </div>

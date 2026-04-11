@@ -123,7 +123,7 @@ export default function Navbar() {
                       className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-serif font-bold text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
                     >
                       <span className="opacity-30">⎆</span>
-                      Logout session
+                      Logout
                     </button>
                   </div>
                 )}
@@ -237,8 +237,7 @@ export default function Navbar() {
                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-red-400 text-lg font-serif font-bold group-hover:text-red-300 transition-colors">Logout Session</span>
-                      <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Exit your account</span>
+                      <span className="text-red-400 text-lg font-serif font-bold group-hover:text-red-300 transition-colors">Logout</span>
                     </div>
                   </button>
                 </div>

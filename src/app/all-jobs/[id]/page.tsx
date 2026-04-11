@@ -927,7 +927,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               <div className="jd-hero-value" style={{ fontSize: 19 }}>
                 {dates.startDate ? fmtDate(dates.startDate) : "—"}
               </div>
-              <div className="jd-hero-sub">Registration opens</div>
+              <div className="jd-hero-sub">Application opens</div>
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Last Date</div>

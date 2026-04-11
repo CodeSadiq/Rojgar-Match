@@ -301,27 +301,6 @@ export default function Home() {
 
       </main >
 
-      {/* SIMPLE FOOTER */}
-      <footer className="bg-[#0D244D] border-t border-white/5 py-12 md:py-20 px-6 md:px-12 mt-auto">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl flex items-center justify-center overflow-hidden">
-              <img src="/logo.png" alt="" className="w-6 h-6 object-contain opacity-80" />
-            </div>
-            <div className="flex flex-col">
-              <strong className="text-white text-[14px] font-black uppercase tracking-[0.3em]">Rojgar Match</strong>
-              <span className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">Official Recruitment Manifest</span>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
-            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Data Privacy</Link>
-            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Operating Terms</Link>
-            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Institutional Help</Link>
-            <p className="text-[11px] text-white/10 font-bold uppercase tracking-[0.15em] md:ml-16">© 2026 MINISTRY OF RECRUITMENT</p>
-          </div>
-        </div>
-      </footer>
-
       <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />
     </div >
   );

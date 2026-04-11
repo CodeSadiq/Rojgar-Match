@@ -496,11 +496,11 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
             <div className="jd-hero-sub">Posts to be filled</div>
           </div>
           <div className="jd-hero-cell">
-            <div className="jd-hero-label">Age Limit</div>
-            <div className="jd-hero-value" style={{ fontSize: 22 }}>
-              {al.min && al.max ? `${al.min}–${al.max}` : al.max ? `≤ ${al.max}` : "—"}
+            <div className="jd-hero-label">Start Date</div>
+            <div className="jd-hero-value" style={{ fontSize: 20 }}>
+              {dates.startDate ? fmtDate(dates.startDate) : "TBA"}
             </div>
-            <div className="jd-hero-sub">years{al.asOnDate ? ` as on ${fmtDate(al.asOnDate)}` : ""}</div>
+            <div className="jd-hero-sub">Application opens</div>
           </div>
           <div className="jd-hero-cell">
             <div className="jd-hero-label">Last Date</div>
