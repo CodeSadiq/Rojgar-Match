@@ -183,7 +183,7 @@ export default function Home() {
                         </div>
 
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          <div className="flex gap-1 flex-shrink-0">
+                          <div className="flex gap-3 flex-shrink-0">
                             <button
                               onClick={() => setCurrentCatIndex((prev) => (prev - 1 + categories.length) % categories.length)}
                               className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy hover:bg-navy hover:text-white transition-all border-none cursor-pointer active:scale-90 shadow-sm"
@@ -302,17 +302,22 @@ export default function Home() {
       </main >
 
       {/* SIMPLE FOOTER */}
-      <footer className="bg-white border-t border-gray-100 py-6 md:py-10 px-6 md:px-12 mt-auto">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-white border border-gray-100 rounded flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-4 h-4 object-contain" /></div>
-            <strong className="text-navy text-[11px] font-black uppercase tracking-wider">Rojgar Match</strong>
+      <footer className="bg-[#0D244D] border-t border-white/5 py-12 md:py-20 px-6 md:px-12 mt-auto">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="" className="w-6 h-6 object-contain opacity-80" />
+            </div>
+            <div className="flex flex-col">
+              <strong className="text-white text-[14px] font-black uppercase tracking-[0.3em]">Rojgar Match</strong>
+              <span className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">Official Recruitment Manifest</span>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Privacy</Link>
-            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Terms</Link>
-            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Support</Link>
-            <p className="text-[9px] text-gray-300 font-bold uppercase tracking-widest md:ml-10">© 2026</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Data Privacy</Link>
+            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Operating Terms</Link>
+            <Link href="#" className="text-[11px] text-white/40 font-bold uppercase tracking-widest hover:text-white transition-all no-underline">Institutional Help</Link>
+            <p className="text-[11px] text-white/10 font-bold uppercase tracking-[0.15em] md:ml-16">© 2026 MINISTRY OF RECRUITMENT</p>
           </div>
         </div>
       </footer>
