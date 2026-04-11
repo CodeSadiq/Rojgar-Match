@@ -21,7 +21,7 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const categories = ['Admission', 'Important', 'Result', 'Syllabus', 'Admit Card'];
+  const categories = ['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card'];
   const [currentCatIndex, setCurrentCatIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -73,6 +73,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
+      {/* ⚡ PRELOAD HERO ASSETS */}
+      <link rel="preload" as="image" href="/mobilehero.png" />
+      <link rel="preload" as="image" href="/herobg1.png" />
 
       <main className="flex-1 pb-32 md:pb-48 animate-in fade-in duration-700">
 
@@ -92,7 +95,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/5 to-transparent z-1 hidden md:block"></div>
 
               {/* Pin top-right search (Tight corner) */}
-              <div className="absolute top-2 right-2 md:top-6 md:right-8 z-30">
+              <div className="absolute top-2 right-2 md:top-6 md:right-8 z-30 hidden md:block">
                 <div className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-2 h-8 md:h-12 gap-1.5 w-[130px] focus-within:w-[190px] md:focus-within:w-[280px] md:w-[280px] transition-all focus-within:border-navy group shadow-sm">
                   <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-[0.6] md:scale-90"><IconSearch /></span>
                   <input
@@ -128,11 +131,11 @@ export default function Home() {
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col md:rounded-3xl">
                   <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-2 md:px-0">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-lg md:text-2xl font-serif font-bold text-navy">
+                      <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You
                       </h2>
                     </div>
-                    <Link href="/all-jobs" className="text-[14px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
+                    <Link href="/for-you" className="text-[11px] md:text-[14px] font-sans md:font-serif font-bold text-navy/30 md:text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
                   </header>
 
                   <div className="space-y-6 flex-1 flex flex-col">
@@ -232,9 +235,9 @@ export default function Home() {
                             />
                           ))}
                         </div>
-                        <Link 
-                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
-                           className="text-[12px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline"
+                        <Link
+                          href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
+                          className="text-[12px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline"
                         >
                           View All ›
                         </Link>

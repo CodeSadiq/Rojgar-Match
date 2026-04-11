@@ -369,7 +369,7 @@ const styles = `
   .age-main {
     font-family: var(--mono);
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--navy);
     white-space: nowrap;
   }
@@ -403,7 +403,7 @@ const styles = `
   .sal-level {
     font-family: var(--mono);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--navy);
   }
   .sal-range {
@@ -437,7 +437,7 @@ const styles = `
   .cat-vac-chip-val {
     font-family: var(--mono);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--navy);
     display: block;
   }
@@ -602,11 +602,11 @@ const DATE_ROWS: { label: string; key: string; highlight?: boolean }[] = [
   { label: "Application Closes", key: "lastDate", highlight: true },
   { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
   { label: "Correction Window Closes", key: "correctionWindowLastDate" },
-  { label: "Admit Card", key: "admitCardDate" },
+  { label: "Admit Card Released", key: "admitCardDate" },
   { label: "Examination Date", key: "examDate", highlight: true },
-  { label: "Result Declaration", key: "resultDate" },
-  { label: "Interview", key: "interviewDate" },
-  { label: "Document Verification", key: "documentVerificationDate" },
+  { label: "Result Announced", key: "resultDate" },
+  { label: "Interview Date", key: "interviewDate" },
+  { label: "Document Verification Date", key: "documentVerificationDate" },
 ];
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -775,7 +775,7 @@ function AgeCell({ post, job }: { post: any; job: any }) {
 
   return (
     <td className="center" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)" }}>
-      <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>
+      <div className="age-main" style={{ fontWeight: 500, color: "var(--ink)", fontSize: "15px", lineHeight: "1.2" }}>
         {min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}
       </div>
       {asOn && (
@@ -786,7 +786,7 @@ function AgeCell({ post, job }: { post: any; job: any }) {
       {relaxEntries.length > 0 && (
         <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
           {relaxEntries.map(([cat, val], idx) => (
-            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 600, whiteSpace: "nowrap" }}>
+            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 500, whiteSpace: "nowrap" }}>
               {RELAX_LABELS[cat] || cat.toUpperCase()}: {max ? Number(max) + Number(val) : `+${val}`}
               {idx < relaxEntries.length - 1 ? <span style={{ color: "var(--border)", marginLeft: "6px", fontWeight: 400 }}>|</span> : ""}
             </span>
@@ -812,7 +812,7 @@ function SalaryCell({ post, job }: { post: any; job: any }) {
   }
   return (
     <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
-      {payLevel != null && <div className="sal-level" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "13px" }}>Level {payLevel}</div>}
+      {payLevel != null && <div className="sal-level" style={{ fontWeight: 500, color: "var(--ink)", fontSize: "14px" }}>Level {payLevel}</div>}
       {(min || max) ? (
         <div className="sal-range" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>
           {min ? fmtMoney(min) : ""}
@@ -923,23 +923,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               <div className="jd-hero-sub">{rawPosts.length} post{rawPosts.length !== 1 ? "s" : ""}</div>
             </div>
             <div className="jd-hero-cell">
-              <div className="jd-hero-label">Age Limit</div>
-              <div className="jd-hero-value" style={{ fontSize: 22 }}>
-                {heroAge.min && heroAge.max
-                  ? `${heroAge.min}–${heroAge.max}`
-                  : heroAge.max
-                    ? `≤ ${heroAge.max}`
-                    : heroSal.payLevel
-                      ? `Level ${heroSal.payLevel}`
-                      : "—"}
+              <div className="jd-hero-label">Application Start Date</div>
+              <div className="jd-hero-value" style={{ fontSize: 19 }}>
+                {dates.startDate ? fmtDate(dates.startDate) : "—"}
               </div>
-              <div className="jd-hero-sub">
-                {heroAge.max
-                  ? `years${heroAge.asOnDate ? ` as on ${fmtDate(heroAge.asOnDate)}` : ""}`
-                  : heroSal.payLevel
-                    ? "Pay Level"
-                    : "See post details"}
-              </div>
+              <div className="jd-hero-sub">Registration opens</div>
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Last Date</div>
@@ -978,7 +966,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {allSameSalary && (heroSal.min || heroSal.max) && (
                 <tr>
                   <td className="label">Salary</td>
-                  <td className="bold">
+                  <td style={{ fontWeight: 500 }}>
                     {heroSal.min ? fmtMoney(heroSal.min) : ""}
                     {heroSal.min && heroSal.max ? " – " : ""}
                     {heroSal.max ? fmtMoney(heroSal.max) : ""}
@@ -1186,7 +1174,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <tbody>
               {DATE_ROWS.map((row) => {
                 const val = (dates as any)[row.key];
-                if (!val && !row.highlight) return null;
                 return (
                   <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
                     <td className="label">{row.label}</td>
@@ -1199,6 +1186,15 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   </tr>
                 );
               })}
+              {/* Custom Milestones */}
+              {((dates as any).customDates || []).map((cd: any, idx: number) => (
+                <tr key={`custom-${idx}`}>
+                  <td className="label">{cd.label}</td>
+                  <td className="mono bold">
+                    {cd.date ? fmtDate(cd.date) : <span style={{ color: "var(--ink-muted)", fontWeight: 400, fontStyle: "italic" }}>—</span>}
+                  </td>
+                </tr>
+              ))}
               {job.applyLink && (
                 <tr>
                   <td className="label">Apply Portal</td>

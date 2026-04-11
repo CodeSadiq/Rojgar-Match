@@ -266,7 +266,7 @@ function hasCategoryData(cv: any): boolean {
 }
 
 // ── QUALIFICATION CELL ────────────────────────────────────────────────────────
-function QualCell({ post }: { post: any }) {
+function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
   const q = post.qualification;
   if (q && !Array.isArray(q) && q.course !== undefined) {
     const courses: string[] = Array.isArray(q.course) ? q.course : [q.course];
@@ -283,7 +283,18 @@ function QualCell({ post }: { post: any }) {
           ))}
         </div>
         {branches.length > 0 && <div className="qual-branch-line"><span className="qual-branch-label">Stream / Branch: </span>{branches.join(", ")}</div>}
-        {extra && <div className="qual-extra"><strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>{extra}</div>}
+        {(extra || editable) && (
+          <div className="qual-extra">
+            <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
+            <Editable
+              editable={editable}
+              type="textarea"
+              value={extra}
+              path={isGeneral ? "qualification.extraQualificationText" : `posts.${postIndex}.qualification.extraQualificationText`}
+              onUpdate={onUpdate}
+            />
+          </div>
+        )}
         {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
         {post.appearingEligible && (
           <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
@@ -311,7 +322,18 @@ function QualCell({ post }: { post: any }) {
             {i > 0 && <div style={{ margin: "4px 0", fontSize: "10px", color: "var(--ink-muted)", fontStyle: "italic" }}>— OR —</div>}
             <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{name}</span>
             {branches.length > 0 && <div className="qual-branch-line"><span className="qual-branch-label">Branch: </span>{branches.join(", ")}</div>}
-            {extras.length > 0 && <div className="qual-extra"><strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>{extras.join(" · ")}</div>}
+            {(extras.length > 0 || editable) && (
+              <div className="qual-extra">
+                <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
+                <Editable
+                  editable={editable}
+                  type="textarea"
+                  value={item.extraQualificationText || extras.join(" · ")}
+                  path={isGeneral ? `qualification.${i}.extraQualificationText` : `posts.${postIndex}.qualification.${i}.extraQualificationText`}
+                  onUpdate={onUpdate}
+                />
+              </div>
+            )}
           </React.Fragment>
         );
       })}
@@ -391,8 +413,18 @@ function CatVacCell({ post, job }: { post: any; job: any }) {
   );
 }
 
-const Editable = ({ editable, value, onUpdate, path }: any) => {
+const Editable = ({ editable, value, onUpdate, path, type = 'text' }: any) => {
   if (!editable) return <span>{value}</span>;
+  if (type === 'textarea') {
+    return (
+      <textarea
+        value={value || ""}
+        onChange={(e) => onUpdate(path, e.target.value)}
+        className="jd-edit-field w-full min-h-[100px] bg-blue-50/50 border-blue-200"
+        style={{ fontSize: '14px', lineHeight: '1.6', padding: '10px' }}
+      />
+    );
+  }
   return (
     <input
       value={value || ""}
@@ -428,7 +460,11 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
     { label: "Application Closes", key: "lastDate", highlight: true },
     { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
     { label: "Correction Window Closes", key: "correctionWindowLastDate" },
+    { label: "Admit Card Released", key: "admitCardDate" },
     { label: "Examination Date", key: "examDate", highlight: true },
+    { label: "Result Announced", key: "resultDate" },
+    { label: "Interview Date", key: "interviewDate" },
+    { label: "DV Date", key: "documentVerificationDate" },
   ];
 
   const rawPosts: any[] = (job.posts || []).length > 0 ? job.posts : [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }];
@@ -476,8 +512,16 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         </div>
 
         {/* LEDE */}
-        {(job.description || job.shortInfo) && (
-          <div className="jd-lede">{job.description || job.shortInfo}</div>
+        {(job.description || job.shortInfo || editable) && (
+          <div className="jd-lede">
+            <Editable
+              editable={editable}
+              path="description"
+              value={job.description || job.shortInfo}
+              onUpdate={onUpdate}
+              type="textarea"
+            />
+          </div>
         )}
 
         {/* OVERVIEW */}
@@ -489,7 +533,20 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           <tbody>
             <tr><td className="label">Organisation</td><td><Editable editable={editable} path="organization" value={job.organization} onUpdate={onUpdate} /></td></tr>
             <tr><td className="label">Govt. Type</td><td><Editable editable={editable} path="type" value={job.type} onUpdate={onUpdate} /></td></tr>
-            <tr><td className="label">Location</td><td>{job.location?.join(", ") || "All India"}</td></tr>
+            <tr>
+              <td className="label">Location</td>
+              <td>
+                <Editable
+                  editable={editable}
+                  path="location"
+                  value={Array.isArray(job.location) ? job.location.join(", ") : (job.location || "")}
+                  onUpdate={(path: string, val: string) => {
+                    const arr = val.split(",").map(s => s.trim()).filter(Boolean);
+                    onUpdate(path, arr);
+                  }}
+                />
+              </td>
+            </tr>
             {(job.salary?.min || job.salary?.max) && (
               <tr>
                 <td className="label">Salary</td>
@@ -531,7 +588,13 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                   <CatVacCell post={p} job={job} />
                   <AgeCell post={p} job={job} />
                   <SalaryCell post={p} job={job} />
-                  <QualCell post={p} />
+                  <QualCell
+                    post={p}
+                    editable={editable}
+                    onUpdate={onUpdate}
+                    postIndex={idx}
+                    isGeneral={!(job.posts || []).length}
+                  />
                 </tr>
               ))}
               <tr className="tr-total">
@@ -626,16 +689,71 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           <tbody>
             {timelineRows.map(row => {
               const val = dates[row.key as keyof typeof dates];
-              if (!val && row.key !== 'examDate') return null;
+              // Show all rows as per institutional standard
               return (
                 <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
                   <td className="label">{row.label}</td>
                   <td className={val ? "bold" : "red bold"}>
-                    {val ? fmtDate(val as string) : "Not announced"}
+                    {editable ? (
+                      <>
+                        <Editable 
+                          editable={true}
+                          path={`importantDates.${row.key}`}
+                          value={val || ""}
+                          onUpdate={onUpdate}
+                        />
+                        <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>YYYY-MM-DD</div>
+                      </>
+                    ) : (
+                      val ? fmtDate(val as string) : "Not announced"
+                    )}
                   </td>
                 </tr>
               );
             })}
+            {/* Custom Milestone Addition */}
+            {(dates.customDates || []).map((cd: any, idx: number) => (
+              <tr key={`custom-${idx}`}>
+                <td className="label">
+                  <Editable 
+                    editable={editable}
+                    path={`importantDates.customDates.${idx}.label`}
+                    value={cd.label}
+                    onUpdate={onUpdate}
+                  />
+                </td>
+                <td className="bold">
+                  {editable ? (
+                    <>
+                      <Editable 
+                        editable={true}
+                        path={`importantDates.customDates.${idx}.date`}
+                        value={cd.date || ""}
+                        onUpdate={onUpdate}
+                      />
+                      <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>YYYY-MM-DD</div>
+                    </>
+                  ) : (
+                    cd.date ? fmtDate(cd.date) : "—"
+                  )}
+                </td>
+              </tr>
+            ))}
+            {editable && (
+              <tr>
+                <td colSpan={2} style={{ textAlign: 'center', padding: '12px' }}>
+                  <button
+                    onClick={() => {
+                      const currentCustom = dates.customDates || [];
+                      onUpdate('importantDates.customDates', [...currentCustom, { label: 'New Milestone', date: '' }]);
+                    }}
+                    className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-full border border-blue-100"
+                  >
+                    + Add New Milestone
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 

@@ -75,7 +75,7 @@ export default function AdminPage() {
     if (!normalizedData.applicationProcess && normalizedData.application_process) normalizedData.applicationProcess = normalizedData.application_process;
     if (!normalizedData.selectionProcess && normalizedData.selection) normalizedData.selectionProcess = normalizedData.selection;
     if (!normalizedData.applicationProcess && normalizedData.application) normalizedData.applicationProcess = normalizedData.application;
-    
+
     // Convert string to array if needed (splits by newlines, commas, or semicolons)
     const arrayify = (val: any) => {
       if (!val) return [];
@@ -130,7 +130,7 @@ export default function AdminPage() {
           </Link>
         </nav>
 
-        <div 
+        <div
           onClick={() => setIsFullToolOpen(true)}
           className="max-w-2xl mx-auto bg-white border-2 border-gray-100 rounded-[32px] p-6 lg:p-10 shadow-xl hover:border-navy/20 cursor-pointer transition-all hover:-translate-y-1 group group-hover:shadow-[#0D244D]/10"
         >
@@ -152,7 +152,7 @@ export default function AdminPage() {
         </div>
 
         <footer className="mt-40 text-center opacity-10">
-           <div className="text-[10px] font-black uppercase tracking-[0.5em] text-navy">ADMIN ACCESS ONLY</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.5em] text-navy">ADMIN ACCESS ONLY</div>
         </footer>
       </div>
     );
@@ -162,24 +162,24 @@ export default function AdminPage() {
     <div className="fixed inset-0 bg-[#F8FAFC] z-[2000] flex flex-col font-sans animate-in fade-in duration-300">
       <header className="h-[60px] md:h-[70px] bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 shrink-0 shadow-sm">
         <div className="flex items-center gap-2 md:gap-4">
-           <button onClick={() => setIsFullToolOpen(false)} className="text-navy/40 hover:text-navy text-lg md:text-xl p-2">✕</button>
-           <div className="h-6 w-[1px] bg-gray-100 hidden md:block"></div>
-           <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-navy truncate max-w-[80px] md:max-w-none">Recruitment Editor</h2>
+          <button onClick={() => setIsFullToolOpen(false)} className="text-navy/40 hover:text-navy text-lg md:text-xl p-2">✕</button>
+          <div className="h-6 w-[1px] bg-gray-100 hidden md:block"></div>
+          <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-navy truncate max-w-[80px] md:max-w-none">Recruitment Editor</h2>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
-          <button 
+          <button
             onClick={handleReset}
             className="px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-500 hover:bg-red-100 transition-all border border-red-100"
           >
             Reset
           </button>
-          <button 
+          <button
             onClick={() => setIsEditing(!isEditing)}
             className={`px-3 md:px-6 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${isEditing ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
           >
             {isEditing ? 'Live Edit ON' : 'Edit Mode'}
           </button>
-          <button 
+          <button
             onClick={handlePublish}
             disabled={!jobData || isPublishing || success}
             className={`px-4 md:px-8 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-xl transition-all ${success ? 'bg-green text-white' : 'bg-navy text-white hover:bg-navy-dark active:scale-95 disabled:opacity-30 disabled:grayscale'}`}
@@ -206,20 +206,20 @@ export default function AdminPage() {
         </div>
         <div className="bg-white overflow-y-auto custom-scrollbar p-0 md:p-8">
           <div className="max-w-[1000px] mx-auto scale-[0.85] md:scale-100 origin-top">
-             {!jobData ? (
-               <div className="h-[calc(100vh-100px)] flex flex-col items-center justify-center opacity-10">
-                  <div className="text-4xl md:text-6xl mb-4">📑</div>
-                  <div className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Awaiting Valid Schema</div>
-               </div>
-             ) : (
-               <div className="animate-in fade-in zoom-in-95 duration-700">
-                  <RecruitmentPreview 
-                    job={jobData} 
-                    editable={isEditing} 
-                    onUpdate={handleUpdate} 
-                  />
-               </div>
-             )}
+            {!jobData ? (
+              <div className="h-[calc(100vh-100px)] flex flex-col items-center justify-center opacity-10">
+                <div className="text-4xl md:text-6xl mb-4">📑</div>
+                <div className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Awaiting Valid Schema</div>
+              </div>
+            ) : (
+              <div className="animate-in fade-in zoom-in-95 duration-700">
+                <RecruitmentPreview
+                  job={jobData}
+                  editable={isEditing}
+                  onUpdate={handleUpdate}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
