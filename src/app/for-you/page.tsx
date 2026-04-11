@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import Navbar from '@/components/Navbar';
+import RecruitmentCard from '@/components/RecruitmentCard';
 
 // ─── SVG ICONS ───────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -49,8 +51,8 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto p-6 md:p-12 w-full animate-in fade-in duration-700">
-        <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10">
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-6 md:py-12 w-full animate-in fade-in duration-700">
+        <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10 px-4 md:px-0">
           <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-tight">Recruitment for You</h1>
           <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Showing official verified government openings matched to your profile.</p>
         </header>
@@ -62,40 +64,10 @@ export default function ForYouPage() {
             ))}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {jobs.map((job, idx) => {
-              const lastDateVal = job.lastDate || job.importantDates?.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
-              const isFallback = !lastDateVal.includes('202');
-
-              return (
-                <Link
-                  href={`/all-jobs/${job.id || job._id}`}
-                  key={idx}
-                  className="bg-white border-2 border-gray-100 p-8 md:p-10 flex flex-col hover:shadow-2xl hover:-translate-y-2 transition-all group h-full rounded-[2rem] shadow-sm relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#1a3a8f]/[0.02] rounded-bl-[4rem] group-hover:bg-[#1a3a8f]/[0.05] transition-colors pointer-events-none"></div>
-
-                  <div className="grow mb-10">
-                    <h3 className="text-[26px] font-serif font-bold text-[#1a3a8f] leading-[1.2] tracking-tight group-hover:text-[#122870] transition-colors">
-                      {job.title}
-                    </h3>
-                  </div>
-
-                  <div className="pt-8 border-t border-gray-100 flex items-end justify-between">
-                    <div className="flex flex-col gap-1">
-                      <div className="text-[11px] font-serif font-bold text-gray-400">Last Date</div>
-                      <div className="text-[15px] font-serif font-bold text-[#FF3B30] leading-tight max-w-[200px]">
-                        {isFallback && lastDateVal === "DETAILS AWAITED" ? `EARLY NOTIFICATION — FULL DETAILS AWAITED` : lastDateVal}
-                      </div>
-                    </div>
-
-                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[15px] font-serif font-bold rounded-full shadow-lg shadow-[#1a3a8f]/20 group-hover:bg-[#122870] transition-all transform group-hover:scale-105 whitespace-nowrap">
-                      View Details
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="flex flex-col gap-6">
+            {jobs.map((job, idx) => (
+              <RecruitmentCard key={idx} job={job} isMatched={true} />
+            ))}
           </div>
         ) : (
           <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">

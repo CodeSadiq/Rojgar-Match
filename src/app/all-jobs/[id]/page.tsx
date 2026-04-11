@@ -73,9 +73,9 @@ const styles = `
 
   /* ── LAYOUT ── */
   .jd-wrap {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 0 auto;
-    padding: 0 20px 80px;
+    padding: 0 60px 100px;
   }
 
   /* ── MASTHEAD ── */
@@ -550,7 +550,7 @@ const styles = `
 
   @media (max-width: 600px) {
     .jd { font-size: 18px; }
-    .jd-wrap { padding: 0 12px 60px; }
+    .jd-wrap { padding: 0 24px 80px; }
     .jd-hero { grid-template-columns: 1fr; }
     .jd-hero-value { font-size: 26px !important; }
     .jd-table { font-size: 15px; }

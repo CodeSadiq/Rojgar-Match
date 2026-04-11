@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { JOBS as STATIC_JOBS, NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
 import JobDetailModal from '@/components/JobDetailModal';
+import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
@@ -20,7 +21,7 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const categories = Object.keys(CATEGORY_DATA);
+  const categories = ['Admission', 'Important', 'Result', 'Syllabus', 'Admit Card'];
   const [currentCatIndex, setCurrentCatIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -34,7 +35,7 @@ export default function Home() {
   }, [isAutoPlaying, categories.length]);
 
   const activeCategory = categories[currentCatIndex];
-  const activeItems = CATEGORY_DATA[activeCategory];
+  const activeItems = (CATEGORY_DATA as any)[activeCategory] || [];
 
   useEffect(() => {
     // Lead user profile
@@ -103,25 +104,15 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Mobile Absolute Header Block (Moved Upper Part) */}
-              <div className="md:hidden absolute top-12 left-5 z-20 space-y-1">
-                <h1 className="text-[19px] font-serif font-bold text-navy leading-tight drop-shadow-sm">
-                  Recruitment for You
-                </h1>
-                <p className="text-[9px] text-navy/60 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                  Verified openings matched to your profile.
-                </p>
-              </div>
-
-              {/* Desktop Centered Header Block */}
-              <div className="hidden md:block relative z-10 w-full max-w-[1440px] mx-auto px-12 py-8">
-                <div className="max-w-[800px] text-left space-y-4">
-                  <h1 className="text-5xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
+              {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-5 pb-16 md:py-16">
+                <div className="max-w-[800px] text-left space-y-3 md:space-y-6">
+                  <h1 className="text-2xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
                     Recruitment for You
                   </h1>
-                  <div className="max-w-[500px]">
-                    <p className="text-[14px] text-navy/60 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                      Official portal for verified government openings matched to your profile.
+                  <div className="max-w-[450px] md:max-w-[650px]">
+                    <p className="text-[10px] md:text-[16px] text-navy/60 font-bold uppercase tracking-[0.2em] leading-relaxed">
+                      Verified openings matched to your profile.
                     </p>
                   </div>
                 </div>
@@ -134,14 +125,14 @@ export default function Home() {
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:p-10 md:shadow-sm relative overflow-hidden h-full flex flex-col md:rounded-3xl">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col md:rounded-3xl">
                   <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-2 md:px-0">
                     <div className="flex items-center gap-4">
                       <h2 className="text-lg md:text-2xl font-serif font-bold text-navy">
                         Recruitment For You
                       </h2>
                     </div>
-                    <Link href="/for-you" className="text-[14px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
+                    <Link href="/all-jobs" className="text-[14px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
                   </header>
 
                   <div className="space-y-6 flex-1 flex flex-col">
@@ -161,40 +152,15 @@ export default function Home() {
                       </div>
                     ) : (
                       recommendedJobs.map((job: any, idx) => (
-                        <Link
-                          href={`/all-jobs/${job.id || job._id}`}
-                          key={idx}
-                          className="group bg-white border-2 border-gray-100 p-3 md:p-8 flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-all hover:border-navy hover:shadow-2xl hover:-translate-y-1 rounded-2xl shadow-sm"
-                        >
-                          <div className="flex-1">
-                            <h3 className="text-[15px] md:text-2xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
-                            <div className="mt-1.5 md:mt-4 flex flex-wrap items-center gap-2">
-                              {job.matchedPosts ? (
-                                <>
-                                  <span className="text-[9px] md:text-[10px] font-serif font-bold bg-navy text-white px-2 py-0.5 md:px-3 md:py-1 rounded-full">{job.matchedPosts.length} post{job.matchedPosts.length === 1 ? '' : 's'} matched</span>
-                                  <span className="hidden md:inline text-[10px] font-serif font-bold text-navy/40">including {job.matchedPosts[0].name}</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span className="text-[9px] md:text-[10px] font-serif font-bold bg-gray-50 text-gray-400 px-2 py-0.5 rounded-full border border-gray-100">Direct Entry</span>
-                                  <span className="text-[9px] font-serif font-bold text-gray-300">{job.totalVacancy || 0}+ vacancies</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0 flex items-baseline justify-between md:block mt-3 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-50 md:border-none">
-                            <div className="text-[10px] font-serif font-bold text-gray-400 mb-1">Last Date</div>
-                            <div className="text-[13px] md:text-xl font-serif font-bold text-red leading-none">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</div>
-                          </div>
-                        </Link>
+                        <RecruitmentCard key={idx} job={job} isMatched={true} />
                       ))
                     )}
                   </div>
                 </div>
               </section>
 
-              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-24 md:mt-0">
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:shadow-sm overflow-hidden flex flex-col h-full md:rounded-3xl">
+              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-0 md:px-0">
+                <div className="bg-white border border-gray-100 p-2.5 md:p-4 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(false)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
@@ -251,19 +217,27 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* DOT TRACKER */}
-                      <div className="mt-8 flex items-center justify-center gap-2">
-                        {categories.map((_, idx) => (
-                          <button
-                            key={idx}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCurrentCatIndex(idx);
-                              setIsAutoPlaying(false);
-                            }}
-                            className={`h-1 rounded-full transition-all duration-500 border-none p-0 cursor-pointer ${idx === currentCatIndex ? 'bg-navy w-6' : 'bg-gray-200 w-2 hover:bg-gray-300'}`}
-                          />
-                        ))}
+                      {/* DOT TRACKER & VIEW ALL */}
+                      <div className="mt-8 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {categories.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentCatIndex(idx);
+                                setIsAutoPlaying(false);
+                              }}
+                              className={`h-1 rounded-full transition-all duration-500 border-none p-0 cursor-pointer ${idx === currentCatIndex ? 'bg-navy w-6' : 'bg-gray-200 w-2 hover:bg-gray-300'}`}
+                            />
+                          ))}
+                        </div>
+                        <Link 
+                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
+                           className="text-[12px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline"
+                        >
+                          View All ›
+                        </Link>
                       </div>
                     </div>
 
@@ -278,8 +252,49 @@ export default function Home() {
               </aside>
             </div>
           </>
-        )
-        }
+        )}
+
+        {/* VIEW: ALL JOBS */}
+        {activeTab === 'all' && (
+          <div className="max-w-[1440px] mx-auto px-0 md:px-12 py-4 md:py-12">
+            <header className="mb-14 border-b-4 border-navy pb-10 flex flex-col md:flex-row md:items-end justify-between gap-8 px-4 md:px-0">
+              <div>
+                <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-navy leading-tight">National Registry</h1>
+                <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Broadcasting official verified government openings across the national registry.</p>
+              </div>
+            </header>
+
+            <div className="flex flex-col gap-6">
+              {filteredJobs.length === 0 ? (
+                <div className="py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
+              ) : (
+                filteredJobs.map((job, idx) => (
+                  <RecruitmentCard key={idx} job={job} />
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* VIEW: NOTIFICATIONS */}
+        {activeTab === 'notifications' && (
+          <div className="max-w-[800px] mx-auto p-4 md:p-20">
+            <div className="bg-white border-2 border-gray-100 p-8 md:p-12 rounded-3xl shadow-sm">
+              <h2 className="text-2xl font-serif font-bold text-navy mb-8">Live Notifications</h2>
+              <div className="space-y-6">
+                {NOTIFICATIONS.map((n, i) => (
+                  <div key={i} className="flex gap-4 pb-6 border-b border-gray-50 last:border-0 last:pb-0">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+                    <div>
+                      <p className="text-[15px] font-serif font-bold text-navy leading-snug">{n.text}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase mt-2">{n.time} • OFFICIAL BULLETIN</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
       </main >
 

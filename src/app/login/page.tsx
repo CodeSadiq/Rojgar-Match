@@ -94,11 +94,11 @@ export default function LoginPage() {
           </div>
 
           {/* AUTH CARD */}
-          <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden group">
-            <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4">
+          <div className="bg-white rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50">
+            <form onSubmit={handleLogin} className="p-8 md:p-10 space-y-4">
 
               {error && (
-                <div className="bg-red/10 border-2 border-red/20 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-xl animate-in fade-in slide-in-from-top-2">
+                <div className="bg-red/5 border-2 border-red/10 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-2xl animate-in fade-in slide-in-from-top-2">
                   ⚠️ {error}
                 </div>
               )}
@@ -119,7 +119,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@institution.gov"
-                      className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all tracking-tight"
+                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[15px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
                     />
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all"
+                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[15px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
                     />
                   </div>
                 </div>
@@ -183,10 +183,10 @@ export default function LoginPage() {
             </form>
 
             {/* BOTTOM LINK */}
-            <div className="bg-gray-50/50 p-4 text-center border-t border-gray-100">
-              <p className="text-[11px] font-bold text-gray-400 items-center justify-center gap-2 flex">
+            <div className="bg-gray-50/50 p-6 text-center border-t border-gray-100">
+              <p className="text-[14px] font-sans font-medium text-gray-500 items-center justify-center gap-2 flex">
                 Don't have an account?
-                <Link href="/signup" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
+                <Link href="/signup" className="text-navy font-bold hover:text-[#1d4ed8] transition-colors no-underline">
                   Sign up
                 </Link>
               </p>
