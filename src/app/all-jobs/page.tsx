@@ -44,7 +44,7 @@ export default function JobsPage() {
 
   // ── RECRUITMENT MATCHING LOGIC ──
   const jobsWithMatching = React.useMemo(() => {
-    if (!userProfile || !userProfile.level || dbJobs.length === 0) {
+    if (!userProfile || !userProfile.qualifications || userProfile.qualifications.length === 0 || dbJobs.length === 0) {
       return dbJobs.map(j => ({ ...j, isMatched: false }));
     }
     
@@ -111,16 +111,6 @@ export default function JobsPage() {
           )}
         </section>
       </main>
-
-      <footer className="bg-white border-t-2 border-gray-100 py-10 px-6 md:px-12 mt-auto">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-5 h-5 object-contain" /></div>
-            <strong className="text-navy text-sm font-black leading-none uppercase">Rojgar Match</strong>
-          </div>
-          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 Rojgar Match Institutional Index</p>
-        </div>
-      </footer>
     </div>
   );
 }
