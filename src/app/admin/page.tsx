@@ -95,28 +95,28 @@ export default function AdminPage() {
 
           <Link
             href="/admin/editor"
-            className="px-8 py-4 bg-navy text-white text-[12px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-navy/20 hover:bg-[#06142E] transition-all flex items-center gap-4 group no-underline"
+            className="flex items-center gap-3 px-6 py-3 bg-navy text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-navy/20 no-underline"
           >
-            Add New Job <span className="text-xl group-hover:rotate-90 transition-transform">+</span>
+            Add New Job <span className="text-xl">+</span>
           </Link>
         </div>
 
         {/* MANAGEMENT SECTION */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white border-2 border-gray-200 p-4 rounded-xl shadow-sm">
-            <div className="flex-1 w-full relative border-none">
+            <label className="relative flex-1 group cursor-text flex items-center min-h-[44px]">
               <input
                 type="text"
                 placeholder="SEARCH RECRUITMENT REGISTRY (ID, TITLE, ORG)..."
                 value={adminSearchQuery}
                 onChange={(e) => setAdminSearchQuery(e.target.value)}
-                className="w-full bg-transparent border-none outline-none text-[11px] font-bold text-navy placeholder:text-navy/20 uppercase tracking-widest pl-10 h-10 ring-0 focus:ring-0"
+                className="w-full h-full bg-transparent border-none outline-none text-[11px] font-bold text-navy placeholder:text-navy/20 uppercase tracking-widest pl-10 ring-0 focus:ring-0"
               />
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-navy/20" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-            </div>
+            </label>
             <div className="flex items-center gap-4 shrink-0">
               <span className="text-[9px] font-black text-navy/30 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                 Total Records: {publishedJobs.length}

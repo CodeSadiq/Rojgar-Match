@@ -114,7 +114,7 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* HERO: UPPER TEXT ALIGNMENT (SKY-TEXT / BASE-BUILDING) */}
-            <div className="w-full bg-[#FAFAFA] relative h-[210px] md:h-[300px] flex items-center overflow-hidden border-b-2 border-gray-100">
+            <div className="w-full bg-[#FAFAFA] relative h-[160px] md:h-[300px] flex items-center overflow-hidden border-b-2 border-gray-100">
               {/* Background Layer (Anchored at Bottom for upper-text space) */}
               <div
                 className="absolute inset-0 bg-cover bg-bottom lg:bg-[right_-150px_center] bg-[url('/mobilehero.png')] lg:bg-[url('/herobg1.png')] z-0 transition-opacity duration-1000"
@@ -133,22 +133,24 @@ export default function Home() {
                       router.push(`/all-jobs?q=${encodeURIComponent(searchQuery.trim())}`);
                     }
                   }}
-                  className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-3 md:px-4 h-9 md:h-14 gap-2 w-[160px] focus-within:w-[220px] md:w-[320px] md:focus-within:w-[380px] transition-all focus-within:border-navy group shadow-lg shadow-navy/5"
+                  className="bg-white border-2 border-gray-100 rounded-xl px-3 md:px-4 h-9 md:h-14 w-[160px] focus-within:w-[220px] md:w-[320px] md:focus-within:w-[380px] transition-all focus-within:border-navy group shadow-lg shadow-navy/5"
                 >
-                  <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-75 md:scale-100"><IconSearch /></span>
-                  <input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
-                    placeholder="Search Index..."
-                  />
+                  <label className="flex items-center w-full h-full cursor-text gap-2">
+                    <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-75 md:scale-100"><IconSearch /></span>
+                    <input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
+                      placeholder="Search Index..."
+                    />
+                  </label>
                 </form>
               </div>
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-5 pb-16 md:py-16">
-                <div className="max-w-[800px] text-left space-y-3 md:space-y-6">
-                  <h1 className="text-2xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-8 md:py-16">
+                <div className="max-w-[800px] text-left space-y-2 md:space-y-6">
+                  <h1 className="text-xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
                     Government Jobs For You
                   </h1>
                   <div className="max-w-[450px] md:max-w-[650px]">
@@ -245,9 +247,9 @@ export default function Home() {
                       <div key={activeCategory} className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-8 duration-700">
                         {activeItems.map((n: any, i: number) => (
                           <Link
-                            href="#"
+                            href={`/bulletin/${n.id}`}
                             key={i}
-                            className="group block py-3.5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4"
+                            className="group block py-3.5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4 no-underline"
                           >
                             <div className="text-[13px] md:text-[14px] font-serif font-bold text-[#344163] leading-tight group-hover:text-navy transition-colors mb-2 line-clamp-2">
                               {n.text}

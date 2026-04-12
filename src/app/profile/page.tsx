@@ -258,57 +258,56 @@ export default function ProfilePage() {
                 })}
 
                 <div className="pt-6 border-t border-gray-100">
-                  <div className="flex justify-end gap-3">
+                  <div className="flex flex-col md:flex-row md:justify-end gap-3">
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="px-12 h-12 bg-navy text-white font-bold text-[11px] uppercase tracking-widest rounded-lg shadow-sm hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30"
+                      className="w-full md:px-12 h-14 md:h-12 bg-navy text-white font-bold text-[11px] uppercase tracking-widest rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 order-1 md:order-none"
                     >
                       {isSaving ? 'Saving...' : 'Save Qualification'}
                     </button>
 
-                      <button
-                        onClick={async () => {
-                           if(confirm('Are you sure you want to reset all qualifications? This cannot be undone.')) {
-                             setIsSaving(true);
-                             try {
-                               // ── GUEST HANDLING: Clear local only ──
-                               if (userProfile.email === 'guest@govrecruit.local') {
-                                 setSelectedLevels({});
-                                 setCompleted(false);
-                                 localStorage.removeItem('govrecruit_profile');
-                                 window.dispatchEvent(new Event('govrecruit_auth_change'));
-                                 alert('Guest qualifications reset successfully! ✅');
-                                 setIsSaving(false);
-                                 return;
-                               }
+                    <button
+                      onClick={async () => {
+                        if (confirm('Are you sure you want to reset all qualifications? This cannot be undone.')) {
+                          setIsSaving(true);
+                          try {
+                            if (userProfile.email === 'guest@govrecruit.local') {
+                              setSelectedLevels({});
+                              setCompleted(false);
+                              localStorage.removeItem('govrecruit_profile');
+                              window.dispatchEvent(new Event('govrecruit_auth_change'));
+                              alert('Guest qualifications reset successfully! ✅');
+                              setIsSaving(false);
+                              return;
+                            }
 
-                               const res = await fetch('/api/profile', {
-                                 method: 'POST',
-                                 headers: { 'Content-Type': 'application/json' },
-                                 body: JSON.stringify({ email: userProfile.email.toLowerCase().trim(), profile: { qualifications: [] } }),
-                               });
-                               if (res.ok) {
-                                 setSelectedLevels({});
-                                 setCompleted(false);
-                                 localStorage.removeItem('govrecruit_profile');
-                                 window.dispatchEvent(new Event('govrecruit_auth_change'));
-                                 alert('Qualifications reset successful! ✅');
-                               } else {
-                                  throw new Error('Reset failed');
-                               }
-                             } catch (e) {
-                               alert('Error: Could not clear remote records.');
-                             } finally {
-                               setIsSaving(false);
-                             }
-                           }
-                        }}
-                        className="px-6 h-12 bg-transparent text-red-500 font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all border border-red-100"
-                        disabled={isSaving}
-                      >
-                        {isSaving ? 'Processing...' : 'Reset Qualification'}
-                      </button>
+                            const res = await fetch('/api/profile', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ email: userProfile.email.toLowerCase().trim(), profile: { qualifications: [] } }),
+                            });
+                            if (res.ok) {
+                              setSelectedLevels({});
+                              setCompleted(false);
+                              localStorage.removeItem('govrecruit_profile');
+                              window.dispatchEvent(new Event('govrecruit_auth_change'));
+                              alert('Qualifications reset successful! ✅');
+                            } else {
+                              throw new Error('Reset failed');
+                            }
+                          } catch (e) {
+                            alert('Error: Could not clear remote records.');
+                          } finally {
+                            setIsSaving(false);
+                          }
+                        }
+                      }}
+                      className="w-full md:px-6 h-14 md:h-12 bg-transparent text-red-500 font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all border border-red-100 order-2 md:order-none"
+                      disabled={isSaving}
+                    >
+                      {isSaving ? 'Processing...' : 'Reset Qualification'}
+                    </button>
                   </div>
                 </div>
               </div>

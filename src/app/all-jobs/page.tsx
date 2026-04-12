@@ -127,7 +127,7 @@ export default function JobsPage() {
             <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
             <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Broadcasting official verified government openings across the national registry.</p>
           </div>
-          <div className="flex bg-white border-2 border-gray-100 rounded-2xl px-5 h-10 md:h-14 items-center gap-3 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-all">
+          <label className="flex bg-white border-2 border-gray-100 rounded-xl px-5 h-10 md:h-14 items-center gap-3 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-all cursor-text">
             <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
             <input
               value={searchQuery}
@@ -135,7 +135,7 @@ export default function JobsPage() {
               className="bg-transparent border-none outline-none text-xs md:text-sm font-black text-navy uppercase flex-1 placeholder:text-gray-200"
               placeholder="Search index..."
             />
-          </div>
+          </label>
         </header>
 
 

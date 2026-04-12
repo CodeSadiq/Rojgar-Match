@@ -47,31 +47,27 @@ export default function CategoryPage() {
         {data.length > 0 ? (
           <div className="flex flex-col gap-3">
             {data.map((item, idx) => (
-              <div
+              <Link
                 key={idx}
-                className="bg-white border border-gray-300 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6"
+                href={`/bulletin/${item.id}`}
+                className="group bg-white border border-gray-100 rounded-xl p-4 md:p-6 flex items-center justify-between gap-4 no-underline hover:bg-gray-50 hover:border-gray-200 transition-all mb-3 shadow-sm"
               >
-                <div className="flex-1">
-                  {/* 🛡 Status row */}
-                  <div className="flex items-center gap-3 mb-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{item.time}</span>
-                    </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full shrink-0"></span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 truncate">{item.time}</span>
                   </div>
 
-                  <h3 className="text-base md:text-lg font-bold text-navy">
+                  <h3 className="text-[14px] md:text-lg font-bold text-navy leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
                     {item.text}
                   </h3>
                 </div>
 
                 {/* 🔘 Action */}
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                  <button className="flex-1 md:flex-none text-[10px] font-bold uppercase tracking-widest text-white bg-navy px-8 py-3 rounded-lg">
-                    View Details
-                  </button>
+                <div className="text-navy/20 group-hover:text-navy group-hover:translate-x-1 transition-all shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
