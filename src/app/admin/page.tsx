@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
+import { getRegistryData } from '@/lib/data-service';
 
 export default function AdminPage() {
   const [publishedJobs, setPublishedJobs] = useState<any[]>([]);
@@ -82,15 +83,20 @@ export default function AdminPage() {
 
   const [activeTab, setActiveTab] = useState<'recruitment' | 'bulletin'>('recruitment');
   const [bulletinSearch, setBulletinSearch] = useState('');
+  const [dynamicRegistry, setDynamicRegistry] = useState<any>(null);
+
+  useEffect(() => {
+    setDynamicRegistry(getRegistryData());
+  }, []);
 
   // BULLETIN DATA LOGIC (Archival Manifests only)
-  const allBulletins = [
-    ...(CATEGORY_DATA['Important'] || []).map(n => ({ ...n, category: 'IMPORTANT' })),
-    ...(CATEGORY_DATA['Admission'] || []).map(n => ({ ...n, category: 'ADMISSION' })),
-    ...(CATEGORY_DATA['Syllabus'] || []).map(n => ({ ...n, category: 'SYLLABUS' })),
-    ...(CATEGORY_DATA['Result'] || []).map(n => ({ ...n, category: 'RESULT' })),
-    ...(CATEGORY_DATA['Admit Card'] || []).map(n => ({ ...n, category: 'ADMIT CARD' })),
-  ];
+  const allBulletins = dynamicRegistry ? [
+    ...(dynamicRegistry.categories['Important'] || []).map((n: any) => ({ ...n, category: 'IMPORTANT' })),
+    ...(dynamicRegistry.categories['Admission'] || []).map((n: any) => ({ ...n, category: 'ADMISSION' })),
+    ...(dynamicRegistry.categories['Syllabus'] || []).map((n: any) => ({ ...n, category: 'SYLLABUS' })),
+    ...(dynamicRegistry.categories['Result'] || []).map((n: any) => ({ ...n, category: 'RESULT' })),
+    ...(dynamicRegistry.categories['Admit Card'] || []).map((n: any) => ({ ...n, category: 'ADMIT CARD' })),
+  ] : [];
 
   const filteredBulletins = allBulletins.filter(b => 
     b.text.toLowerCase().includes(bulletinSearch.toLowerCase()) || 

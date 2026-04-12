@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { JOBS as STATIC_JOBS, NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
+import { getRegistryData } from '@/lib/data-service';
 import JobDetailModal from '@/components/JobDetailModal';
 import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
@@ -34,10 +35,11 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [isAutoPlaying, categories.length]);
 
-  const activeCategory = categories[currentCatIndex];
-  const activeItems = (CATEGORY_DATA as any)[activeCategory] || [];
+  const [registry, setRegistry] = useState<any>(null);
 
   useEffect(() => {
+    setRegistry(getRegistryData());
+
     // Lead user profile
     const savedProfile = localStorage.getItem('govrecruit_profile');
     if (savedProfile) {
@@ -54,6 +56,9 @@ export default function Home() {
     }
     fetchJobs();
   }, []);
+
+  const activeCategory = categories[currentCatIndex];
+  const activeItems = (registry ? registry.categories[activeCategory] : (CATEGORY_DATA as any)[activeCategory]) || [];
 
   const isFuzzyMatch = (target: any, query: string) => {
     const t = String(target || "").toLowerCase();
@@ -81,7 +86,7 @@ export default function Home() {
 
   const filteredJobs = dbJobs.filter(job => {
     const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term => 
+    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term =>
       isFuzzyMatch(job.title, term) ||
       isFuzzyMatch(job.organization, term) ||
       isFuzzyMatch(job.org, term) ||

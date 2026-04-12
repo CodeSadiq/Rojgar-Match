@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { CATEGORY_DATA } from '@/lib/data';
+import { getRegistryData } from '@/lib/data-service';
 
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -11,6 +11,12 @@ const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill=
 export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
+
+  const [registry, setRegistry] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    setRegistry(getRegistryData());
+  }, []);
 
   // Map slug back to category name
   const categoryMap: Record<string, string> = {
@@ -23,7 +29,7 @@ export default function CategoryPage() {
   };
 
   const categoryName = categoryMap[slug] || 'Notifications';
-  const data = CATEGORY_DATA[categoryName] || [];
+  const data = registry ? (registry.categories[categoryName] || []) : [];
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">

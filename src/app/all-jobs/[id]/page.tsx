@@ -6,6 +6,7 @@ import Job from "@/models/Job";
 import { JobPost } from "@/types/job";
 import { fmtDate, fmtMoney } from "@/lib/helpers";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 export const viewport = {
   width: 'device-width',
@@ -911,18 +912,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="jd">
         <div className="jd-wrap">
-          <Link
-            href="/all-jobs"
-            className="inline-flex items-center gap-4 text-[13px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all mb-16 md:mb-24 pt-20 md:pt-32 no-underline"
-          >
-            <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-navy group-hover:text-white transition-all">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-              </svg>
-            </div>
-            Back
-          </Link>
+          <BackButton className="text-[13px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all mb-16 md:mb-24 pt-20 md:pt-32" />
 
           {/* ── MASTHEAD ── */}
           <header className="jd-masthead">

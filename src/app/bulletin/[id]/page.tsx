@@ -3,7 +3,7 @@
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
+import { getRegistryData } from '@/lib/data-service';
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconCheckGreen = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>;
@@ -13,17 +13,27 @@ export default function BulletinViewer() {
   const router = useRouter();
   const id = params.id as string;
 
-  // Find the bulletin in either primary NOTIFICATIONS or CATEGORY_DATA
-  let notification = NOTIFICATIONS.find(n => n.id === id);
+  const [registry, setRegistry] = React.useState<any>(null);
 
-  if (!notification) {
-    Object.values(CATEGORY_DATA).forEach(list => {
-      const found = list.find(item => item.id === id);
-      if (found) notification = found;
-    });
+  React.useEffect(() => {
+    setRegistry(getRegistryData());
+  }, []);
+
+  // Find the bulletin in either primary NOTIFICATIONS or CATEGORY_DATA
+  let notification: any = null;
+
+  if (registry) {
+    notification = registry.notifications.find((n: any) => n.id === id);
+
+    if (!notification) {
+      Object.values(registry.categories).forEach((list: any) => {
+        const found = list.find((item: any) => item.id === id);
+        if (found) notification = found;
+      });
+    }
   }
 
-  if (!notification) {
+  if (!notification && registry) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center">
         <h1 className="text-4xl font-black text-navy/10 mb-4 uppercase tracking-tighter">Content Absent</h1>
@@ -32,6 +42,8 @@ export default function BulletinViewer() {
       </div>
     );
   }
+
+  if (!notification) return null; // Wait for registry
 
   return (
     <div className="jd min-h-screen bg-[#fafaf9] flex flex-col font-sans selection:bg-navy/5">
@@ -98,9 +110,6 @@ export default function BulletinViewer() {
           font-size: 15px;
           line-height: 1.7;
           color: #1c1917;
-          border-left: 2px solid #1e3a5f;
-          padding-left: 18px;
-          margin: 32px 0;
           opacity: 0.9;
         }
       `}</style>
@@ -121,21 +130,63 @@ export default function BulletinViewer() {
 
         {/* 🏛 Institutional Header */}
         <header className="mb-10 pt-6">
-           <h1 className="jd-title">{notification.text}</h1>
-           <div className="jd-meta">Broadcasted {notification.time}</div>
+          <h1 className="jd-title">{notification.text}</h1>
         </header>
 
-        {/* 📄 Formatted Briefing (Simplified & Compact) */}
+        {/* 📄 Formatted Briefing */}
         <div className="max-w-[700px] mr-auto">
-           <div className="jd-content">
-              {notification.desc}
-           </div>
+          <div className="border-l-4 border-navy pl-8 space-y-6">
+             <div className="jd-content">
+                {notification.desc}
+             </div>
 
-           <div className="pt-12 flex justify-start">
-              <Link href="/all-jobs" className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-lg no-underline hover:bg-slate-800 transition-all text-center">
-                View Details ➜
-              </Link>
-           </div>
+             {/* 🔗 Institutional Verification Channels */}
+             {notification.links && notification.links.length > 0 && (
+                <div className="flex flex-col gap-3 pt-2">
+                   {notification.links.map((link: any, i: number) => (
+                      <a 
+                        key={i} 
+                        href={link.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 group no-underline"
+                      >
+                         <span className="text-[13px] font-bold text-navy group-hover:text-blue-600 border-b border-transparent group-hover:border-blue-600/30 transition-all uppercase tracking-tight">{link.title}</span>
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-navy/20 group-hover:text-blue-600 transition-all"><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+                   ))}
+                </div>
+             )}
+          </div>
+
+          <div className="pt-8 space-y-8">
+             <Link href={notification.routedTo || "/all-jobs"} className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full no-underline hover:bg-slate-800 transition-all text-center inline-block shadow-lg shadow-navy/20">
+               view Details ➜
+             </Link>
+
+            <div className="space-y-4 pt-8 border-t border-gray-100">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <div className="flex items-center gap-2">
+                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                   <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">Published {notification.time}</span>
+                </div>
+                <span className="hidden md:block w-1 h-3 bg-gray-200"></span>
+                <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">
+                  {notification.category || 'Institutional'}
+                </span>
+
+                {/* Classification Tags Integration into Primary Metadata Line */}
+                {notification.tags && notification.tags.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-x-3">
+                    <span className="hidden md:block w-1 h-3 bg-gray-200"></span>
+                    {notification.tags.map((tag: string, i: number) => (
+                      <span key={i} className="text-[9px] font-black text-navy/30 uppercase tracking-widest italic hover:text-navy transition-colors whitespace-nowrap">#{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
       </main>
