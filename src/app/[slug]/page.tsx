@@ -50,7 +50,7 @@ export default function CategoryPage() {
               <Link
                 key={idx}
                 href={`/bulletin/${item.id}`}
-                className="group bg-white border border-gray-100 rounded-xl p-4 md:p-6 flex items-center justify-between gap-4 no-underline hover:bg-gray-50 hover:border-gray-200 transition-all mb-3 shadow-sm"
+                className="group bg-white border border-gray-100 rounded-xl p-4 md:p-6 flex items-center justify-between gap-4 no-underline hover:bg-gray-50 hover:border-navy hover:shadow-lg hover:shadow-navy/5 transition-all mb-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -58,7 +58,7 @@ export default function CategoryPage() {
                     <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 truncate">{item.time}</span>
                   </div>
 
-                  <h3 className="text-[14px] md:text-lg font-bold text-navy leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
+                  <h3 className="text-[14px] md:text-lg font-bold text-navy leading-snug line-clamp-2">
                     {item.text}
                   </h3>
                 </div>

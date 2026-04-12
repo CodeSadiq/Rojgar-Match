@@ -77,6 +77,11 @@ const styles = `
     padding-top: 60px;
   }
 
+  @media (max-width: 768px) {
+    .jd { padding-top: 20px; }
+    .jd-wrap { padding: 0 20px 60px; }
+  }
+
   .jd * { box-sizing: border-box; margin: 0; padding: 0; }
 
   /* ── LAYOUT ── */
