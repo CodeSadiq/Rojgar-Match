@@ -7,6 +7,7 @@ import { JobPost } from "@/types/job";
 import { fmtDate, fmtMoney } from "@/lib/helpers";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import { getCachedData, setCachedData } from "@/lib/cache";
 
 export const viewport = {
   width: 'device-width',
@@ -592,12 +593,22 @@ const styles = `
 
 // ── DATA FETCHING ─────────────────────────────────────────────────────────────
 async function getJob(id: string): Promise<JobPost | null> {
+  const cacheKey = `job:${id}`;
   try {
+    // 1. Try Cache
+    const cached = await getCachedData<any>(cacheKey);
+    if (cached) return cached as unknown as JobPost;
+
+    // 2. Try DB
     await dbConnect();
     const jobData = await Job.findOne({ id }).lean();
-    if (jobData) return jobData as unknown as JobPost;
+    if (jobData) {
+      // 3. Save to Cache
+      await setCachedData(cacheKey, jobData, 3600);
+      return jobData as unknown as JobPost;
+    }
   } catch (e) {
-    console.error("Mongo Error:", e);
+    console.error("Mongo/Cache Error:", e);
   }
   return null;
 }

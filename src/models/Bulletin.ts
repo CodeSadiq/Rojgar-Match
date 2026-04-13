@@ -15,6 +15,10 @@ const BulletinSchema = new mongoose.Schema({
   active: { type: Boolean, default: true }
 }, { timestamps: true });
 
+// ── INDEXES ──────────────────────────────────────────────────────────────────
+BulletinSchema.index({ id: 1 }, { unique: true });
+BulletinSchema.index({ active: 1, createdAt: -1 });
+
 // Purge cache in development so Next.js picks up changes seamlessly
 if (process.env.NODE_ENV !== 'production' && mongoose.models.Bulletin) {
   delete mongoose.models.Bulletin;

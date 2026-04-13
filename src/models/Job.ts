@@ -116,6 +116,12 @@ const JobSchema = new mongoose.Schema({
   notificationType: { type: String },
   active: { type: Boolean, default: true }
 }, { timestamps: true, strict: false });
+
+// ── INDEXES ──────────────────────────────────────────────────────────────────
+JobSchema.index({ id: 1 }, { unique: true });
+JobSchema.index({ type: 1, active: 1 });
+JobSchema.index({ createdAt: -1 });
+JobSchema.index({ updatedAt: -1 });
 // Purge cache in development so Next.js picks up changes seamlessly
 if (process.env.NODE_ENV !== 'production' && mongoose.models.Job) {
   delete mongoose.models.Job;
