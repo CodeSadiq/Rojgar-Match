@@ -51,17 +51,17 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-6 md:py-12 w-full animate-in fade-in duration-700">
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-3 md:py-6 w-full animate-in fade-in duration-700">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-8 md:mb-12 no-underline"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
         >
           <IconArrowLeft /> Back to Dashboard
         </Link>
 
-        <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10 px-4 md:px-0">
-          <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-tight">Recruitment for You</h1>
-          <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Showing official verified government openings matched to your profile.</p>
+        <header className="mb-8 border-b-2 border-navy pb-5 px-4 md:px-0">
+          <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">Recruitment for You</h1>
+          <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-2 opacity-60">Official verified government openings matched to your profile.</p>
         </header>
 
         {isLoading ? (

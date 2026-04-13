@@ -49,6 +49,7 @@ export default function SignupPage() {
 
       // Success: Auto-login
       localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName, email }));
+      window.dispatchEvent(new Event('rojgarmatch_auth_change'));
       router.push('/');
     } catch (err: any) {
       setError(err.message);
@@ -162,7 +163,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-navy hover:bg-[#06142E] text-white py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
@@ -186,7 +187,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={handleGoogleSignup}
-              className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
+              className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
             >
               <IconGoogle />
               <span>Sign up with Google</span>

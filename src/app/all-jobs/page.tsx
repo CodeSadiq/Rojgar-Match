@@ -115,29 +115,28 @@ function JobsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-6 md:py-12 animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-3 md:py-6 animate-in fade-in duration-500">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-8 md:mb-12 no-underline"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
         >
           <IconArrowLeft /> Back to Dashboard
         </Link>
-        <header className="mb-14 border-b-4 border-navy pb-10 flex flex-col md:flex-row md:items-end justify-between gap-8 px-4 md:px-0">
+        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
           <div>
-            <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
-            <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Broadcasting official verified government openings across the national registry.</p>
+            <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
+            <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-2 opacity-60">Official verified government openings across the national registry.</p>
           </div>
-          <label className="flex bg-white border-2 border-gray-100 rounded-xl px-5 h-10 md:h-14 items-center gap-3 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-all cursor-text">
+          <label className="flex bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 w-full md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
             <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-xs md:text-sm font-black text-navy uppercase flex-1 placeholder:text-gray-200"
+              className="bg-transparent border-none outline-none text-[11px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-200"
               placeholder="Search index..."
             />
           </label>
         </header>
-
 
         {/* JOB LISTING */}
         <section className="space-y-12 h-full">

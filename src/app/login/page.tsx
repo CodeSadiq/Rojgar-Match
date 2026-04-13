@@ -150,7 +150,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-navy hover:bg-[#06142E] text-white py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
@@ -170,38 +170,46 @@ export default function LoginPage() {
                 <div className="flex-1 h-[1px] bg-gray-100"></div>
               </div>
 
-              {/* SOCIAL LOGIN */}
+              {/* GUEST ACCESS */}
               <button
                 type="button"
-                onClick={handleGoogleLogin}
-                className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
-              >
-                <IconGoogle />
-                <span>Continue with Google</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
+                onClick={async () => {
                   setIsLoading(true);
-                  setTimeout(() => {
-                    localStorage.setItem('rojgarmatch_auth', JSON.stringify({
-                      fullName: 'Anonymous Guest',
-                      email: 'guest@rojgarmatch.local',
-                      isGuest: true
-                    }));
-                    window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-                    router.push('/');
+                  try {
+                    const res = await fetch('/api/auth/guest', { method: 'POST' });
+                    if (res.ok) {
+                      const userData = await res.json();
+                      localStorage.setItem('rojgarmatch_auth', JSON.stringify({
+                        fullName: userData.fullName,
+                        email: userData.email,
+                        isGuest: true
+                      }));
+                      window.dispatchEvent(new Event('rojgarmatch_auth_change'));
+                      router.push('/');
+                    }
+                  } catch (e) {
+                    console.error('Guest auth failed', e);
+                  } finally {
                     setIsLoading(false);
-                  }, 800);
+                  }
                 }}
-                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-4 px-8 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-2xl mt-4 active:scale-[0.95] group/guest"
+                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-3 md:py-4 px-8 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-2xl active:scale-[0.95] group/guest"
               >
                 <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <span>Continue as a guest</span>
                 <span className="group-hover/guest:translate-x-1 transition-transform">➜</span>
+              </button>
+
+              {/* SOCIAL LOGIN */}
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98] mt-2"
+              >
+                <IconGoogle />
+                <span>Continue with Google</span>
               </button>
 
             </form>

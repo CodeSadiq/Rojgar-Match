@@ -44,9 +44,20 @@ export default function Navbar() {
     };
   }, [pathname]);
 
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('rojgarmatch_auth');
-    localStorage.removeItem('rojgarmatch_profile');
+  const handleLogout = useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error('Logout API failure:', e);
+    }
+    
+    // Comprehensive Guest data cleanup: match all keys starting with rojgarmatch_
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('rojgarmatch_')) {
+        localStorage.removeItem(key);
+      }
+    });
+
     setIsLoggedIn(false);
     setUserProfile(null);
     setIsMobileMenuOpen(false);
@@ -68,7 +79,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-[#0D244D] h-[60px] flex items-center px-6 md:px-12 sticky top-0 z-[100] shadow-sm transform-gpu transition-none">
+      <nav className="bg-[#0D244D] h-[56px] flex items-center px-6 md:px-12 sticky top-0 z-[100] shadow-sm transform-gpu transition-none">
 
         {/* 🏛 Institutional Brand */}
         <Link href="/" className="flex items-center gap-2 no-underline mr-auto group transition-none">
@@ -153,96 +164,67 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 z-[1000] lg:hidden animate-in fade-in duration-300" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="fixed top-0 right-0 h-full w-[280px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100 flex flex-col"
+          <div className="fixed top-0 right-0 h-full w-[240px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100 flex flex-col"
             style={{ backgroundColor: '#0D244D' }}
           >
             <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#0D244D] flex-shrink-0">
               <strong className="text-white text-sm font-serif font-bold uppercase tracking-widest opacity-40">Menu</strong>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/60 hover:text-white"><IconX /></button>
             </div>
-            <div className="flex flex-col p-6 space-y-10 overflow-y-auto flex-1 pb-12">
+            <div className="flex flex-col p-6 space-y-4 overflow-y-auto flex-1">
 
-              {/* 👤 Personnel Access (Top of Drawer) */}
-              <div className="flex flex-col gap-6">
+              {/* 👤 Simplified Profile section */}
+              <div className="mb-4">
                 {!isLoggedIn ? (
                   <Link
                     href="/login"
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 no-underline group active:bg-white/10 transition-all shadow-sm"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 no-underline hover:bg-white/10 transition-all font-serif font-bold text-white text-lg"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400 group-hover:text-[#0D244D] transition-all">
-                      <IconUser />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-white text-lg font-serif font-bold group-hover:text-amber-400 transition-colors">Candidate Login</span>
-                      <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Access your dashboard</span>
-                    </div>
+                    <span>Candidate Login</span>
+                    <span className="ml-auto opacity-20 group-hover:opacity-100 transition-all font-sans">➜</span>
                   </Link>
                 ) : (
-                  <div className="space-y-6">
-                    {/* 👤 Refined Profile Container */}
-                    <Link
-                      href="/profile"
-                      className="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col gap-3 group hover:bg-white/10 transition-all no-underline shadow-sm"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <h4 className="text-white text-[20px] font-serif font-bold leading-tight group-hover:text-blue-400 transition-colors">
-                        {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
-                      </h4>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest group-hover:text-white/70 transition-colors">
-                          Profile Details
-                        </span>
-                        <div className="text-white/20 group-hover:text-blue-400 transition-colors group-hover:translate-x-1 transition-transform">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10 no-underline hover:bg-white/10 transition-all font-serif font-bold text-white text-base group"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <span className="group-hover:text-blue-400 transition-colors">
+                      {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest Access' : (userProfile?.fullName || 'Candidate')}
+                    </span>
+                    <span className="ml-auto opacity-20 group-hover:opacity-100 transition-all font-sans">➜</span>
+                  </Link>
                 )}
               </div>
 
-              {/* 🗺 Navigation Links */}
-              <div className="flex flex-col gap-2 pt-2">
-                <div className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em] mb-2 px-4">Navigation</div>
-                <Link
-                  href="/for-you"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all no-underline group"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className="w-1 h-8 rounded-full bg-blue-500 group-hover:bg-blue-400 transition-all opacity-40 group-hover:opacity-100 flex-shrink-0"></div>
-                  <div className="flex flex-col">
-                    <span className="text-white text-xl font-serif font-bold group-hover:text-blue-400 transition-colors">For You</span>
-                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Matched recruitment</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/all-jobs"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all no-underline group"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className="w-1 h-8 rounded-full bg-white opacity-10 group-hover:opacity-40 transition-all flex-shrink-0"></div>
-                  <div className="flex flex-col">
-                    <span className="text-white text-xl font-serif font-bold group-hover:text-white transition-colors">All Jobs</span>
-                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Global repository</span>
-                  </div>
-                </Link>
+              {/* 🗺 Navigation Links (Unified List) */}
+              <div className="flex flex-col gap-2 pt-6 border-t border-white/5">
+                {[
+                  { name: 'Home', href: '/' },
+                  { name: 'For You', href: '/for-you' },
+                  { name: 'All Jobs', href: '/all-jobs' },
+                ].map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center gap-4 py-3 px-2 no-underline group transition-all ${pathname === link.href ? 'text-white' : 'text-white/40 hover:text-white'}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <div className={`w-1.5 h-1.5 rounded-full ${pathname === link.href ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]' : 'bg-white/10'}`}></div>
+                    <span className="text-lg font-serif font-bold tracking-tight">{link.name}</span>
+                  </Link>
+                ))}
               </div>
 
-              {/* 🚪 Logout (Bottom of Drawer) */}
+              {/* 🚪 Logout (Simplified) */}
               {isLoggedIn && (
-                <div className="border-t border-white/5 pt-10 mt-auto pb-4">
-                  <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8"></div>
+                <div className="mt-auto pt-8 border-t border-white/5">
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left bg-transparent border-none p-0 flex items-center gap-4 p-4 rounded-xl hover:bg-red-500/5 transition-all group cursor-pointer"
+                    className="flex items-center gap-3 text-red-400/60 hover:text-red-400 transition-colors bg-transparent border-none p-2 font-serif font-bold text-base cursor-pointer"
                   >
-                    <div className="text-red-400/30 group-hover:text-red-400 transition-colors flex-shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-red-400 text-lg font-serif font-bold group-hover:text-red-300 transition-colors">Logout</span>
-                    </div>
+                    <span className="text-lg">⎆</span> Logout
                   </button>
                 </div>
               )}

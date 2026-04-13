@@ -16,11 +16,10 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
   return (
     <Link
       href={`/all-jobs/${job.id || job._id}`}
-      className={`group p-3 md:p-5 flex flex-col md:flex-row md:items-center gap-1 md:gap-4 transition-all rounded-xl no-underline relative overflow-hidden ${
-        highlighted 
-          ? 'bg-navy/[0.02] border-2 border-navy shadow-lg ring-1 ring-navy/10' 
+      className={`group p-3 md:p-5 flex flex-col md:flex-row md:items-center gap-1 md:gap-4 transition-all rounded-xl no-underline relative overflow-hidden ${highlighted
+          ? 'bg-navy/[0.02] border-2 border-navy shadow-lg ring-1 ring-navy/10'
           : 'bg-white border-2 border-gray-200 md:shadow-sm'
-      } hover:border-navy`}
+        } hover:border-navy`}
     >
       <div className="w-full flex-1">
         <div className="flex items-start justify-between gap-4 mb-0.5 md:mb-1">

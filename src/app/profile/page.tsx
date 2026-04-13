@@ -147,9 +147,18 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('rojgarmatch_auth');
-    localStorage.removeItem('rojgarmatch_profile');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error('Logout API failure:', e);
+    }
+
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('rojgarmatch_')) {
+        localStorage.removeItem(key);
+      }
+    });
     router.push('/login');
   };
 
@@ -162,20 +171,20 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
 
-      <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
-        <div className="max-w-[1100px] mx-auto space-y-12 animate-in fade-in duration-700">
+      <main className="flex-1 overflow-y-auto px-6 md:px-12 pt-4 pb-10 md:py-10">
+        <div className="max-w-[1100px] mx-auto space-y-6 md:space-y-12 animate-in fade-in duration-700">
 
           <div className="flex items-center justify-between mb-2">
             <BackButton className="text-navy/40 hover:text-navy text-[10px] font-black uppercase tracking-[0.3em] font-sans" />
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-8 shadow-sm text-center md:text-left">
-            <div className="flex flex-col items-center md:items-start gap-5">
+          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-8 shadow-sm text-center md:text-left">
+            <div className="flex flex-col items-center md:items-start gap-4 md:gap-5">
               <div className="space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
                    <>
-                    <h1 className="text-3xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
-                    <p className="text-gray-500 text-sm md:text-base font-medium">Logged in as a Guest</p>
+                    <h1 className="text-2xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
+                    <p className="text-xs md:text-base font-medium text-gray-500">Logged in as a Guest</p>
                    </>
                 ) : (
                   <>
@@ -198,7 +207,7 @@ export default function ProfilePage() {
 
             <button
               onClick={handleLogout}
-              className="px-8 py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-red-100"
+              className="px-5 py-2.5 md:px-8 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] border border-red-100"
             >
               Logout
             </button>
@@ -208,7 +217,9 @@ export default function ProfilePage() {
             <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-10 shadow-sm space-y-8">
               <div className="space-y-2">
                 <h2 className="text-xl font-bold text-navy">Set Qualification</h2>
-                <p className="text-xs text-navy/60 uppercase tracking-widest font-bold leading-relaxed">Update your qualifications level wise to see eligible jobs. If you haven't qualified in any then leave it on no records</p>
+                <p className="text-[13.5px] text-navy/60 font-medium leading-relaxed">
+                  Update your qualifications level-wise to discover eligible job opportunities. If you haven't qualified in a category yet, please leave it set to "No Record".
+                </p>
               </div>
 
               <div className="space-y-8">
