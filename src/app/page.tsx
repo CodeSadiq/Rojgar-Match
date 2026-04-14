@@ -209,7 +209,7 @@ export default function Home() {
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-1 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-4 md:px-0">
+                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-1 md:px-0">
                     <div className="flex items-center gap-4">
                       <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You

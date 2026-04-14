@@ -572,11 +572,11 @@ const styles = `
   .tbl-scroll { overflow-x: auto; }
 
   @media (max-width: 600px) {
-    .jd { font-size: 11px; padding-top: 2px; }
-    .jd-wrap { padding: 0 12px 120px; }
+    .jd { font-size: 11px; padding-top: 16px; }
+    .jd-wrap { padding: 0 8px 120px; }
     .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
     
-    .jd-title { font-size: 18px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
+    .jd-title { font-size: 18px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 6px; }
     .jd-header-back { display: flex; color: var(--navy); margin-top: 2px; flex-shrink: 0; }
     .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: center; }
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: center; text-align: center; }

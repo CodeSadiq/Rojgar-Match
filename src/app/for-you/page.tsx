@@ -53,15 +53,15 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 pt-4 md:pt-3 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
-        <div className="hidden md:block mb-6 pt-4">
+      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-6 md:pt-6 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-6">
           <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
             <IconArrowLeft /> Back to Dashboard
           </BackButton>
         </div>
 
-        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
-          <div className="flex items-start gap-3">
+        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-0">
+          <div className="flex items-start gap-1 text-left">
             <BackButton className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
@@ -77,7 +77,7 @@ export default function ForYouPage() {
             {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1 md:gap-6">
             {jobs.map((job, idx) => (
               <RecruitmentCard key={idx} job={job} isMatched={true} />
             ))}

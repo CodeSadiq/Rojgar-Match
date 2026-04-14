@@ -117,15 +117,15 @@ function JobsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 pt-4 md:pt-3 pb-1 md:pb-3 animate-in fade-in duration-500">
-        <div className="hidden md:block mb-6 pt-4">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-1 md:px-12 pt-6 md:pt-3 pb-1 md:pb-3 animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-6">
           <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
             <IconArrowLeft /> Back to Dashboard
           </BackButton>
         </div>
 
-        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
-          <div className="flex items-start gap-3">
+        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 md:px-0">
+          <div className="flex items-start gap-1 text-left">
             <BackButton className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
@@ -148,11 +148,11 @@ function JobsPageContent() {
         {/* JOB LISTING */}
         <section className="space-y-12 h-full">
           {isLoading ? (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1 md:gap-6">
               {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1 md:gap-6">
               {filteredJobs.length === 0 ? (
                 <div className="py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
               ) : (

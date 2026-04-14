@@ -168,11 +168,15 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
 
-      <main className="flex-1 overflow-y-auto px-6 md:px-12 pt-1 pb-10 md:py-3">
-        <div className="max-w-[1100px] mx-auto space-y-6 md:space-y-12 animate-in fade-in duration-700">
-
-          <div className="flex items-center justify-between mb-2">
-            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-black uppercase tracking-[0.3em] font-sans" />
+      <main className="flex-1 overflow-y-auto px-4 md:px-12 pt-4 md:pt-3 pb-10">
+        <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
+          
+          {/* 🔙 BACK NAVIGATION (Standardized Position) */}
+          <div className="mb-6">
+            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              <span>Back</span>
+            </BackButton>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-8 shadow-sm text-center md:text-left">

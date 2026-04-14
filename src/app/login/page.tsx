@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import BackButton from '@/components/BackButton';
 
 const IconShield = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>;
 const IconLock = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
@@ -60,7 +61,7 @@ export default function LoginPage() {
 
       // Signal Navbar for immediate update
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-      router.push('/');
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -98,7 +99,7 @@ export default function LoginPage() {
       }
 
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-      router.push('/');
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -149,6 +150,14 @@ export default function LoginPage() {
         </div>
 
         <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
+          
+          {/* 🔙 BACK NAVIGATION (Repositioned) */}
+          <div className="mb-6">
+            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              <span>Back</span>
+            </BackButton>
+          </div>
 
           <div className="text-center mb-10">
             <h2 className="text-4xl font-serif font-bold text-navy leading-none mb-2">Login</h2>
@@ -246,7 +255,7 @@ export default function LoginPage() {
                         isGuest: true
                       }));
                       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-                      router.push('/');
+                      window.location.href = '/';
                     }
                   } catch (e) {
                     console.error('Guest auth failed', e);
