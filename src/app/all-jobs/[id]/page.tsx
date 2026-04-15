@@ -573,10 +573,10 @@ const styles = `
 
   @media (max-width: 600px) {
     .jd { font-size: 11px; padding-top: 16px; }
-    .jd-wrap { padding: 0 8px 120px; }
+    .jd-wrap { padding: 0 20px 120px; }
     .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
     
-    .jd-title { font-size: 18px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 6px; }
+    .jd-title { font-size: 20px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 6px; }
     .jd-header-back { display: flex; color: var(--navy); margin-top: 2px; flex-shrink: 0; }
     .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: center; }
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: center; text-align: center; }
@@ -701,39 +701,42 @@ function deriveSalaryFromPosts(posts: any[]): { payLevel: number | null; min: nu
 function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
   const q = post.qualification;
 
-  // ── NEW SCHEMA: { course, branch, extraQualificationText } ──
-  if (q && !Array.isArray(q) && q.course !== undefined) {
-    const courses: string[] = Array.isArray(q.course) ? q.course : [q.course];
-    const branches: string[] = (Array.isArray(q.branch) ? q.branch : []).filter(
-      (b: string) => b && b.toLowerCase() !== "any"
-    );
+  // ── NEW SCHEMA: { courses: { name, branches }[], extraQualificationText } ──
+  if (q && !Array.isArray(q) && (q.courses !== undefined || q.course !== undefined)) {
+    const courses: any[] = q.courses 
+      ? (Array.isArray(q.courses) ? q.courses : [q.courses])
+      : (Array.isArray(q.course) ? q.course.map((c: any) => ({ name: c, branches: Array.isArray(q.branch) ? q.branch : [] })) : [{ name: q.course, branches: Array.isArray(q.branch) ? q.branch : [] }]);
+
     const extra: string = q.extraQualificationText?.trim() || "";
 
     return (
       <td className="qual-cell" rowSpan={rowSpan}>
-        {/* Course pills — removed container per feedback */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {courses.map((c, i) => (
-            <React.Fragment key={i}>
-              <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "14.5px" }}>{c}</span>
-              {i < courses.length - 1 && (
-                <div style={{ margin: "2px 0", fontSize: "12px", color: "var(--ink-muted)", fontStyle: "italic" }}>
-                  — OR —
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {courses.map((course, i) => {
+            const name = typeof course === 'string' ? course : course.name;
+            const branches = Array.isArray(course.branches) ? course.branches : [];
+            
+            return (
+              <div key={i} className="qual-course-block">
+                <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "14.5px" }}>{name}</div>
+                {branches.length > 0 && (
+                  <div className="qual-branch-line" style={{ marginTop: '2px' }}>
+                    <span className="qual-branch-label" style={{ fontSize: '10px', color: 'var(--ink-muted)' }}>Required Stream: </span>
+                    <span style={{ fontSize: '13px', color: 'var(--ink-light)' }}>{branches.join(", ")}</span>
+                  </div>
+                )}
+                {i < courses.length - 1 && (
+                  <div className="qual-or-sep" style={{ marginTop: '10px' }}>
+                    <div className="qual-or-sep-line"></div>
+                    <div className="qual-or-sep-badge">OR</div>
+                    <div className="qual-or-sep-line"></div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Branch / Specialization */}
-        {branches.length > 0 && (
-          <div className="qual-branch-line">
-            <span className="qual-branch-label">Stream / Branch: </span>
-            {branches.join(", ")}
-          </div>
-        )}
-
-        {/* Extra requirements (marks, exp, certs) */}
         {extra && (
           <div className="qual-extra">
             <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
@@ -741,14 +744,9 @@ function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
           </div>
         )}
 
-        {/* Prerequisite exam */}
         {post.prerequisite?.length > 0 && (
-          <div className="qual-prereq">
-            ⚠ {post.prerequisite.join("; ")}
-          </div>
+          <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>
         )}
-
-        {/* Appearing eligibility — removed container per feedback */}
         {post.appearingEligible && (
           <div style={{ marginTop: "8px", fontSize: "13px", color: "var(--ink-light)", lineHeight: "1.4" }}>
             <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>

@@ -8,6 +8,8 @@ const UserSchema = new mongoose.Schema({
   googleId: String,
   avatar: String,
   profile: mongoose.Schema.Types.Mixed,
+  resetToken: String,
+  resetTokenExpiry: Date,
 }, { timestamps: true });
 
 // Hash password before saving

@@ -29,6 +29,7 @@ export default function Home() {
   const [currentCatIndex, setCurrentCatIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -52,10 +53,20 @@ export default function Home() {
     }
     loadMetadata();
 
-    // Lead user profile
+    const savedToken = localStorage.getItem('rojgarmatch_token');
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
+    const savedAuth = localStorage.getItem('rojgarmatch_auth');
+
+    let profileData = null;
     if (savedProfile) {
-      try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
+      try {
+        profileData = JSON.parse(savedProfile);
+        setUserProfile(profileData);
+      } catch (e) { console.error(e); }
+    }
+
+    if (savedToken || savedAuth || (profileData && profileData.isGuest)) {
+      setIsLoggedIn(true);
     }
 
     async function fetchJobs() {
@@ -181,7 +192,7 @@ export default function Home() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
-                      placeholder="Search Index..."
+                      placeholder="Search Government Jobs..."
                     />
                   </label>
                 </form>
@@ -190,11 +201,11 @@ export default function Home() {
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
               <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-8 md:py-10">
                 <div className="max-w-[800px] text-left space-y-2 md:space-y-6">
-                  <h1 className="text-xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
+                  <h1 className="text-xl md:text-6xl font-serif font-bold text-navy/90 leading-tight drop-shadow-sm">
                     Government Jobs For You
                   </h1>
                   <div className="max-w-[450px] md:max-w-[650px]">
-                    <p className="text-[10px] md:text-[16px] text-navy/60 font-bold uppercase tracking-[0.2em] leading-relaxed">
+                    <p className="text-[10px] md:text-[16px] text-navy/40 font-bold uppercase tracking-[0.2em] leading-relaxed">
                       Verified openings matched to your qualifications.
                     </p>
                   </div>
@@ -203,13 +214,13 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto p-4 md:p-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-4 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-1 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-1 md:px-0">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
+                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-4 md:px-0 ${(!isLoggedIn && !userProfile) ? 'hidden' : 'flex'}`}>
                     <div className="flex items-center gap-4">
                       <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You
@@ -223,22 +234,84 @@ export default function Home() {
                       <div className="space-y-6">
                         {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
                       </div>
-                    ) : recommendedJobs.length === 0 ? (
-                      <div className="flex-1 py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-2xl">
-                        <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-                          {(!userProfile?.qualifications || userProfile.qualifications.length === 0)
-                            ? "Set your qualification details to see eligible gov jobs."
-                            : "No recruitments currently match your specific qualification level and branch."
-                          }
-                        </p>
-                        {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
+                    ) : (!isLoggedIn && !userProfile) ? (
+                      /* 🔗 CASE 1: LOGGED OUT / NEW VISITOR - SHOW RICH HERO (COMPACT) */
+                      <div className="flex-1 py-8 md:py-20 px-4 md:px-6 flex flex-col items-center justify-center text-center mx-0 md:mx-0 overflow-hidden relative">
+                        {/* Background Decor */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-navy/[0.02] rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
+
+                        <div className="relative z-10 max-w-[800px] w-full">
+                          <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.25em] text-navy/40 mb-2 md:mb-3">
+                            Welcome to RojgarMatch
+                          </p>
+
+                          <h2 className="text-2xl md:text-5xl font-serif font-bold text-navy leading-tight mb-2 md:mb-5">
+                            Find Government Jobs and Updates
+                          </h2>
+
+                          <p className="text-[13px] md:text-[16px] text-navy/60 font-medium mb-6 md:mb-12 leading-relaxed max-w-[400px] md:max-w-[540px] mx-auto">
+                            Add your education to see government jobs that match your qualification.
+                          </p>
+
+                          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-5 mb-6 md:mb-12 text-left">
+                            {/* ITEM 1 */}
+                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
+                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                              </div>
+                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">Eligible Jobs</h4>
+                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">See jobs that you are exactly eligible for based on your specific <b>Course</b> and <b>Branch</b>.</p>
+                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Matched to your Course &amp; Branch.</p>
+                            </div>
+
+                            {/* ITEM 2 */}
+                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
+                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                              </div>
+                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">All Jobs</h4>
+                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Browse through <b>all government jobs</b> or see <b>recommended ones</b> that match your profile.</p>
+                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">All &amp; recommended jobs.</p>
+                            </div>
+
+                            {/* ITEM 3 */}
+                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
+                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                              </div>
+                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">Email Alerts</h4>
+                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Get a direct email alert the moment a government job matching your education is posted.</p>
+                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Instant job match alerts.</p>
+                            </div>
+                          </div>
+
                           <Link
-                            href="/profile"
-                            className="mt-8 px-10 py-3 bg-navy text-white text-[14px] font-serif font-bold hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
+                            href="/login"
+                            className="inline-flex items-center gap-3 px-8 md:px-12 py-3 md:py-4 bg-navy text-white text-[11px] md:text-[13px] font-bold uppercase tracking-widest hover:bg-[#06142E] transition-all shadow-2xl shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]"
                           >
-                            Setup Profile →
+                            <span>Setup Profile</span>
+                            <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                           </Link>
-                        )}
+                        </div>
+                      </div>
+                    ) : (isLoggedIn || userProfile) && (!userProfile?.qualifications || userProfile?.qualifications?.length === 0) ? (
+                      /* 👤 LOGGED IN NO EDUCATION: SHOW SIMPLE PROMPT */
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-3xl mx-4 md:mx-0">
+                        <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
+                          Set your qualification details to see eligible gov jobs.
+                        </p>
+                        <Link href="/profile" className="inline-flex items-center gap-3 px-8 py-3 bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#06142E] transition-all shadow-2xl shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]">
+                          <span>Set Qualification</span>
+                          <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
+                        </Link>
+                      </div>
+                    ) : recommendedJobs.length === 0 ? (
+                      /* ❌ NO MATCHES STATE */
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-3xl mx-4 md:mx-0">
+                        <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center">
+                          No recruitments currently match your specific qualification level and branch.
+                        </p>
                       </div>
                     ) : (
                       recommendedJobs.map((job: any, idx) => (
@@ -249,7 +322,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-0 md:px-0">
+              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-4 md:px-0">
                 <div className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(false)}
@@ -263,23 +336,24 @@ export default function Home() {
                             <IconBell />
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-[#0D244D] opacity-80 animate-in fade-in slide-in-from-left duration-300 truncate">
+                            <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-navy opacity-80 truncate">
                               {activeCategory}
                             </h3>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          <div className="flex gap-3 flex-shrink-0">
+                          {/* Desktop Arrows */}
+                          <div className="hidden md:flex gap-3 flex-shrink-0">
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setCurrentCatIndex((prev) => (prev - 1 + CATEGORIES.length) % CATEGORIES.length);
                               }}
-                              className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center cursor-pointer group/nav -m-2 md:-m-3 z-50"
+                              className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
                               title="Previous"
                             >
-                              <div className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
+                              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                               </div>
                             </div>
@@ -288,56 +362,75 @@ export default function Home() {
                                 e.stopPropagation();
                                 setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
                               }}
-                              className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center cursor-pointer group/nav -m-2 md:-m-3 z-50"
+                              className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
                               title="Next"
                             >
-                              <div className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
+                              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                               </div>
                             </div>
                           </div>
+
+                          {/* Mobile View All (Placed where slider buttons were) */}
+                          <Link
+                            href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
+                            className="md:hidden text-[10px] font-black text-[#2563EB] uppercase tracking-widest"
+                          >
+                            View All ›
+                          </Link>
                         </div>
                       </div>
 
-                      <div className="relative mt-2 overflow-hidden marquee-viewer overflow-y-auto hide-scrollbar">
-                        {/* THE MARQUEE TRACK */}
-                        <div className="marquee-track flex flex-col group/marquee">
-                          {/* Primary List */}
-                          <div className="flex flex-col">
-                            {activeItems.map((n: any, i: number) => (
-                              <Link
-                                href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
-                                key={`p-${i}`}
-                                className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
-                              >
-                                <div className="text-[13px] md:text-[14px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
-                                  {n.text}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
-                                  <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                          {/* Duplicate List for Seamless Loop */}
-                          <div className="flex flex-col" aria-hidden="true">
-                            {activeItems.map((n: any, i: number) => (
-                              <Link
-                                href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
-                                key={`d-${i}`}
-                                className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
-                              >
-                                <div className="text-[13px] md:text-[14px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
-                                  {n.text}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
-                                  <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
+                      <div
+                        className="relative mt-2 overflow-hidden marquee-viewer touch-pan-y"
+                        onTouchStart={(e) => { (window as any)._swipeX = e.touches[0].clientX; }}
+                        onTouchEnd={(e) => {
+                          const startX = (window as any)._swipeX;
+                          const endX = e.changedTouches[0].clientX;
+                          if (!startX) return;
+                          const diff = startX - endX;
+                          if (Math.abs(diff) > 50) {
+                            setCurrentCatIndex((prev) => (diff > 0 ? (prev + 1) % CATEGORIES.length : (prev - 1 + CATEGORIES.length) % CATEGORIES.length));
+                          }
+                          (window as any)._swipeX = null;
+                        }}
+                      >
+                        {/* THE SLIDING CONTENT TRACK */}
+                        <div
+                          className="flex transition-transform duration-500 ease-out h-full"
+                          style={{ transform: `translateX(-${currentCatIndex * 100}%)` }}
+                        >
+                          {CATEGORIES.map((cat, catIdx) => {
+                            const items = cat === 'All Jobs'
+                              ? dbJobs.slice(0, 30).map(j => ({ id: j.id || j._id, text: j.title, time: getTimeAgo(j.createdAt || j.updatedAt), isJob: true }))
+                              : (cat === 'Important'
+                                ? (registry?.notifications || NOTIFICATIONS)
+                                : (registry?.categories[cat] || (CATEGORY_DATA as any)[cat] || [])
+                              ).map((b: any) => ({ ...b, time: b.createdAt ? getTimeAgo(b.createdAt) : b.time }));
+
+                            return (
+                              <div key={catIdx} className="w-full shrink-0 flex flex-col h-full overflow-y-auto hide-scrollbar px-1">
+                                {items.map((n: any, i: number) => (
+                                  <Link
+                                    href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                                    key={i}
+                                    className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
+                                  >
+                                    <div className="text-[13px] md:text-[14px] font-bold text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                      {n.text}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                      <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                                    </div>
+                                  </Link>
+                                ))}
+                                {items.length === 0 && (
+                                  <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -360,8 +453,8 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* ENHANCED VIEW ALL BUTTON */}
-                      <div className="mt-3">
+                      {/* ENHANCED VIEW ALL BUTTON (Desktop Only) */}
+                      <div className="hidden md:block mt-3">
                         <Link
                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
                           className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
@@ -385,6 +478,11 @@ export default function Home() {
                   position: relative;
                   scrollbar-width: none;
                   -ms-overflow-style: none;
+                }
+                @media (max-width: 768px) {
+                  .marquee-viewer {
+                    height: 350px;
+                  }
                 }
                 .marquee-viewer::-webkit-scrollbar {
                   display: none;
@@ -435,8 +533,8 @@ export default function Home() {
                   <IconBell />
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-navy">Live Bulletin</h2>
-                  <p className="text-[10px] md:text-xs text-navy/40 font-bold uppercase tracking-widest mt-1">Official Institutional Announcements</p>
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-navy">Latest Notices</h2>
+                  <p className="text-[10px] md:text-xs text-navy/40 font-bold uppercase tracking-widest mt-1">Official Government Updates</p>
                 </div>
               </div>
 

@@ -32,6 +32,14 @@ export const QUAL_TREE: QualNode[] = [
   // ─────────────────────────────────────────────
   {
     level: 3, name: "ITI", label: "ITI Certificate", branches: [
+      { value: "Refrigeration and AC", label: "Refrigeration and AC" },
+      { value: "Heat Engine", label: "Heat Engine" },
+      { value: "Mechanic Diesel", label: "Mechanic Diesel" },
+      { value: "Armature and Coil Winder", label: "Armature and Coil Winder" },
+      { value: "Mechanic Motor Vehicle", label: "Mechanic Motor Vehicle" },
+      { value: "Mechanic Radio and TV", label: "Mechanic Radio and TV" },
+      { value: "Maintenance Mechanic", label: "Maintenance Mechanic" },
+      { value: "Millwright", label: "Millwright" },
       // Electrical / Electronics
       { value: "Electrician", label: "Electrician" },
       { value: "Wireman", label: "Wireman" },
@@ -102,6 +110,7 @@ export const QUAL_TREE: QualNode[] = [
   // ─────────────────────────────────────────────
   {
     level: 3, name: "Diploma", label: "Diploma / Polytechnic", branches: [
+      { value: "Electronics", label: "Electronics" },
       // Engineering
       { value: "CSE", label: "Computer Science & Engineering (CSE)" },
       { value: "IT", label: "Information Technology (IT)" },
@@ -173,6 +182,7 @@ export const QUAL_TREE: QualNode[] = [
   // Engineering
   {
     level: 4, name: "B.Tech", label: "B.Tech / BE (Engineering)", branches: [
+      { value: "Electronics", label: "Electronics" },
       { value: "CSE", label: "Computer Science & Engineering (CSE)" },
       { value: "IT", label: "Information Technology (IT)" },
       { value: "Mechanical", label: "Mechanical Engineering" },

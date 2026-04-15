@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Job from '@/models/Job';
 import { getCachedData, setCachedData, invalidateCache } from '@/lib/cache';
+import { notifyEligibleCandidates } from '@/lib/notification-service';
 
 export async function GET(request: Request) {
   await dbConnect();
@@ -47,6 +48,14 @@ export async function POST(request: Request) {
     // Invalidate Cache
     await invalidateCache('jobs:all');
     await invalidateCache(`job:${body.id}`);
+
+    // background: Notify eligible candidates
+    try {
+      // Use toObject() to ensure we're passing clean data to the service
+      notifyEligibleCandidates(job.toObject());
+    } catch (err) {
+      console.error("Delayed Notification Failed:", err);
+    }
 
     return NextResponse.json({ success: true, data: job }, { status: 201 });
   } catch (error: any) {

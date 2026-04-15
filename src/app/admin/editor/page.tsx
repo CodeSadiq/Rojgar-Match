@@ -7,12 +7,14 @@ import Link from 'next/link';
 import { QUAL_TREE } from '@/lib/constants';
 
 function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path: string, value: any) => void }) {
+  const [localTree, setLocalTree] = useState(QUAL_TREE);
+
   const allRequirements = useMemo(() => {
     if (!jobData) return [];
     const found: any[] = [];
     if (jobData.educationRequirementForMatch) {
-      found.push(...jobData.educationRequirementForMatch.map((r: any, idx: number) => ({ 
-        ...r, 
+      found.push(...jobData.educationRequirementForMatch.map((r: any, idx: number) => ({
+        ...r,
         source: 'Root',
         path: `educationRequirementForMatch.${idx}`
       })));
@@ -20,8 +22,8 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
     if (jobData.posts) {
       jobData.posts.forEach((p: any, postIdx: number) => {
         if (p.educationRequirementForMatch) {
-          found.push(...p.educationRequirementForMatch.map((r: any, reqIdx: number) => ({ 
-            ...r, 
+          found.push(...p.educationRequirementForMatch.map((r: any, reqIdx: number) => ({
+            ...r,
             source: p.name?.substring(0, 15) || `Post ${postIdx + 1}`,
             path: `posts.${postIdx}.educationRequirementForMatch.${reqIdx}`
           })));
@@ -33,19 +35,55 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
 
   const mismatches = useMemo(() => {
     return allRequirements.filter(req => {
-      const qualNode = QUAL_TREE.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
+      const qualNode = localTree.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
       if (!qualNode) return true;
       const branches = req.branches || [];
       const allBranchesValid = branches.every((b: string) => qualNode.branches.some(qB => qB.value.toLowerCase() === b.toLowerCase() || qB.label.toLowerCase() === b.toLowerCase()));
       return !allBranchesValid;
     });
-  }, [allRequirements]);
+  }, [allRequirements, localTree]);
 
   if (allRequirements.length === 0) return null;
 
   const handleRemoveBranch = (reqPath: string, branches: string[], branchToRemove: string) => {
     const updatedBranches = branches.filter(b => b !== branchToRemove);
     onUpdate(`${reqPath}.branches`, updatedBranches);
+  };
+
+  const handleAddToTree = async (qualification: string, branch: string) => {
+    const isConfirmed = confirm(`Add "${branch}" to "${qualification}" branches in constants.ts?`);
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch('/api/admin/qual-tree/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qualification, branch }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Optimistically update local state so UI reflects change immediately
+        setLocalTree(prev => {
+          return prev.map(q => {
+            if (q.name.toLowerCase() === qualification.toLowerCase()) {
+              return { ...q, branches: [...q.branches, { value: branch, label: branch }] };
+            }
+            return q;
+          });
+        });
+
+        // Success notification
+        const toast = document.createElement('div');
+        toast.className = "fixed bottom-8 right-8 bg-black text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 animate-in slide-in-from-right-10 z-[10000]";
+        toast.innerText = `✓ ${branch} added to ${qualification}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (e: any) {
+      alert(`Failed: ${e.message}`);
+    }
   };
 
   return (
@@ -55,7 +93,7 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
           Validation: {mismatches.length > 0 ? `${mismatches.length} Mismatch Found` : 'All Stable'}
         </h3>
       </div>
-      
+
       <div className="flex flex-col gap-1">
         {mismatches.length === 0 ? (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100 text-[10px] font-bold text-green uppercase tracking-wide">
@@ -64,16 +102,16 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
           </div>
         ) : (
           mismatches.map((req, idx) => {
-            const qualNode = QUAL_TREE.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
+            const qualNode = localTree.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
             const nameValid = !!qualNode;
             const branches = req.branches || [];
-            
+
             return (
               <div key={idx} className="flex items-center gap-3 px-3 py-2 rounded-lg border bg-red-50/50 border-red-100 animate-in slide-in-from-left-1">
                 <div className="w-2 h-2 rounded-full flex-shrink-0 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                
+
                 <div className="min-w-[70px] text-[10px] font-black text-navy/40 truncate uppercase">{req.source}</div>
-                
+
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className={`text-[11px] font-bold truncate ${nameValid ? 'text-navy' : 'text-red-600 underline decoration-wavy'}`}>
                     {req.qualification || '??'}
@@ -87,14 +125,22 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
                         const isValid = qualNode?.branches.some(qB => qB.value.toLowerCase() === b.toLowerCase() || qB.label.toLowerCase() === b.toLowerCase());
                         if (isValid) return null; // Only show invalid branches
                         return (
-                          <span 
-                            key={bIdx} 
-                            onClick={() => handleRemoveBranch(req.path, branches, b)}
-                            className="text-[9px] px-1.5 py-0.5 rounded border whitespace-nowrap bg-red-100 border-red-200 text-red-700 font-bold hover:bg-red-200 cursor-pointer transition-colors"
-                            title="Click to remove branch from JSON"
-                          >
-                            {b} ✕
-                          </span>
+                          <div key={bIdx} className="flex items-center gap-1">
+                            <span
+                              onClick={() => handleRemoveBranch(req.path, branches, b)}
+                              className="text-[9px] px-1.5 py-0.5 rounded border whitespace-nowrap bg-red-100 border-red-200 text-red-700 font-bold hover:bg-red-200 cursor-pointer transition-colors"
+                              title="Delete from JSON"
+                            >
+                              {b} ✕
+                            </span>
+                            <button
+                              onClick={() => handleAddToTree(req.qualification, b)}
+                              className="w-4 h-4 flex items-center justify-center bg-blue-500 text-white rounded text-[10px] font-bold hover:bg-blue-600 transition-colors shadow-sm"
+                              title="Add to Qualification Tree"
+                            >
+                              +
+                            </button>
+                          </div>
                         );
                       }).filter(Boolean)
                     )}
@@ -122,7 +168,6 @@ function EditorContent() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isJsonCollapsed, setIsJsonCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(!!jobId);
 
   const isInternalUpdate = React.useRef(false);
@@ -211,7 +256,7 @@ function EditorContent() {
     if (!jobData) return;
     setIsPublishing(true);
     const normalizedData = { ...jobData };
-    
+
     if (!normalizedData.id) {
       normalizedData.id = normalizedData.title ? normalizedData.title.toLowerCase().replace(/[^a-z0-9]/g, '-') : Math.random().toString(36).substr(2, 9);
     }
@@ -312,8 +357,8 @@ function EditorContent() {
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden flex flex-col lg:flex-row relative">
         {/* JSON Source Panel */}
-        <div 
-          className={`relative bg-gray-50 border-gray-100 flex flex-col transition-all duration-500 ease-in-out border-b lg:border-b-0 lg:border-r-[6px] overflow-hidden ${isJsonCollapsed ? 'w-0 opacity-0' : 'w-full lg:w-[40%] opacity-100'}`}
+        <div
+          className="relative bg-gray-50 border-gray-100 flex flex-col transition-all duration-500 ease-in-out border-b lg:border-b-0 lg:border-r-[6px] overflow-hidden w-full lg:w-[40%] opacity-100"
         >
           <div className="absolute top-2 left-4 text-[8px] font-black text-navy/20 uppercase tracking-widest z-10 pointer-events-none whitespace-nowrap">JSON Source</div>
           <div className="flex-1 w-full min-w-[400px]">
@@ -324,7 +369,7 @@ function EditorContent() {
               placeholder='Paste Job JSON Meta-Data Here...'
             />
           </div>
-          
+
           {/* Real-time Matcher Console */}
           <div className="shrink-0 p-3 md:p-4 bg-gray-50 border-t border-gray-200 max-h-[200px] overflow-y-auto custom-scrollbar">
             <QualTreeMatcher jobData={jobData} onUpdate={handleUpdate} />
@@ -337,19 +382,8 @@ function EditorContent() {
           )}
         </div>
 
-        {/* Preview Panel + Toggle Handle */}
+        {/* Preview Panel */}
         <div className="flex-1 relative bg-white min-w-0 flex flex-col">
-          <button
-            onClick={() => setIsJsonCollapsed(!isJsonCollapsed)}
-            className={`absolute top-1/2 -left-4 -translate-y-1/2 w-8 h-20 bg-navy text-white rounded-r-xl shadow-2xl z-[5000] flex flex-col items-center justify-center hover:scale-x-110 active:scale-95 transition-all outline-none border-y-2 border-r-2 border-white/20 ${isJsonCollapsed ? 'left-0' : ''}`}
-          >
-            <div className={`text-[12px] font-black transition-transform duration-500 ${isJsonCollapsed ? 'rotate-0' : 'rotate-180'}`}>
-              ➜
-            </div>
-            <div className="text-[7px] font-bold uppercase tracking-tighter mt-1 [writing-mode:vertical-lr] opacity-30">
-              {isJsonCollapsed ? 'JSON' : 'HIDE'}
-            </div>
-          </button>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-0 md:p-8">
             <div className="max-w-[1000px] mx-auto scale-[0.85] md:scale-100 origin-top">

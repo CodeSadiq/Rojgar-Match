@@ -24,6 +24,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState({ text: '', isError: false });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,41 +112,69 @@ export default function LoginPage() {
   };
 
   React.useEffect(() => {
-    // Initialize Google One Tap / Login
+    // 🛡️ Singleton Initialization to prevent "signal aborted" errors
     const initializeGoogle = () => {
       if (typeof window !== 'undefined' && (window as any).google) {
-        (window as any).google.accounts.id.initialize({
-          client_id: "962213572826-d6j12qircjvf1eritlm468cqsbkeufvt.apps.googleusercontent.com",
-          callback: (response: any) => handleGoogleLogin(response.credential),
-        });
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: "962213572826-d6j12qircjvf1eritlm468cqsbkeufvt.apps.googleusercontent.com",
+            callback: (response: any) => handleGoogleLogin(response.credential),
+            use_fedcm_for_prompt: true,
+            ux_mode: 'popup', 
+            auto_select: false,
+            itp_support: true, // 🛡️ Support for Intelligent Tracking Prevention
+            cancel_on_tap_outside: false, // Prevent accidental dismissal during network wait
+            context: 'signin'
+          });
+          
+          const container = document.getElementById("google-login-button");
+          const containerWidth = container?.clientWidth || 280;
+          
+          // 🎨 Render the Official Branded Button
+          (window as any).google.accounts.id.renderButton(
+            container,
+            { 
+               theme: "outline", 
+               size: "large", 
+               width: Math.min(containerWidth, 400), // Match container exactly (up to GSI max of 400)
+               text: "continue_with",
+               shape: "pill",
+               logo_alignment: "left"
+            }
+          );
+        } catch (e) {
+          console.error("GSI Init Error:", e);
+        }
       }
     };
 
-    const script = document.createElement('script');
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = initializeGoogle;
-    document.head.appendChild(script);
-
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
-  }, []);
+    const scriptId = "google-gsi-client";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogle;
+      document.head.appendChild(script);
+    } else {
+      initializeGoogle();
+    }
+  }, [isLoading]);
 
   const triggerGooglePrompt = () => {
     if ((window as any).google) {
-      (window as any).google.accounts.id.prompt();
-      // Also try to render or trigger standard flow
-      // For simplicity in this UI, we can just use the prompt or a custom button
+      try {
+        (window as any).google.accounts.id.prompt();
+      } catch (e) {
+        console.warn("Manual GSI prompt failed:", e);
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
-      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center pt-4 md:pt-12 md:justify-center p-6 md:p-12 relative overflow-hidden">
 
         {/* BACKGROUND DECOR */}
         <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
@@ -152,35 +184,35 @@ export default function LoginPage() {
         <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
           
           {/* 🔙 BACK NAVIGATION (Repositioned) */}
-          <div className="mb-6">
+          <div className="mb-2 md:mb-6">
             <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
               <span>Back</span>
             </BackButton>
           </div>
 
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-serif font-bold text-navy leading-none mb-2">Login</h2>
+          <div className="text-center mb-4 md:mb-6">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-none mb-1">Login</h2>
           </div>
 
           {/* AUTH CARD */}
-          <div className="bg-white rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50">
-            <form onSubmit={handleLogin} className="p-8 md:p-10 space-y-4">
+          <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50 mx-1 md:mx-0">
+            <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4 md:space-y-6">
 
               {error && (
-                <div className="bg-red/5 border-2 border-red/10 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-2xl animate-in fade-in slide-in-from-top-2">
+                <div className="bg-red/5 border-2 border-red/10 text-red text-[10px] font-black uppercase tracking-widest p-4 rounded-xl md:rounded-2xl animate-in fade-in slide-in-from-top-2">
                   ⚠️ {error}
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* EMAIL */}
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-1.5 md:mb-2 block px-1">
                     Email Address
                   </label>
                   <div className="relative group/field">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
                       <IconMail />
                     </span>
                     <input
@@ -189,18 +221,27 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@institution.gov"
-                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[15px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
+                      className="w-full bg-white border-2 border-gray-100 py-3 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
                     />
                   </div>
                 </div>
 
                 {/* PASSWORD */}
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
-                    Password
-                  </label>
+                  <div className="flex items-center justify-between px-1 mb-1.5 md:mb-2">
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 block">
+                      Password
+                    </label>
+                    <button 
+                      type="button"
+                      onClick={() => setShowForgotModal(true)}
+                      className="text-[9px] font-black uppercase tracking-widest text-navy/60 hover:text-navy transition-colors underline decoration-navy/20 underline-offset-4"
+                    >
+                      Forgot?
+                    </button>
+                  </div>
                   <div className="relative group/field">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
                       <IconLock />
                     </span>
                     <input
@@ -209,18 +250,18 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[15px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
+                      className="w-full bg-white border-2 border-gray-100 py-3 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
                     />
                   </div>
                 </div>
               </div>
 
               {/* MAIN ACTION */}
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3.5 md:py-4 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
@@ -234,9 +275,9 @@ export default function LoginPage() {
               </div>
 
               {/* SEPARATOR */}
-              <div className="flex items-center gap-4 py-2">
+              <div className="flex items-center gap-4 py-1 md:py-2">
                 <div className="flex-1 h-[1px] bg-gray-100"></div>
-                <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">OR</span>
+                <span className="text-[9px] font-black uppercase text-gray-200 tracking-widest">OR</span>
                 <div className="flex-1 h-[1px] bg-gray-100"></div>
               </div>
 
@@ -263,24 +304,22 @@ export default function LoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-3 md:py-4 px-8 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-2xl active:scale-[0.95] group/guest"
+                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-3 md:py-4 px-8 font-black text-[9px] md:text-[10px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 rounded-xl md:rounded-2xl active:scale-[0.95] group/guest"
               >
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all">
+                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all scale-90 md:scale-100">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <span>Continue as a guest</span>
-                <span className="group-hover/guest:translate-x-1 transition-transform">➜</span>
+                <span className="group-hover/guest:translate-x-1 transition-transform opacity-60">➜</span>
               </button>
 
-              {/* SOCIAL LOGIN */}
-              <button
-                type="button"
-                onClick={triggerGooglePrompt}
-                className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98] mt-2"
-              >
-                <IconGoogle />
-                <span>Continue with Google</span>
-              </button>
+              {/* OFFICIAL GOOGLE BUTTON */}
+              <div className="flex justify-center pt-2 w-full overflow-hidden">
+                <div 
+                  id="google-login-button" 
+                  className="w-full h-[44px] flex justify-center"
+                ></div>
+              </div>
 
             </form>
 
@@ -295,13 +334,99 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* FOOTER */}
-          <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
-            RojgarMatch Verification Protocol Active
-          </p>
 
         </main>
       </div>
+
+      {/* 🔐 FORGOT PASSWORD MODAL */}
+      {showForgotModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" onClick={() => setShowForgotModal(false)} />
+          <div className="relative w-full max-w-[400px] bg-white rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+            <div className="p-8 md:p-10">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-navy/5 text-navy rounded-2xl">
+                  <IconLock />
+                </div>
+                <div>
+                  <h3 className="text-xl font-sans font-bold text-navy">Recover Password</h3>
+                  <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mt-1">Verification Required</p>
+                </div>
+              </div>
+
+              {resetMessage.text && (
+                <div className={`mb-6 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 ${resetMessage.isError ? 'bg-red/5 border-red/10 text-red' : 'bg-green-500/5 border-green-500/10 text-green-600'}`}>
+                  {resetMessage.isError ? '⚠️' : '✅'} {resetMessage.text}
+                </div>
+              )}
+
+              <p className="text-[13px] font-medium text-navy/80 mb-8 leading-relaxed">
+                Enter your administrative email address. If an account is registered, we'll send a secure password reset link.
+              </p>
+
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setResetLoading(true);
+                setResetMessage({ text: '', isError: false });
+                try {
+                  const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmail }),
+                  });
+                  const data = await res.json();
+                  setResetMessage({ text: data.message, isError: !res.ok });
+                } catch (err) {
+                  setResetMessage({ text: 'Service currently unavailable', isError: true });
+                } finally {
+                    setResetLoading(false);
+                }
+              }} className="space-y-6">
+                <div>
+                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
+                      Verification Email
+                   </label>
+                   <div className="relative group/field">
+                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                       <IconMail />
+                     </span>
+                     <input
+                       type="email"
+                       required
+                       value={resetEmail}
+                       onChange={(e) => setResetEmail(e.target.value)}
+                       placeholder="name@institution.gov"
+                       className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[14px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all"
+                     />
+                   </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotModal(false)}
+                    className="flex-1 bg-gray-50 text-navy font-black text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-gray-100 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="flex-[2] bg-navy text-white font-black text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-[#06142E] transition-all flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    {resetLoading ? 'Transmitting...' : (
+                      <>
+                        <span>Send Link</span>
+                        <IconArrowRight />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

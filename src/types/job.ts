@@ -1,6 +1,10 @@
+export interface QualificationCourse {
+  name: string;
+  branches: string[];
+}
+
 export interface Qualification {
-  course: string[];
-  branch: string[];
+  courses: QualificationCourse[];
   extraQualificationText: string;
 }
 

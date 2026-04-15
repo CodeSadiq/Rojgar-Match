@@ -268,24 +268,46 @@ function hasCategoryData(cv: any): boolean {
 // ── QUALIFICATION CELL ────────────────────────────────────────────────────────
 function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
   const q = post.qualification;
-  if (q && !Array.isArray(q) && q.course !== undefined) {
-    const courses: string[] = Array.isArray(q.course) ? q.course : [q.course];
-    const branches: string[] = (Array.isArray(q.branch) ? q.branch : []).filter((b: string) => b && b.toLowerCase() !== "any");
+
+  // ── NEW SCHEMA: { courses: { name, branches }[], extraQualificationText } ──
+  if (q && !Array.isArray(q) && (q.courses !== undefined || q.course !== undefined)) {
+    const courses: any[] = q.courses 
+      ? (Array.isArray(q.courses) ? q.courses : [q.courses])
+      : (Array.isArray(q.course) ? q.course.map((c: any) => ({ name: c, branches: Array.isArray(q.branch) ? q.branch : [] })) : [{ name: q.course, branches: Array.isArray(q.branch) ? q.branch : [] }]);
+
     const extra: string = q.extraQualificationText?.trim() || "";
+
     return (
       <td className="qual-cell">
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {courses.map((c, i) => (
-            <React.Fragment key={i}>
-              <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{c}</span>
-              {i < courses.length - 1 && <div style={{ margin: "2px 0", fontSize: "10px", color: "var(--ink-muted)", fontStyle: "italic" }}>— OR —</div>}
-            </React.Fragment>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {courses.map((course, i) => {
+            const name = typeof course === 'string' ? course : course.name;
+            const branches = Array.isArray(course.branches) ? course.branches : [];
+            
+            return (
+              <div key={i} className="qual-course-block">
+                <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{name}</div>
+                {branches.length > 0 && (
+                  <div className="qual-branch-line" style={{ marginTop: '1px' }}>
+                    <span className="qual-branch-label" style={{ fontSize: '9px' }}>Stream: </span>
+                    <span style={{ fontSize: '11px' }}>{branches.join(", ")}</span>
+                  </div>
+                )}
+                {i < courses.length - 1 && (
+                  <div className="qual-or-sep" style={{ margin: '8px 0' }}>
+                    <div className="qual-or-sep-line" style={{ height: '0.5px' }}></div>
+                    <div className="qual-or-sep-badge" style={{ fontSize: '8px', padding: '1px 5px' }}>OR</div>
+                    <div className="qual-or-sep-line" style={{ height: '0.5px' }}></div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        {branches.length > 0 && <div className="qual-branch-line"><span className="qual-branch-label">Stream / Branch: </span>{branches.join(", ")}</div>}
+
         {(extra || editable) && (
-          <div className="qual-extra">
-            <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
+          <div className="qual-extra" style={{ marginTop: '8px', padding: '4px 8px' }}>
+            <strong style={{ fontWeight: 600, color: "var(--amber)", fontSize: '11px' }}>Note: </strong>
             <Editable
               editable={editable}
               type="textarea"
@@ -295,7 +317,8 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
             />
           </div>
         )}
-        {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
+
+        {post.prerequisite?.length > 0 && <div className="qual-prereq" style={{ fontSize: '10px' }}>⚠ {post.prerequisite.join("; ")}</div>}
         {post.appearingEligible && (
           <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
             <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
