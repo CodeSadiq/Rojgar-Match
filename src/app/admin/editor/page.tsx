@@ -43,7 +43,7 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
     });
   }, [allRequirements, localTree]);
 
-  if (allRequirements.length === 0) return null;
+  // Remove the early return so Tools are always visible
 
   const handleRemoveBranch = (reqPath: string, branches: string[], branchToRemove: string) => {
     const updatedBranches = branches.filter(b => b !== branchToRemove);
@@ -381,8 +381,11 @@ function EditorContent() {
           <button
             onClick={async () => {
               const targetId = jobId || potentialDuplicate?.id;
-              if (!targetId) return;
-              const isConfirmed = confirm(`This will send email alerts for ${jobData?.title || 'this job'}. Proceed?`);
+              if (!targetId) {
+                alert("Please publish this job first to generate a permanent ID before sending alerts.");
+                return;
+              }
+              const isConfirmed = confirm(`This will send email alerts for "${jobData?.title || 'this job'}". Proceed?`);
               if (!isConfirmed) return;
               try {
                 const res = await fetch('/api/jobs/notify', {
@@ -394,10 +397,9 @@ function EditorContent() {
                 else alert("Failed to send alerts.");
               } catch (e) { alert("Error."); }
             }}
-            disabled={!jobId && !potentialDuplicate}
-            className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${(!jobId && !potentialDuplicate) ? 'opacity-30 cursor-not-allowed bg-gray-100 text-gray-400' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg active:scale-95'}`}
+            className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${(!jobId && !potentialDuplicate) ? 'bg-amber-100 text-amber-600 hover:bg-amber-200 shadow-sm border border-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg active:scale-95'}`}
           >
-            📢 Send Alerts
+            📢 {jobId || potentialDuplicate ? 'Send Alerts' : 'Alert Queue'}
           </button>
           <button
             onClick={handlePublish}
