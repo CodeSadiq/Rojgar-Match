@@ -54,7 +54,7 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
 
   .jd {
-    --serif:  'Libre Baskerville', Georgia, serif;
+    --serif:  'Source Sans 3', system-ui, sans-serif;
     --sans:   'Source Sans 3', system-ui, sans-serif;
     --mono:   'Roboto Mono', monospace;
 
@@ -128,20 +128,20 @@ const styles = `
     font-weight: 700;
     line-height: 1.2;
     color: var(--navy);
-    text-align: center;
+    text-align: left;
     margin-bottom: 12px;
   }
   .jd-advert {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--ink-muted);
-    text-align: center;
+    text-align: left;
     margin-bottom: 16px;
   }
   .jd-tags {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 5px;
   }
   .jd-tag {
@@ -170,7 +170,7 @@ const styles = `
   .jd-hero-cell {
     background: var(--paper);
     padding: 18px 16px;
-    text-align: center;
+    text-align: left;
   }
   .jd-hero-cell.accent { background: var(--navy); }
   .jd-hero-label {
@@ -576,10 +576,10 @@ const styles = `
     .jd-wrap { padding: 0 20px 120px; }
     .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
     
-    .jd-title { font-size: 20px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 6px; }
+    .jd-title { font-size: 20px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: left; display: flex; align-items: flex-start; justify-content: flex-start; gap: 6px; }
     .jd-header-back { display: flex; color: var(--navy); margin-top: 2px; flex-shrink: 0; }
-    .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: center; }
-    .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: center; text-align: center; }
+    .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: left; }
+    .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: flex-start; text-align: left; }
 
     /* 2x2 Grid for Hero on Mobile */
     .jd-hero { 
