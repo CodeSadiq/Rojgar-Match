@@ -161,25 +161,26 @@ export default function Home() {
 
     // Boundary checks for infinite looping
     if (currentCatIndex === 0) {
-      const timer = setTimeout(() => {
+      const snapTimer = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentCatIndex(CATEGORIES.length);
-        // Unlock after snap
-        setTimeout(() => setIsMoving(false), 50);
+        // We wait a tiny bit after the index update to allow the snap to paint
+        // and THEN we can unlock isMoving.
+        setTimeout(() => setIsMoving(false), 30);
       }, 250);
-      return () => clearTimeout(timer);
+      return () => clearTimeout(snapTimer);
     }
+    
     if (currentCatIndex >= CATEGORIES.length + 1) {
-      const timer = setTimeout(() => {
+      const snapTimer = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentCatIndex(1);
-        // Unlock after snap
-        setTimeout(() => setIsMoving(false), 50);
+        setTimeout(() => setIsMoving(false), 30);
       }, 250);
-      return () => clearTimeout(timer);
+      return () => clearTimeout(snapTimer);
     }
 
-    // If not a boundary, unlock after the transition finishes (250ms)
+    // Standard move: enable transitions and unlock after finish
     setIsTransitioning(true);
     const unlockTimer = setTimeout(() => setIsMoving(false), 250);
     return () => clearTimeout(unlockTimer);
@@ -499,13 +500,18 @@ export default function Home() {
                         {/* THE SLIDING CONTENT TRACK */}
                         <div
                           className={`flex h-full ${isTransitioning ? 'transition-transform duration-[250ms] ease-out' : ''}`}
-                          style={{ transform: `translateX(-${currentCatIndex * 100}%)` }}
+                          style={{ 
+                            transform: `translateX(-${currentCatIndex * 100}%)`,
+                            transitionProperty: isTransitioning ? 'transform' : 'none' 
+                          }}
                         >
                           {sliderItems.map((catGroup, catIdx) => {
-                            const { items } = catGroup;
-                            const realIdx = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+                            const { items, cat } = catGroup;
+                            // Generate a perfectly unique key for clones to avoid re-mounting same-key items at different positions
+                            const itemKey = `${cat}-${catIdx}`;
+                            
                             return (
-                              <div key={catIdx} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-1">
+                              <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-1">
                                 <div
                                   className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
                                   style={{
