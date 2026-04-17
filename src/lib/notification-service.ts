@@ -58,12 +58,12 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
       if (matches.length > 0) {
         matchCount++;
         const match = matches[0];
-        const jobUrl = `${process.env.NEXTAUTH_URL}/all-jobs/${newJob.id}`;
+        const jobUrl = `https://rojgar-match.vercel.app/all-jobs/${newJob.id}`;
 
         const mailOptions = {
           from: `"RojgarMatch Alerts" <${process.env.SMTP_USER}>`,
           to: user.email,
-          subject: `New Recruitment Opportunity: ${newJob.title}`,
+          subject: `New Recruitment Opportunity for you`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e1e4e8; border-radius: 12px; overflow: hidden;">
               <div style="background-color: #0D244D; color: white; padding: 24px; text-align: center;">
@@ -77,7 +77,8 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
                 
                 <div style="background-color: #f6f8fa; border-radius: 8px; padding: 20px; margin: 24px 0; border-left: 4px solid #0D244D;">
                   <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #0D244D;">${newJob.title}</h2>
-                  <p style="margin: 0; font-size: 14px; color: #586069;">Organization: ${newJob.organization || 'National Registry'}</p>
+                  <p style="margin: 0 0 5px 0; font-size: 14px; color: #586069;">Organization: ${newJob.organization || 'National Registry'}</p>
+                  <p style="margin: 0; font-size: 14px; color: #d93025; font-weight: bold;">Last Date: ${newJob.importantDates?.applicationLastDate || "Details Awaited"}</p>
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
