@@ -179,77 +179,68 @@ export default function ProfilePage() {
       <main className="flex-1 overflow-y-auto px-4 md:px-12 pt-4 md:pt-3 pb-10">
         <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
           
-          {/* 🔙 BACK NAVIGATION (Standardized Position) */}
-          <div className="mb-6">
-            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-              <span>Back</span>
-            </BackButton>
+          {/* 🔙 BACK NAVIGATION (Circular Style) */}
+          <div className="mb-4 md:mb-8 mt-2 md:mt-0 flex items-center justify-start">
+            <BackButton />
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-8 shadow-sm text-center md:text-left">
-            <div className="flex flex-col items-center md:items-start gap-4 md:gap-5">
-              <div className="space-y-1">
+          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-5 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-8 shadow-sm text-center md:text-left transition-all">
+            <div className="flex flex-col items-center md:items-start gap-3 md:gap-5">
+              <div className="space-y-0.5 md:space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
                    <>
-                    <h1 className="text-2xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
-                    <p className="text-xs md:text-base font-medium text-gray-500">Logged in as a Guest</p>
+                    <h1 className="text-xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
+                    <p className="text-[10px] md:text-base font-medium text-gray-400 capitalize">Guest Session</p>
                    </>
                 ) : (
                   <>
-                    <h1 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
-                    <p className="text-gray-600 text-sm md:text-base font-medium">{userProfile.email}</p>
+                    <h1 className="text-2xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
+                    <p className="text-gray-500 text-xs md:text-base font-medium">{userProfile.email}</p>
                   </>
                 )}
               </div>
 
-              {completed ? (
-                <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-green-600 bg-green-50 px-4 py-1.5 rounded-full border border-green-100">
-                  Qualification Recorded
-                </div>
-              ) : (
-                <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-red-500 bg-red-50 px-4 py-1.5 rounded-full border border-red-100">
-                  Qualification Not Recorded
-                </div>
-              )}
+              <div className={`inline-flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] px-3 md:px-4 py-1.5 rounded-full border ${completed 
+                  ? "text-green-600 bg-green-50 border-green-100" 
+                  : "text-red-500 bg-red-50 border-red-100"}`}>
+                {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
+              </div>
             </div>
 
             <button
               onClick={handleLogout}
-              className="px-5 py-2.5 md:px-8 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] border border-red-100"
+              className="px-6 py-2 md:px-8 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[9px] md:text-[11px] font-black uppercase tracking-widest border border-red-100/50"
             >
-              Logout
+              Sign Out
             </button>
           </div>
 
-          <div className="max-w-[1100px]">
-            <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-10 shadow-sm space-y-8">
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-navy">
+          <div className="max-w-[1100px] mt-6">
+            <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-10 shadow-sm space-y-6 md:space-y-8">
+              <div className="space-y-4 md:space-y-6">
+                <h2 className="text-lg md:text-xl font-bold text-navy">
                   Select Gender <span className="text-red-500">*</span>
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex gap-2">
-                      {['Male', 'Female', 'Other'].map((g) => (
-                        <button
-                          key={g}
-                          onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))}
-                          className={`flex-1 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g
-                              ? "bg-navy text-white border-navy shadow-lg"
-                              : "bg-white text-navy/40 border-gray-100 hover:border-navy/20"
-                            }`}
-                        >
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div className="flex gap-2">
+                  {['Male', 'Female', 'Other'].map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))}
+                      className={`flex-1 h-10 md:h-12 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm ${userProfile.gender === g
+                          ? "bg-navy text-white border-navy"
+                          : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"
+                        }`}
+                    >
+                      {g}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-              <div className="space-y-2 pt-4 border-t border-gray-50">
-                <h2 className="text-xl font-bold text-navy">Set Qualification</h2>
-                <p className="text-[13.5px] text-navy/60 font-medium leading-relaxed">
-                  Update your qualifications level-wise to discover eligible job opportunities. If you haven't qualified in a category yet, please leave it set to "No Record".
+              <div className="space-y-1.5 pt-4 border-t border-gray-50">
+                <h2 className="text-lg md:text-xl font-bold text-navy">Set Qualification</h2>
+                <p className="text-[12px] md:text-[13.5px] text-navy/40 font-medium leading-relaxed">
+                  Update your qualifications level-wise to discover match-ready opportunities.
                 </p>
               </div>
 
@@ -304,19 +295,19 @@ export default function ProfilePage() {
                   );
                 })}
 
-                <div className="pt-6 border-t border-gray-100">
-                  <div className="flex flex-col md:flex-row md:justify-end gap-3">
+                <div className="pt-4 border-t border-gray-100">
+                  <div className="flex flex-col md:flex-row md:justify-end gap-2.5">
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="w-full md:px-12 h-14 md:h-12 bg-navy text-white font-bold text-[11px] uppercase tracking-widest rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 order-1 md:order-none"
+                      className="w-full md:px-12 h-12 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 order-1 md:order-none"
                     >
-                      {isSaving ? 'Saving...' : 'Save Qualification'}
+                      {isSaving ? 'Saving...' : 'Save Profile'}
                     </button>
 
                     <button
                       onClick={async () => {
-                        if (confirm('Are you sure you want to reset all qualifications? This cannot be undone.')) {
+                        if (confirm('Are you sure you want to reset all qualifications?')) {
                           setIsSaving(true);
                           try {
                             if (userProfile.email === 'guest@rojgarmatch.local') {
@@ -324,7 +315,7 @@ export default function ProfilePage() {
                               setCompleted(false);
                               localStorage.removeItem('rojgarmatch_profile');
                               window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-                              alert('Guest qualifications reset successfully! ✅');
+                              alert('Guest records cleared! ✅');
                               setIsSaving(false);
                               return;
                             }
@@ -339,21 +330,21 @@ export default function ProfilePage() {
                               setCompleted(false);
                               localStorage.removeItem('rojgarmatch_profile');
                               window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-                              alert('Qualifications reset successful! ✅');
+                              alert('Profile reset successful! ✅');
                             } else {
                               throw new Error('Reset failed');
                             }
                           } catch (e) {
-                            alert('Error: Could not clear remote records.');
+                            alert('Reset error.');
                           } finally {
                             setIsSaving(false);
                           }
                         }
                       }}
-                      className="w-full md:px-6 h-14 md:h-12 bg-transparent text-red-500 font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all border border-red-100 order-2 md:order-none"
+                      className="w-full md:px-6 h-10 md:h-12 bg-transparent text-red-500/60 font-bold text-[9px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all order-2 md:order-none"
                       disabled={isSaving}
                     >
-                      {isSaving ? 'Processing...' : 'Reset Qualification'}
+                      {isSaving ? 'Wait...' : 'Reset Records'}
                     </button>
                   </div>
                 </div>
