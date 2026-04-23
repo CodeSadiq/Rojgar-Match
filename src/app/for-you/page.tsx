@@ -13,43 +13,50 @@ import { CardSkeleton } from '@/components/LoadingState';
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconStar = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
+const IconRefresh = ({ className }: { className?: string }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
 
 export default function ForYouPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
+  const fetchJobs = React.useCallback(async (isManual = false) => {
+    if (isManual) setIsRefreshing(true);
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
     let profile: CandidateProfile | null = null;
     if (savedProfile) {
       try {
         profile = JSON.parse(savedProfile);
         setUserProfile(profile);
-      } catch (e) { console.error(e); }
-    }
-
-    async function fetchJobs() {
-      try {
-        const res = await fetch('/api/jobs');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          if (!profile || !profile.qualifications || profile.qualifications.length === 0) {
-            setJobs([]); // Clean slate if profile is incomplete
-            return;
-          }
-          const matched = getEligibleJobs(profile, data);
-          setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn })));
-        }
       } catch (e) {
         console.error(e);
-      } finally {
-        setIsLoading(false);
       }
     }
-    fetchJobs();
+
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        if (!profile || !profile.qualifications || profile.qualifications.length === 0) {
+          setJobs([]);
+          return;
+        }
+        const matched = getEligibleJobs(profile, data);
+        setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn })));
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchJobs(true);
+  }, [fetchJobs]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
@@ -70,6 +77,14 @@ export default function ForYouPage() {
               <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings matched to your profile</p>
             </div>
           </div>
+          <button 
+            onClick={() => fetchJobs(true)}
+            disabled={isRefreshing || isLoading}
+            className={`self-end md:self-auto p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+            title="Refresh Jobs"
+          >
+            <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+          </button>
         </header>
 
         {isLoading ? (

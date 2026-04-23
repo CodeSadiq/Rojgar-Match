@@ -8,9 +8,9 @@ export default function Loading() {
         <Spinner size="lg" />
       </div>
       <div className="space-y-3">
-        <h2 className="font-serif text-2xl font-bold text-navy/80">Indexing Recruitment Detail</h2>
+        <h2 className="font-serif text-2xl font-bold text-navy/80">Loading Job Notification</h2>
         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-navy/30">
-          Syncing with National Registry Security Layer
+          Fetching Official Recruitment Details
         </p>
       </div>
       

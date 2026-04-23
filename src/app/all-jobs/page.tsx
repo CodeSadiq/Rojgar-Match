@@ -13,6 +13,7 @@ import { CardSkeleton, GlobalLoading } from '@/components/LoadingState';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
+const IconRefresh = ({ className }: { className?: string }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
 
 function JobsPageContent() {
   const router = useRouter();
@@ -24,6 +25,22 @@ function JobsPageContent() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [filterType, setFilterType] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchJobs = React.useCallback(async (isManual = false) => {
+    if (isManual) setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) setDbJobs(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
+    }
+  }, []);
 
   useEffect(() => {
     if (initialQuery) {
@@ -38,20 +55,8 @@ function JobsPageContent() {
       try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
     }
 
-    async function fetchJobs() {
-      try {
-        const res = await fetch('/api/jobs');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data)) setDbJobs(data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchJobs();
-  }, []);
+    fetchJobs(true);
+  }, [fetchJobs]);
 
   // ── RECRUITMENT MATCHING LOGIC ──
   const jobsWithMatching = React.useMemo(() => {
@@ -134,15 +139,25 @@ function JobsPageContent() {
               <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings</p>
             </div>
           </div>
-          <label className="flex bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 w-full md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
-            <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-[11px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-200"
-              placeholder="Search index..."
-            />
-          </label>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button 
+              onClick={() => fetchJobs(true)}
+              disabled={isRefreshing || isLoading}
+              className={`p-3 rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Registry"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
+            <label className="flex flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
+              <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-[11px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-200"
+                placeholder="Search index..."
+              />
+            </label>
+          </div>
         </header>
 
         {/* JOB LISTING */}

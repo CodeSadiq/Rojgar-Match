@@ -9,20 +9,32 @@ import BackButton from '@/components/BackButton';
 
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
+const IconRefresh = ({ className }: { className?: string }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
 
 export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
 
   const [registry, setRegistry] = React.useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
 
-  React.useEffect(() => {
-    async function loadData() {
+  const loadData = React.useCallback(async (isManual = false) => {
+    if (isManual) setIsRefreshing(true);
+    try {
       const data = await getRegistryData();
       setRegistry(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
     }
-    loadData();
   }, []);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+    loadData(true);
+  }, [loadData]);
 
   // Map slug back to category name
   const categoryMap: Record<string, string> = {
@@ -63,6 +75,16 @@ export default function CategoryPage() {
               <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings</p>
             </div>
           </div>
+          {isMounted && (
+            <button 
+              onClick={() => loadData(true)}
+              disabled={isRefreshing}
+              className={`self-end md:self-auto p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Bulletins"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
+          )}
         </header>
 
         {data.length > 0 ? (

@@ -27,6 +27,9 @@ export default function ProfilePage() {
     if (savedLocal) {
       try {
         const profile = JSON.parse(savedLocal);
+        // CRITICAL FIX: Restore gender and other details for guest/local persistence
+        setUserProfile((prev: any) => ({ ...prev, ...profile }));
+        
         if (profile.qualifications && Array.isArray(profile.qualifications)) {
           const initialState: Record<number, { qual: string, branch: string }> = {};
           profile.qualifications.forEach((q: any) => {
@@ -80,7 +83,7 @@ export default function ProfilePage() {
     }
 
     const authData = JSON.parse(isAuth);
-    setUserProfile({ fullName: authData.fullName, email: authData.email });
+    setUserProfile((prev: any) => ({ ...prev, fullName: authData.fullName, email: authData.email }));
     fetchProfile();
   }, [router, fetchProfile]);
 

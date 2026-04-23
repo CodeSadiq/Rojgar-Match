@@ -14,6 +14,7 @@ import { CardSkeleton } from '@/components/LoadingState';
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
+const IconRefresh = ({ className }: { className?: string }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
 
 const CATEGORIES = ['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card'];
 
@@ -26,13 +27,14 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [currentCatIndex, setCurrentCatIndex] = useState(1); // 1 is the first real category (after the clone of last)
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [isMoving, setIsMoving] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isInViewport, setIsInViewport] = useState(false);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -77,7 +79,26 @@ export default function Home() {
 
   const [registry, setRegistry] = useState<any>(null);
 
+  const fetchJobs = React.useCallback(async (isManual = false) => {
+    if (isManual) setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) setDbJobs(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      if (isManual) {
+        // Add a slight delay for better UX so the icon doesn't stop instantly
+        setTimeout(() => setIsRefreshing(false), 500);
+      }
+    }
+  }, []);
+
   useEffect(() => {
+    setIsMounted(true);
     async function loadMetadata() {
       const registryData = await getRegistryData();
       setRegistry(registryData);
@@ -103,16 +124,8 @@ export default function Home() {
       setIsLoading(false);
     }
 
-    async function fetchJobs() {
-      try {
-        const res = await fetch('/api/jobs');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data)) setDbJobs(data);
-      } catch (e) { console.error(e); } finally { setIsLoading(false); }
-    }
-    fetchJobs();
-  }, []);
+    fetchJobs(true);
+  }, [fetchJobs]);
 
 
 
@@ -300,12 +313,20 @@ export default function Home() {
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(!isLoggedIn && !userProfile) ? 'hidden' : 'flex'}`}>
+                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="flex items-center gap-4">
                       <h2 className="text-[15px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You
                       </h2>
                     </div>
+                    <button 
+                      onClick={() => fetchJobs(true)}
+                      disabled={isRefreshing}
+                      className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                      title="Refresh Jobs"
+                    >
+                      <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+                    </button>
                   </header>
 
                   <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
@@ -417,21 +438,21 @@ export default function Home() {
               </section>
 
               <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-4 md:px-0">
-                <div ref={sidebarRef} className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+                <div ref={sidebarRef} className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(prev => !prev)}
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
                   >
-                    <div className="p-4 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-4 h-8 min-h-[32px]">
-                        <div className="flex-1 flex items-center gap-3 min-w-0 pr-4">
-                          <div className="p-1.5 md:p-2 bg-navy/5 text-navy rounded-lg flex-shrink-0">
+                    <div className="p-0 flex-1 flex flex-col">
+                      <div className="flex items-center justify-between px-5 h-14 md:h-16 bg-[#0D244D] text-white shadow-lg relative z-10">
+                        <div className="flex-1 flex items-center gap-4 min-w-0 pr-4">
+                          <div className="p-2 md:p-2.5 bg-white/10 text-white rounded-xl flex-shrink-0 backdrop-blur-md border border-white/10 shadow-inner">
                             <IconBell />
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-navy opacity-80 truncate">
+                            <h3 className="text-[12px] md:text-[14px] font-bold uppercase tracking-[0.2em] text-white truncate">
                               {activeCategory}
                             </h3>
                           </div>
@@ -447,11 +468,11 @@ export default function Home() {
                                 setIsMoving(true);
                                 setCurrentCatIndex((prev) => prev - 1);
                               }}
-                              className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
+                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
                               title="Previous"
                             >
-                              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                               </div>
                             </div>
                             <div
@@ -461,11 +482,11 @@ export default function Home() {
                                 setIsMoving(true);
                                 setCurrentCatIndex((prev) => prev + 1);
                               }}
-                              className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
+                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
                               title="Next"
                             >
-                              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                               </div>
                             </div>
                           </div>
@@ -473,7 +494,7 @@ export default function Home() {
                           {/* Mobile View All (Placed where slider buttons were) */}
                           <Link
                             href={`/${(activeCategory || 'all-jobs').toLowerCase().replace(' ', '-')}`}
-                            className="md:hidden text-[10px] font-black text-[#2563EB] uppercase tracking-widest"
+                            className="md:hidden text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white"
                           >
                             View All ›
                           </Link>
@@ -481,7 +502,7 @@ export default function Home() {
                       </div>
 
                       <div
-                        className="relative mt-2 overflow-hidden marquee-viewer touch-pan-y"
+                        className="p-4 relative overflow-hidden marquee-viewer touch-pan-y"
                         onTouchStart={(e) => { (window as any)._swipeX = e.touches[0].clientX; }}
                         onTouchEnd={(e) => {
                           const startX = (window as any)._swipeX;
@@ -546,7 +567,7 @@ export default function Home() {
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
-                      <div className="mt-4 flex flex-col items-center">
+                      <div className="px-4 mt-auto flex flex-col items-center">
                         <div className="flex gap-1.5 h-1 w-full px-2 mb-2">
                           {CATEGORIES.map((_, idx) => {
                             const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
@@ -576,7 +597,7 @@ export default function Home() {
                       </div>
 
                       {/* ENHANCED VIEW ALL BUTTON (Desktop Only) */}
-                      <div className="hidden md:block mt-3">
+                      <div className="hidden md:block mt-3 px-4 pb-4">
                         <Link
                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
                           className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
