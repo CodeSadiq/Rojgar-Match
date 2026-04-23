@@ -68,7 +68,7 @@ export default function LoginPage() {
 
       // Signal Navbar for immediate update
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-      window.location.href = '/';
+      window.location.href = '/profile';
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -106,7 +106,7 @@ export default function LoginPage() {
       }
 
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-      window.location.href = '/';
+      window.location.href = '/profile';
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -310,7 +310,7 @@ export default function LoginPage() {
                         isGuest: true
                       }));
                       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-                      window.location.href = '/';
+                      window.location.href = '/profile';
                     }
                   } catch (e) {
                     console.error('Guest auth failed', e);

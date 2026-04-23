@@ -54,7 +54,7 @@ export default function SignupPage() {
       // Success: Auto-login
       localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName, email }));
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-      window.location.href = '/';
+      window.location.href = '/profile';
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -66,7 +66,7 @@ export default function SignupPage() {
     setIsLoading(true);
     setTimeout(() => {
        localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName: 'NEW CITIZEN', email: 'citizen@rojgarmatch.local' }));
-       window.location.href = '/';
+       window.location.href = '/profile';
        setIsLoading(false);
     }, 1000);
   };

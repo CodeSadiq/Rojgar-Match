@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { getRegistryData } from '@/lib/data-service';
 import { getTimeAgo } from '@/lib/helpers';
 import BackButton from '@/components/BackButton';
+import ForceScrollTop from '@/components/ForceScrollTop';
 
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -58,6 +59,7 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
+      <ForceScrollTop />
       <main className="flex-1 max-w-[1440px] mx-auto px-1 md:px-12 pt-6 md:pt-3 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
         <div className="hidden md:block mb-6 pt-6">
           <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
@@ -76,7 +78,7 @@ export default function CategoryPage() {
             </div>
           </div>
           {isMounted && (
-            <button 
+            <button
               onClick={() => loadData(true)}
               disabled={isRefreshing}
               className={`self-end md:self-auto p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}

@@ -108,7 +108,7 @@ function JobsPageContent() {
 
   const filteredJobs = jobsWithMatching.filter(job => {
     const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term => 
+    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term =>
       isFuzzyMatch(job.title, term) ||
       isFuzzyMatch(job.organization, term) ||
       isFuzzyMatch(job.org, term) ||
@@ -140,7 +140,7 @@ function JobsPageContent() {
             </div>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <button 
+            <button
               onClick={() => fetchJobs(true)}
               disabled={isRefreshing || isLoading}
               className={`p-3 rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}

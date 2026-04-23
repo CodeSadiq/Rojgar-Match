@@ -77,7 +77,7 @@ export default function ForYouPage() {
               <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings matched to your profile</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => fetchJobs(true)}
             disabled={isRefreshing || isLoading}
             className={`self-end md:self-auto p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
@@ -103,7 +103,7 @@ export default function ForYouPage() {
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-              {(!userProfile?.qualifications || userProfile.qualifications.length === 0) 
+              {(!userProfile?.qualifications || userProfile.qualifications.length === 0)
                 ? "Set your qualification details to see eligible gov jobs."
                 : "No recruitments currently match your specific qualification level and branch."
               }
@@ -113,7 +113,7 @@ export default function ForYouPage() {
                 href="/profile"
                 className="mt-8 px-10 py-3 bg-[#1a3a8f] text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl no-underline"
               >
-                Setup Profile →
+                setup qualification →
               </Link>
             )}
           </div>

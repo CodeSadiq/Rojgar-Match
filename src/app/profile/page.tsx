@@ -242,8 +242,8 @@ export default function ProfilePage() {
 
               <div className="space-y-1.5 pt-4 border-t border-gray-50">
                 <h2 className="text-lg md:text-xl font-bold text-navy">Set Qualification</h2>
-                <p className="text-[12px] md:text-[13.5px] text-navy/40 font-medium leading-relaxed">
-                  Update your qualifications level-wise to discover match-ready opportunities.
+                <p className="text-[12px] md:text-[13.5px] text-navy/70 font-medium leading-relaxed">
+                  Update your qualifications level-wise to discover eligible jobs. If you do not have a qualification for a specific section, leave it as "-- No Record --".
                 </p>
               </div>
 
@@ -305,7 +305,7 @@ export default function ProfilePage() {
                       disabled={isSaving}
                       className="w-full md:px-12 h-12 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 order-1 md:order-none"
                     >
-                      {isSaving ? 'Saving...' : 'Save Profile'}
+                      {isSaving ? 'Saving...' : 'Save Qualification'}
                     </button>
 
                     <button
@@ -347,7 +347,7 @@ export default function ProfilePage() {
                       className="w-full md:px-6 h-10 md:h-12 bg-transparent text-red-500/60 font-bold text-[9px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all order-2 md:order-none"
                       disabled={isSaving}
                     >
-                      {isSaving ? 'Wait...' : 'Reset Records'}
+                      {isSaving ? 'Wait...' : 'Reset Qualification'}
                     </button>
                   </div>
                 </div>

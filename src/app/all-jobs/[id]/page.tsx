@@ -9,6 +9,7 @@ import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { getCachedData, setCachedData } from "@/lib/cache";
 import ZoomControl from "@/components/ZoomControl";
+import ForceScrollTop from "@/components/ForceScrollTop";
 
 export const viewport = {
   width: 'device-width',
@@ -957,6 +958,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
     <>
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <ZoomControl />
+      <ForceScrollTop />
       <div className="jd">
         <div className="jd-wrap">
           <div className="mt-4 md:mt-8 mb-6 md:mb-10">

@@ -183,7 +183,7 @@ export default function Home() {
       }, 250);
       return () => clearTimeout(snapTimer);
     }
-    
+
     if (currentCatIndex >= CATEGORIES.length + 1) {
       const snapTimer = setTimeout(() => {
         setIsTransitioning(false);
@@ -319,7 +319,7 @@ export default function Home() {
                         Recruitment For You
                       </h2>
                     </div>
-                    <button 
+                    <button
                       onClick={() => fetchJobs(true)}
                       disabled={isRefreshing}
                       className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
@@ -371,7 +371,7 @@ export default function Home() {
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                               </div>
                               <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">All Jobs</h4>
-                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Browse through <b>all government jobs</b> or see <b>recommended ones</b> that match your profile.</p>
+                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Browse through <b>all government jobs</b> or see <b>recommended ones</b> that match your qualification.</p>
                               <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">All &amp; recommended jobs.</p>
                             </div>
 
@@ -390,7 +390,7 @@ export default function Home() {
                             href="/login"
                             className="inline-flex items-center gap-3 px-8 md:px-12 py-3 md:py-4 bg-navy text-white text-[11px] md:text-[13px] font-bold uppercase tracking-widest hover:bg-[#06142E] transition-all shadow-2xl shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]"
                           >
-                            <span>Setup Profile</span>
+                            <span>Setup profile to see eligible jobs</span>
                             <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                           </Link>
                         </div>
@@ -402,7 +402,7 @@ export default function Home() {
                           Set your qualification details to see eligible gov jobs.
                         </p>
                         <Link href="/profile" className="inline-flex items-center gap-3 px-8 py-3 bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#06142E] transition-all shadow-2xl shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]">
-                          <span>Set Qualification</span>
+                          <span>setup qualification</span>
                           <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                         </Link>
                       </div>
@@ -521,16 +521,16 @@ export default function Home() {
                         {/* THE SLIDING CONTENT TRACK */}
                         <div
                           className={`flex h-full ${isTransitioning ? 'transition-transform duration-[250ms] ease-out' : ''}`}
-                          style={{ 
+                          style={{
                             transform: `translateX(-${currentCatIndex * 100}%)`,
-                            transitionProperty: isTransitioning ? 'transform' : 'none' 
+                            transitionProperty: isTransitioning ? 'transform' : 'none'
                           }}
                         >
                           {sliderItems.map((catGroup, catIdx) => {
                             const { items, cat } = catGroup;
                             // Generate a perfectly unique key for clones to avoid re-mounting same-key items at different positions
                             const itemKey = `${cat}-${catIdx}`;
-                            
+
                             return (
                               <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-1">
                                 <div

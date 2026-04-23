@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRegistryData } from '@/lib/data-service';
 import { getTimeAgo } from '@/lib/helpers';
+import ForceScrollTop from '@/components/ForceScrollTop';
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconCheckGreen = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>;
@@ -52,6 +53,7 @@ export default function BulletinViewer() {
 
   return (
     <div className="jd min-h-screen bg-[#fafaf9] flex flex-col font-sans selection:bg-navy/5">
+      <ForceScrollTop />
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
         
@@ -141,43 +143,43 @@ export default function BulletinViewer() {
         {/* 📄 Formatted Briefing */}
         <div className="max-w-[700px] mr-auto">
           <div className="space-y-6">
-             <div className="jd-content">
-                {notification.desc}
-             </div>
+            <div className="jd-content">
+              {notification.desc}
+            </div>
 
-             {/* 🔗 Institutional Verification Channels */}
-             {notification.links && notification.links.length > 0 && (
-                <div className="flex flex-col gap-3 pt-2">
-                   {notification.links.map((link: any, i: number) => (
-                      <a 
-                        key={i} 
-                        href={link.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 group no-underline"
-                      >
-                         <span className="text-[13px] font-bold text-navy group-hover:text-blue-600 border-b border-transparent group-hover:border-blue-600/30 transition-all uppercase tracking-tight">{link.title}</span>
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-navy/20 group-hover:text-blue-600 transition-all"><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                      </a>
-                   ))}
-                </div>
-             )}
+            {/* 🔗 Institutional Verification Channels */}
+            {notification.links && notification.links.length > 0 && (
+              <div className="flex flex-col gap-3 pt-2">
+                {notification.links.map((link: any, i: number) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 group no-underline"
+                  >
+                    <span className="text-[13px] font-bold text-navy group-hover:text-blue-600 border-b border-transparent group-hover:border-blue-600/30 transition-all uppercase tracking-tight">{link.title}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-navy/20 group-hover:text-blue-600 transition-all"><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="pt-8 space-y-8">
-             {notification.routedTo && (
-                <Link href={notification.routedTo} className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full no-underline hover:bg-slate-800 transition-all text-center inline-block shadow-lg shadow-navy/20">
-                  view Details ➜
-                </Link>
-             )}
+            {notification.routedTo && (
+              <Link href={notification.routedTo} className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full no-underline hover:bg-slate-800 transition-all text-center inline-block shadow-lg shadow-navy/20">
+                view Details ➜
+              </Link>
+            )}
 
             <div className="space-y-4 pt-8 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <div className="flex items-center gap-2">
-                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                   <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">
-                     Published {notification.createdAt ? getTimeAgo(notification.createdAt) : notification.time}
-                   </span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">
+                    Published {notification.createdAt ? getTimeAgo(notification.createdAt) : notification.time}
+                  </span>
                 </div>
                 <span className="hidden md:block w-1 h-3 bg-gray-200"></span>
                 <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">
