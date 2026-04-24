@@ -124,7 +124,7 @@ export default function Home() {
       setIsLoading(false);
     }
 
-    fetchJobs(true);
+    fetchJobs(false);
   }, [fetchJobs]);
 
 

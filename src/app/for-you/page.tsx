@@ -55,7 +55,7 @@ export default function ForYouPage() {
   }, []);
 
   useEffect(() => {
-    fetchJobs(true);
+    fetchJobs(false);
   }, [fetchJobs]);
 
   return (

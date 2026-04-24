@@ -123,26 +123,26 @@ export default function LoginPage() {
             client_id: "962213572826-d6j12qircjvf1eritlm468cqsbkeufvt.apps.googleusercontent.com",
             callback: (response: any) => handleGoogleLogin(response.credential),
             use_fedcm_for_prompt: true,
-            ux_mode: 'popup', 
+            ux_mode: 'popup',
             auto_select: false,
             itp_support: true, // 🛡️ Support for Intelligent Tracking Prevention
             cancel_on_tap_outside: false, // Prevent accidental dismissal during network wait
             context: 'signin'
           });
-          
+
           const container = document.getElementById("google-login-button");
           const containerWidth = container?.clientWidth || 280;
-          
+
           // 🎨 Render the Official Branded Button
           (window as any).google.accounts.id.renderButton(
             container,
-            { 
-               theme: "outline", 
-               size: "large", 
-               width: Math.min(containerWidth, 400), // Match container exactly (up to GSI max of 400)
-               text: "continue_with",
-               shape: "pill",
-               logo_alignment: "left"
+            {
+              theme: "outline",
+              size: "large",
+              width: Math.min(containerWidth, 400), // Match container exactly (up to GSI max of 400)
+              text: "continue_with",
+              shape: "pill",
+              logo_alignment: "left"
             }
           );
         } catch (e) {
@@ -185,10 +185,10 @@ export default function LoginPage() {
         </div>
 
         <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
-          
+
           {/* 🔙 BACK NAVIGATION (Repositioned) */}
           <div className="mb-2 md:mb-6">
-            <BackButton 
+            <BackButton
               href="/"
               className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2"
             >
@@ -238,7 +238,7 @@ export default function LoginPage() {
                     <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 block">
                       Password
                     </label>
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setShowForgotModal(true)}
                       className="text-[9px] font-black uppercase tracking-widest text-navy/60 hover:text-navy transition-colors underline decoration-navy/20 underline-offset-4"
@@ -329,8 +329,8 @@ export default function LoginPage() {
 
               {/* OFFICIAL GOOGLE BUTTON */}
               <div className="flex justify-center pt-2 w-full overflow-hidden">
-                <div 
-                  id="google-login-button" 
+                <div
+                  id="google-login-button"
                   className="w-full h-[44px] flex justify-center"
                 ></div>
               </div>
@@ -393,26 +393,26 @@ export default function LoginPage() {
                 } catch (err) {
                   setResetMessage({ text: 'Service currently unavailable', isError: true });
                 } finally {
-                    setResetLoading(false);
+                  setResetLoading(false);
                 }
               }} className="space-y-6">
                 <div>
-                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
-                      Verification Email
-                   </label>
-                   <div className="relative group/field">
-                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
-                       <IconMail />
-                     </span>
-                     <input
-                       type="email"
-                       required
-                       value={resetEmail}
-                       onChange={(e) => setResetEmail(e.target.value)}
-                       placeholder="Email"
-                       className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[14px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all"
-                     />
-                   </div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
+                    Verification Email
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                      <IconMail />
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="Email"
+                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[14px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">

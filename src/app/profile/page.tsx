@@ -29,7 +29,7 @@ export default function ProfilePage() {
         const profile = JSON.parse(savedLocal);
         // CRITICAL FIX: Restore gender and other details for guest/local persistence
         setUserProfile((prev: any) => ({ ...prev, ...profile }));
-        
+
         if (profile.qualifications && Array.isArray(profile.qualifications)) {
           const initialState: Record<number, { qual: string, branch: string }> = {};
           profile.qualifications.forEach((q: any) => {
@@ -50,7 +50,7 @@ export default function ProfilePage() {
           if (remoteUser.profile) {
             const profile = remoteUser.profile;
             setUserProfile((prev: any) => ({ ...prev, ...profile }));
-            
+
             if (profile.qualifications && Array.isArray(profile.qualifications)) {
               const initialState: Record<number, { qual: string, branch: string }> = {};
               profile.qualifications.forEach((q: any) => {
@@ -71,7 +71,7 @@ export default function ProfilePage() {
         console.error('Remote profile fetch failed:', e);
       }
     }
-    
+
     setIsLoaded(true);
   }, []);
 
@@ -181,7 +181,7 @@ export default function ProfilePage() {
 
       <main className="flex-1 overflow-y-auto px-4 md:px-12 pt-4 md:pt-3 pb-10">
         <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
-          
+
           {/* 🔙 BACK NAVIGATION (Circular Style) */}
           <div className="mb-4 md:mb-8 mt-2 md:mt-0 flex items-center justify-start">
             <BackButton />
@@ -191,10 +191,10 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center md:items-start gap-3 md:gap-5">
               <div className="space-y-0.5 md:space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
-                   <>
+                  <>
                     <h1 className="text-xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
                     <p className="text-[10px] md:text-base font-medium text-gray-400 capitalize">Guest Session</p>
-                   </>
+                  </>
                 ) : (
                   <>
                     <h1 className="text-2xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
@@ -203,9 +203,9 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className={`inline-flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] px-3 md:px-4 py-1.5 rounded-full border ${completed 
-                  ? "text-green-600 bg-green-50 border-green-100" 
-                  : "text-red-500 bg-red-50 border-red-100"}`}>
+              <div className={`inline-flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] px-3 md:px-4 py-1.5 rounded-full border ${completed
+                ? "text-green-600 bg-green-50 border-green-100"
+                : "text-red-500 bg-red-50 border-red-100"}`}>
                 {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
               </div>
             </div>
@@ -230,8 +230,8 @@ export default function ProfilePage() {
                       key={g}
                       onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))}
                       className={`flex-1 h-10 md:h-12 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm ${userProfile.gender === g
-                          ? "bg-navy text-white border-navy"
-                          : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"
+                        ? "bg-navy text-white border-navy"
+                        : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"
                         }`}
                     >
                       {g}
@@ -261,8 +261,8 @@ export default function ProfilePage() {
                           value={levelState.qual}
                           onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
                           className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual
-                              ? "bg-blue-50 border-blue-200 text-blue-700"
-                              : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
+                            ? "bg-blue-50 border-blue-200 text-blue-700"
+                            : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
                             }`}
                         >
                           <option value="">-- No Record --</option>
@@ -283,8 +283,8 @@ export default function ProfilePage() {
                             value={levelState.branch}
                             onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
                             className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch
-                                ? "bg-blue-50 border-blue-200 text-blue-700"
-                                : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
+                              ? "bg-blue-50 border-blue-200 text-blue-700"
+                              : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
                               }`}
                           >
                             <option value="">-- No Record --</option>

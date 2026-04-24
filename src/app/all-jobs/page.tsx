@@ -55,7 +55,7 @@ function JobsPageContent() {
       try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
     }
 
-    fetchJobs(true);
+    fetchJobs(false);
   }, [fetchJobs]);
 
   // ── RECRUITMENT MATCHING LOGIC ──

@@ -43,7 +43,7 @@ export default function Navbar() {
       window.removeEventListener('rojgarmatch_auth_change', checkAuth);
     };
   }, [pathname]);
-  
+
   // 🔒 Scroll Lock: Prevent background scrolling when mobile menu is active
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -62,7 +62,7 @@ export default function Navbar() {
     } catch (e) {
       console.error('Logout API failure:', e);
     }
-    
+
     // Comprehensive Guest data cleanup: match all keys starting with rojgarmatch_
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('rojgarmatch_')) {

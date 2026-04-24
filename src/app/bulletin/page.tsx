@@ -34,7 +34,7 @@ export default function BulletinRegistryPage() {
               </span>
               <h4 className="text-[18px] font-bold text-navy mb-3 leading-snug group-hover:text-[#2563EB] transition-colors">{n.text}</h4>
               <p className="text-[14px] text-gray-600 font-medium leading-relaxed mb-6">{n.desc}</p>
-              <Link 
+              <Link
                 href={`/bulletin/${n.id}`}
                 className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-navy bg-white border border-gray-200 px-6 py-2.5 rounded-lg hover:bg-navy hover:text-white transition-all no-underline"
               >
@@ -43,7 +43,7 @@ export default function BulletinRegistryPage() {
             </div>
           ))}
         </div>
-        
+
         <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-24">
           RojgarMatch Verification Protocol — Baseline Manifest Version 2.0.4
         </p>

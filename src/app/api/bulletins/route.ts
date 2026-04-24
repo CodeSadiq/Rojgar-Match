@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
       const bulletin = await Bulletin.findOne({ id }).lean();
       if (!bulletin) return NextResponse.json({ success: false, error: "Bulletin not found" }, { status: 404 });
-      
+
       await setCachedData(cacheKey, bulletin, 3600);
       return NextResponse.json(bulletin);
     }
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     const allBulletins = await Bulletin.find({ active: true }).sort({ createdAt: -1 }).lean();
     await setCachedData(cacheKey, allBulletins, 300); // 5 minutes for bulletins
-    
+
     return NextResponse.json(allBulletins);
   } catch (error) {
     console.error("BULLETIN GET ERROR:", error);
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     if (!body.id) body.id = 'b-' + Math.random().toString(36).substr(2, 9);
 
     const bulletin = await Bulletin.findOneAndUpdate({ id: body.id }, body, { upsert: true, new: true, runValidators: true });
-    
+
     // Invalidate Cache
     await invalidateCache('bulletins:active');
     await invalidateCache(`bulletin:${body.id}`);

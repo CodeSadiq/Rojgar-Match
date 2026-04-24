@@ -34,7 +34,7 @@ export default function CategoryPage() {
 
   React.useEffect(() => {
     setIsMounted(true);
-    loadData(true);
+    loadData(false);
   }, [loadData]);
 
   // Map slug back to category name

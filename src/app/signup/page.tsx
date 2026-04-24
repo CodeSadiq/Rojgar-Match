@@ -65,169 +65,169 @@ export default function SignupPage() {
   const handleGoogleSignup = () => {
     setIsLoading(true);
     setTimeout(() => {
-       localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName: 'NEW CITIZEN', email: 'citizen@rojgarmatch.local' }));
-       window.location.href = '/profile';
-       setIsLoading(false);
+      localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName: 'NEW CITIZEN', email: 'citizen@rojgarmatch.local' }));
+      window.location.href = '/profile';
+      setIsLoading(false);
     }, 1000);
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
-      
+
       <div className="flex-1 flex flex-col items-center pt-4 md:pt-12 md:justify-center p-6 md:p-12 relative overflow-hidden">
-      
-      {/* BACKGROUND DECOR */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
-        <h1 className="text-[25vw] font-black uppercase text-navy rotate-[-10deg]">JOBS</h1>
-      </div>
 
-      <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
-        
-        {/* 🔙 BACK NAVIGATION (Repositioned) */}
-        <div className="mb-2 md:mb-6">
-          <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            <span>Back</span>
-          </BackButton>
-        </div>
-        
-
-        {/* HEADER */}
-        <div className="text-center mb-6 md:mb-10">
-          <h2 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-none mb-2">Create Account</h2>
+        {/* BACKGROUND DECOR */}
+        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
+          <h1 className="text-[25vw] font-black uppercase text-navy rotate-[-10deg]">JOBS</h1>
         </div>
 
-        {/* AUTH CARD */}
-        <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50 mx-1 md:mx-0">
-          <form onSubmit={handleSignup} className="p-6 md:p-10 space-y-5 md:space-y-8">
-            
-            {error && (
-              <div className="bg-red/5 border-2 border-red/10 text-red text-[10px] font-black uppercase tracking-widest p-4 rounded-xl md:rounded-2xl animate-in fade-in slide-in-from-top-2">
-                ⚠️ {error}
-              </div>
-            )}
-            
-            <div className="space-y-5 md:space-y-8">
-               {/* FULL NAME */}
-               <div>
-                <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
-                  Full Name
-                </label>
-                <div className="relative group/field">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
-                    <IconUser />
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value.toUpperCase())}
-                    placeholder="ENTER FULL NAME"
-                    className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all uppercase tracking-tight shadow-sm focus:shadow-md"
-                  />
-                </div>
-              </div>
+        <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
 
-              {/* EMAIL */}
-              <div>
-                <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
-                  Email Address
-                </label>
-                <div className="relative group/field">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
-                    <IconMail />
-                  </span>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
-                  />
-                </div>
-              </div>
-
-              {/* PASSWORD */}
-              <div>
-                <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
-                  Password
-                </label>
-                <div className="relative group/field">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
-                    <IconLock />
-                  </span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-navy/20 hover:text-navy transition-colors scale-90 md:scale-100 focus:outline-none"
-                    title={showPassword ? "Hide Password" : "Show Password"}
-                  >
-                    {showPassword ? <IconEyeOff /> : <IconEye />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* MAIN ACTION */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-navy hover:bg-[#06142E] text-white py-3.5 md:py-4 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <span>Create Account</span>
-                    <span className="group-hover/btn:translate-x-1 transition-transform"><IconArrowRight /></span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* SEPARATOR */}
-            <div className="flex items-center gap-4 py-1 md:py-2">
-              <div className="flex-1 h-[1px] bg-gray-100"></div>
-              <span className="text-[9px] font-black uppercase text-gray-200 tracking-widest">OR</span>
-              <div className="flex-1 h-[1px] bg-gray-100"></div>
-            </div>
-
-            {/* SOCIAL LOGIN */}
-            <button
-              type="button"
-              onClick={handleGoogleSignup}
-              className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-[9px] md:text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-xl md:rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
-            >
-              <IconGoogle />
-              <span>Continue with Google</span>
-            </button>
-
-          </form>
-          
-          {/* BOTTOM LINK */}
-          <div className="bg-gray-50 p-6 text-center border-t-2 border-gray-100">
-            <p className="text-[11px] font-bold text-navy/40 items-center justify-center gap-2 flex">
-              Already have an account? 
-              <Link href="/login" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
-                Login here
-              </Link>
-            </p>
+          {/* 🔙 BACK NAVIGATION (Repositioned) */}
+          <div className="mb-2 md:mb-6">
+            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              <span>Back</span>
+            </BackButton>
           </div>
-        </div>
 
 
-      </main>
-    </div>
+          {/* HEADER */}
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-none mb-2">Create Account</h2>
+          </div>
+
+          {/* AUTH CARD */}
+          <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50 mx-1 md:mx-0">
+            <form onSubmit={handleSignup} className="p-6 md:p-10 space-y-5 md:space-y-8">
+
+              {error && (
+                <div className="bg-red/5 border-2 border-red/10 text-red text-[10px] font-black uppercase tracking-widest p-4 rounded-xl md:rounded-2xl animate-in fade-in slide-in-from-top-2">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <div className="space-y-5 md:space-y-8">
+                {/* FULL NAME */}
+                <div>
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
+                    Full Name
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
+                      <IconUser />
+                    </span>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value.toUpperCase())}
+                      placeholder="ENTER FULL NAME"
+                      className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all uppercase tracking-tight shadow-sm focus:shadow-md"
+                    />
+                  </div>
+                </div>
+
+                {/* EMAIL */}
+                <div>
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
+                    Email Address
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
+                      <IconMail />
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Email"
+                      className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
+                    />
+                  </div>
+                </div>
+
+                {/* PASSWORD */}
+                <div>
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-2 md:mb-2.5 block px-1">
+                    Password
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/20 pointer-events-none group-focus-within/field:text-navy transition-colors scale-90 md:scale-100">
+                      <IconLock />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-white border-2 border-gray-100 py-3.5 md:py-4 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-navy/20 hover:text-navy transition-colors scale-90 md:scale-100 focus:outline-none"
+                      title={showPassword ? "Hide Password" : "Show Password"}
+                    >
+                      {showPassword ? <IconEyeOff /> : <IconEye />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* MAIN ACTION */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3.5 md:py-4 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <span>Create Account</span>
+                      <span className="group-hover/btn:translate-x-1 transition-transform"><IconArrowRight /></span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* SEPARATOR */}
+              <div className="flex items-center gap-4 py-1 md:py-2">
+                <div className="flex-1 h-[1px] bg-gray-100"></div>
+                <span className="text-[9px] font-black uppercase text-gray-200 tracking-widest">OR</span>
+                <div className="flex-1 h-[1px] bg-gray-100"></div>
+              </div>
+
+              {/* SOCIAL LOGIN */}
+              <button
+                type="button"
+                onClick={handleGoogleSignup}
+                className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-[9px] md:text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-xl md:rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
+              >
+                <IconGoogle />
+                <span>Continue with Google</span>
+              </button>
+
+            </form>
+
+            {/* BOTTOM LINK */}
+            <div className="bg-gray-50 p-6 text-center border-t-2 border-gray-100">
+              <p className="text-[11px] font-bold text-navy/40 items-center justify-center gap-2 flex">
+                Already have an account?
+                <Link href="/login" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
+                  Login here
+                </Link>
+              </p>
+            </div>
+          </div>
+
+
+        </main>
+      </div>
     </div>
   );
 }

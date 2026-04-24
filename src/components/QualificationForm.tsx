@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { QUAL_TREE, QualNode } from '@/lib/constants'; 
+import { QUAL_TREE, QualNode } from '@/lib/constants';
 
 // ── Icons ──────────────────────────────────────────
 const IconPlus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
@@ -120,7 +120,7 @@ export default function QualificationForm() {
       try {
         const parsed = JSON.parse(existing);
         profile = { ...parsed, qualifications: registry };
-      } catch (e) {}
+      } catch (e) { }
     }
 
     localStorage.setItem('rojgarmatch_profile', JSON.stringify(profile));
@@ -153,8 +153,8 @@ export default function QualificationForm() {
               {quals.map(q => {
                 const rec = registry.find(r => r.name === q.name);
                 return (
-                  <div 
-                    key={q.name} 
+                  <div
+                    key={q.name}
                     className={`qual-chip ${rec ? 'selected' : ''}`}
                     onClick={() => handleQualClick(q)}
                   >
@@ -185,11 +185,11 @@ export default function QualificationForm() {
           <div className="branch-modal animate-in zoom-in-95 duration-200">
             <h2 className="text-2xl font-black text-white mb-2">Specify Branch</h2>
             <p className="text-white/40 text-[10px] font-black uppercase mb-8 tracking-widest">{showBranchesFor.label}</p>
-            
+
             <div className="max-h-[300px] overflow-y-auto pr-2">
               {showBranchesFor.branches.map(b => (
-                <button 
-                  key={b.value} 
+                <button
+                  key={b.value}
                   className="branch-btn"
                   onClick={() => addRecord(showBranchesFor.name, showBranchesFor.level, showBranchesFor.label, b.value)}
                 >
@@ -197,8 +197,8 @@ export default function QualificationForm() {
                 </button>
               ))}
             </div>
-            
-            <button 
+
+            <button
               className="w-full mt-6 py-4 text-white/40 font-bold hover:text-white transition-colors"
               onClick={() => setShowBranchesFor(null)}
             >

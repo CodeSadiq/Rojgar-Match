@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
       const job = await Job.findOne({ id }).lean();
       if (!job) return NextResponse.json({ success: false, error: "Job not found" }, { status: 404 });
-      
+
       await setCachedData(cacheKey, job, 3600); // 1 hour for details
       return NextResponse.json(job);
     }
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     const allJobs = await Job.find({}).sort({ updatedAt: -1, createdAt: -1 }).lean();
     await setCachedData(cacheKey, allJobs, 600); // 10 minutes for list
-    
+
     return NextResponse.json(allJobs);
   } catch (error) {
     console.error("API GET ERROR:", error);
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!body.id) body.id = Math.random().toString(36).substr(2, 9);
 
     const job = await Job.findOneAndUpdate({ id: body.id }, body, { upsert: true, new: true, runValidators: true });
-    
+
     // Invalidate Cache
     await invalidateCache('jobs:all');
     await invalidateCache(`job:${body.id}`);

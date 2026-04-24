@@ -18,11 +18,8 @@ export default function BackButton({
     e.preventDefault();
     if (href) {
       router.push(href);
-      // Ensure the target page refreshes its auth state
-      setTimeout(() => router.refresh(), 50);
     } else {
       router.back();
-      setTimeout(() => router.refresh(), 50);
     }
   };
 
