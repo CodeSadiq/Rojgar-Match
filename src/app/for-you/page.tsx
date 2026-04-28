@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import RecruitmentCard from '@/components/RecruitmentCard';
 import BackButton from '@/components/BackButton';
 import { CardSkeleton } from '@/components/LoadingState';
+import { getCachedJobs, setCachedJobs } from '@/lib/store';
 
 // ─── SVG ICONS ───────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -22,7 +23,7 @@ export default function ForYouPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchJobs = React.useCallback(async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
+    setIsRefreshing(true);
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
     let profile: CandidateProfile | null = null;
     if (savedProfile) {
@@ -39,6 +40,7 @@ export default function ForYouPage() {
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data)) {
+        setCachedJobs(data); // Save raw jobs to cache
         if (!profile || !profile.qualifications || profile.qualifications.length === 0) {
           setJobs([]);
           return;
@@ -50,12 +52,34 @@ export default function ForYouPage() {
       console.error(e);
     } finally {
       setIsLoading(false);
-      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
+      setTimeout(() => setIsRefreshing(false), 600);
     }
   }, []);
 
   useEffect(() => {
-    fetchJobs(false);
+    // Load profile for state
+    const savedProfile = localStorage.getItem('rojgarmatch_profile');
+    let profile: CandidateProfile | null = null;
+    if (savedProfile) {
+      try {
+        profile = JSON.parse(savedProfile);
+        setUserProfile(profile);
+      } catch (e) { console.error(e); }
+    }
+
+    // Check cache
+    const cached = getCachedJobs();
+    if (cached) {
+      if (profile && profile.qualifications && profile.qualifications.length > 0) {
+        const matched = getEligibleJobs(profile, cached);
+        setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn })));
+      } else {
+        setJobs([]);
+      }
+      setIsLoading(false);
+    } else {
+      fetchJobs(false);
+    }
   }, [fetchJobs]);
 
   return (

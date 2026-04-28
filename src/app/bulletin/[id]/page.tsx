@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getRegistryData } from '@/lib/data-service';
 import { getTimeAgo } from '@/lib/helpers';
 import ForceScrollTop from '@/components/ForceScrollTop';
+import { getCachedRegistry, setCachedRegistry } from '@/lib/store';
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconCheckGreen = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>;
@@ -19,8 +20,14 @@ export default function BulletinViewer() {
 
   React.useEffect(() => {
     async function loadRegistry() {
+      const cached = getCachedRegistry();
+      if (cached) {
+        setRegistry(cached);
+        return;
+      }
       const data = await getRegistryData();
       setRegistry(data);
+      setCachedRegistry(data);
     }
     loadRegistry();
   }, []);

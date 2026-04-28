@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 import { getTimeAgo } from '@/lib/helpers';
 import { CardSkeleton } from '@/components/LoadingState';
+import { getCachedJobs, setCachedJobs, getCachedRegistry, setCachedRegistry } from '@/lib/store';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
@@ -80,28 +81,35 @@ export default function Home() {
   const [registry, setRegistry] = useState<any>(null);
 
   const fetchJobs = React.useCallback(async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
+    setIsRefreshing(true); // Always spin when fetching from DB
     try {
       const res = await fetch('/api/jobs');
       if (!res.ok) return;
       const data = await res.json();
-      if (Array.isArray(data)) setDbJobs(data);
+      if (Array.isArray(data)) {
+        setDbJobs(data);
+        setCachedJobs(data); // Save to cache
+      }
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
-      if (isManual) {
-        // Add a slight delay for better UX so the icon doesn't stop instantly
-        setTimeout(() => setIsRefreshing(false), 500);
-      }
+      // Keep spinning for at least 600ms for visual feedback
+      setTimeout(() => setIsRefreshing(false), 600);
     }
   }, []);
 
   useEffect(() => {
     setIsMounted(true);
     async function loadMetadata() {
+      const cached = getCachedRegistry();
+      if (cached) {
+        setRegistry(cached);
+        return;
+      }
       const registryData = await getRegistryData();
       setRegistry(registryData);
+      setCachedRegistry(registryData);
     }
     loadMetadata();
 
@@ -124,7 +132,15 @@ export default function Home() {
       setIsLoading(false);
     }
 
-    fetchJobs(false);
+    // Check cache before fetching jobs
+    const cachedJobs = getCachedJobs();
+    if (cachedJobs) {
+      setDbJobs(cachedJobs);
+      setIsLoading(false);
+      setIsRefreshing(false);
+    } else {
+      fetchJobs(false);
+    }
   }, [fetchJobs]);
 
 

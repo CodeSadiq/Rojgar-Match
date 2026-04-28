@@ -10,6 +10,7 @@ import RecruitmentCard from '@/components/RecruitmentCard';
 import BackButton from '@/components/BackButton';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 import { CardSkeleton, GlobalLoading } from '@/components/LoadingState';
+import { getCachedJobs, setCachedJobs } from '@/lib/store';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
@@ -28,17 +29,20 @@ function JobsPageContent() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchJobs = React.useCallback(async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
+    setIsRefreshing(true);
     try {
       const res = await fetch('/api/jobs');
       if (!res.ok) return;
       const data = await res.json();
-      if (Array.isArray(data)) setDbJobs(data);
+      if (Array.isArray(data)) {
+        setDbJobs(data);
+        setCachedJobs(data);
+      }
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
-      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
+      setTimeout(() => setIsRefreshing(false), 600);
     }
   }, []);
 
@@ -55,7 +59,14 @@ function JobsPageContent() {
       try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
     }
 
-    fetchJobs(false);
+    // Check cache
+    const cached = getCachedJobs();
+    if (cached) {
+      setDbJobs(cached);
+      setIsLoading(false);
+    } else {
+      fetchJobs(false);
+    }
   }, [fetchJobs]);
 
   // ── RECRUITMENT MATCHING LOGIC ──
@@ -140,14 +151,6 @@ function JobsPageContent() {
             </div>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <button
-              onClick={() => fetchJobs(true)}
-              disabled={isRefreshing || isLoading}
-              className={`p-3 rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
-              title="Refresh Registry"
-            >
-              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-            </button>
             <label className="flex flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
               <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
               <input
@@ -157,6 +160,14 @@ function JobsPageContent() {
                 placeholder="Search index..."
               />
             </label>
+            <button
+              onClick={() => fetchJobs(true)}
+              disabled={isRefreshing || isLoading}
+              className={`h-9 md:h-12 aspect-square flex items-center justify-center rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Registry"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
           </div>
         </header>
 
