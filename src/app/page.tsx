@@ -247,10 +247,10 @@ export default function Home() {
           name: post.name,
           jobTitle: job.title,
           prerequisite: post.prerequisite,
-          qualification: post.qualification, // Includes level name and extra text
-          course: post.course // Includes specific required courses/branches
+          qualification: post.qualification,
+          course: post.course
         }))
-      );
+      ).slice(0, 15);
 
       const res = await fetch('/api/ai/screening', {
         method: 'POST',
@@ -271,8 +271,10 @@ export default function Home() {
         throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
       }
 
-      if (!res.ok) throw new Error('Screening failed');
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Screening failed');
+      }
       const newQuestions = data.questions || [];
 
       setScreeningQuestions(newQuestions);
@@ -337,7 +339,7 @@ export default function Home() {
     if (!userProfile) return;
     setIsScreeningLoading(true);
     try {
-      const allMatchedPosts = recommendedJobs.flatMap(job =>
+      const matchedPostsContext = recommendedJobs.flatMap(job =>
         job.matchedPosts.map((post: any) => ({
           name: post.name,
           jobTitle: job.title,
@@ -345,12 +347,12 @@ export default function Home() {
           qualification: post.qualification,
           course: post.course
         }))
-      );
+      ).slice(0, 15);
 
       const res = await fetch('/api/ai/filter-text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userText: text, matchedPosts: allMatchedPosts })
+        body: JSON.stringify({ userText: text, matchedPosts: matchedPostsContext })
       });
 
       if (!res.ok) throw new Error('Filter failed');
