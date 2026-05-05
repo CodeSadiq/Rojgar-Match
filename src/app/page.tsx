@@ -690,9 +690,13 @@ export default function Home() {
                               <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
                               </div>
-                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">Eligible Jobs</h4>
-                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">See jobs that you are exactly eligible for based on your specific <b>Course</b> and <b>Branch</b>.</p>
-                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Matched to your Course &amp; Branch.</p>
+                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2 flex items-center gap-1.5">
+                                Eligible Jobs
+                              </h4>
+                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                See jobs that you are exactly eligible for based on your specific <b>Course</b> and <b>Branch</b>, plus <b>AI Filter</b> for specialized requirements.
+                              </p>
+                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Matched to your Course, Branch &amp; <b>AI Filtered</b>.</p>
                             </div>
 
                             {/* ITEM 2 */}
