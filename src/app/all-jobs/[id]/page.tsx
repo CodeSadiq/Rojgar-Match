@@ -10,6 +10,7 @@ import BackButton from "@/components/BackButton";
 import { getCachedData, setCachedData } from "@/lib/cache";
 import ZoomControl from "@/components/ZoomControl";
 import ForceScrollTop from "@/components/ForceScrollTop";
+import JobMatchHighlighter from "@/components/JobMatchHighlighter";
 
 export const viewport = {
   width: 'device-width',
@@ -161,7 +162,7 @@ const styles = `
   }
 
   /* ── HERO STRIP ── */
-  .tr-highlight td { color: #D93025 !important; font-weight: 700; }
+  /* Row highlighting removed as per user request */
   
   .jd-hero {
     display: grid;
@@ -276,7 +277,7 @@ const styles = `
     border-top: 2px solid var(--navy);
   }
   /* highlighted date row */
-  .jd-table tr.tr-highlight td { background: var(--gold-bg) !important; }
+  /* highlighted date row removed */
   /* group subheader inside table */
   .jd-table tr.tr-subhead td {
     background: #e8eef5 !important;
@@ -1144,10 +1145,15 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </thead>
               <tbody>
                 {rawPosts.map((p: any, idx: number) => (
-                  <tr key={idx}>
+                  <tr key={idx} data-post-name={p.name}>
                     {/* Post name */}
                     <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
-                      {p.name}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {p.name}
+                        <span className="match-badge" style={{ display: 'none', background: 'var(--navy)', color: '#ffffff', fontSize: '9px', fontWeight: 900, padding: '2px 8px', width: 'fit-content', borderRadius: '4px', marginTop: '4px', letterSpacing: '0.05em' }}>
+                          MATCHED
+                        </span>
+                      </div>
                     </td>
 
                     {/* Total vacancy */}
@@ -1355,6 +1361,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
         </div>
       </div>
+      <JobMatchHighlighter job={JSON.parse(JSON.stringify(job))} />
     </>
   );
 }

@@ -39,7 +39,7 @@ export const Spinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
 };
 
 export const GlobalLoading = () => (
-  <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-6">
+  <div className="fixed inset-0 top-[56px] bg-[#F8FAFC] z-[50] flex flex-col items-center justify-center space-y-6">
     <Spinner size="lg" />
     <div className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30 animate-pulse">
       Initialising Secure Session...

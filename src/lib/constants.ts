@@ -2211,6 +2211,7 @@ export const QUAL_TREE: QualNode[] = [
     name: "M.Com",
     label: "M.Com (Commerce PG)",
     branches: [
+      { value: "Commerce", label: "Commerce" },
       {
         value: "Accounting",
         label: "Accounting & Finance"
@@ -2250,6 +2251,7 @@ export const QUAL_TREE: QualNode[] = [
     name: "M.Sc",
     label: "M.Sc (Science PG)",
     branches: [
+      { value: "Mathematical Statistics", label: "Mathematical Statistics" },
       {
         value: "Physics",
         label: "Physics"

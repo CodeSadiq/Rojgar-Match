@@ -3,7 +3,7 @@ import { Spinner } from '@/components/LoadingState';
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#fafaf9] flex flex-col items-center justify-center p-6 text-center space-y-8 animate-in fade-in duration-500">
+    <div className="fixed inset-0 top-[56px] bg-[#fafaf9] z-[50] flex flex-col items-center justify-center p-6 text-center space-y-8 animate-in fade-in duration-500">
       <div className="scale-125">
         <Spinner size="lg" />
       </div>

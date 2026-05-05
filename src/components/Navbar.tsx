@@ -16,19 +16,36 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Sync auth state
   useEffect(() => {
+    setIsMounted(true);
     const checkAuth = () => {
-      const auth = localStorage.getItem('rojgarmatch_auth');
-      setIsLoggedIn(!!auth);
+      const authStr = localStorage.getItem('rojgarmatch_auth');
+      const profileStr = localStorage.getItem('rojgarmatch_profile');
+      
+      let authData: any = null;
+      let profileData: any = null;
 
-      const savedProfile = localStorage.getItem('rojgarmatch_profile');
-      if (savedProfile) {
-        try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error('Profile sync error:', e); }
-      } else if (auth) {
-        // Fallback to basic auth data if profile isn't set yet
-        try { setUserProfile(JSON.parse(auth)); } catch (e) { setUserProfile(null); }
+      if (authStr) {
+        try { authData = JSON.parse(authStr); } catch (e) {}
+      }
+      if (profileStr) {
+        try { profileData = JSON.parse(profileStr); } catch (e) {}
+      }
+
+      setIsLoggedIn(!!authData);
+
+      // Merge data: profile takes precedence for fields, but identity must persist
+      if (authData || profileData) {
+        setUserProfile({
+          ...(authData || {}),
+          ...(profileData || {}),
+          // Ensure name persists even if profile object is thin
+          fullName: profileData?.fullName || authData?.fullName || 'Candidate',
+          email: profileData?.email || authData?.email || ''
+        });
       } else {
         setUserProfile(null);
       }

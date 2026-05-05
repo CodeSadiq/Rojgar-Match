@@ -11,6 +11,7 @@ import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 import { getTimeAgo } from '@/lib/helpers';
 import { CardSkeleton } from '@/components/LoadingState';
 import { getCachedJobs, setCachedJobs, getCachedRegistry, setCachedRegistry } from '@/lib/store';
+import ScreeningModal from '@/components/ScreeningModal';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
@@ -39,12 +40,56 @@ export default function Home() {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // 🧠 AI Screening States
+  const [isAIScreening, setIsAIScreening] = useState(false);
+  const [isScreeningLoading, setIsScreeningLoading] = useState(false);
+  const [screeningQuestions, setScreeningQuestions] = useState<any[]>([]);
+  const [screeningAnswers, setScreeningAnswers] = useState<Record<string, boolean | null>>({});
+  const [screenedJobIds, setScreenedJobIds] = useState<string>('');
+
   useEffect(() => {
     setIsMounted(true);
     setWindowWidth(window.innerWidth);
 
+    const savedJobs = localStorage.getItem('rojgarmatch_jobs');
+    if (savedJobs) { try { setDbJobs(JSON.parse(savedJobs)); } catch (e) { } }
+    const savedProfile = localStorage.getItem('rojgarmatch_profile');
+    if (savedProfile) {
+      try {
+        const p = JSON.parse(savedProfile);
+        setUserProfile(p);
+        setScreeningQuestions(p.screeningQuestions || []);
+        setScreenedJobIds(p.screenedJobIds || '');
+      } catch (e) { }
+    }
+    const savedAnswers = localStorage.getItem('rojgarmatch_screening_answers');
+    if (savedAnswers) { try { setScreeningAnswers(JSON.parse(savedAnswers)); } catch (e) { } }
+
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
+
+    const handleAuthChange = () => {
+      const savedProfile = localStorage.getItem('rojgarmatch_profile');
+      if (savedProfile) {
+        try {
+          const p = JSON.parse(savedProfile);
+          setUserProfile(p);
+          setScreeningQuestions(p.screeningQuestions || []);
+          setScreenedJobIds(p.screenedJobIds || '');
+        } catch (e) { }
+      } else {
+        setUserProfile(null);
+        setScreeningQuestions([]);
+        setScreenedJobIds('');
+      }
+      const savedAnswers = localStorage.getItem('rojgarmatch_screening_answers');
+      if (savedAnswers) {
+        try { setScreeningAnswers(JSON.parse(savedAnswers)); } catch (e) { }
+      } else {
+        setScreeningAnswers({});
+      }
+    };
+    window.addEventListener('rojgarmatch_auth_change', handleAuthChange);
 
     // Intersection Observer to detect when the sidebar is in view
     const observer = new IntersectionObserver(
@@ -61,6 +106,7 @@ export default function Home() {
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('rojgarmatch_auth_change', handleAuthChange);
     };
   }, []);
 
@@ -85,6 +131,13 @@ export default function Home() {
     try {
       const res = await fetch('/api/jobs');
       if (!res.ok) return;
+
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Non-JSON response from /api/jobs");
+        return;
+      }
+
       const data = await res.json();
       if (Array.isArray(data)) {
         setDbJobs(data);
@@ -141,23 +194,262 @@ export default function Home() {
     } else {
       fetchJobs(false);
     }
+
+    // Load screening answers from localStorage
+    const savedAnswers = localStorage.getItem('rojgarmatch_screening_answers');
+    if (savedAnswers) {
+      try {
+        setScreeningAnswers(JSON.parse(savedAnswers));
+      } catch (e) { console.error(e); }
+    }
+
+    // Sync remote profile if logged in
+    const syncProfile = async () => {
+      const isAuth = localStorage.getItem('rojgarmatch_auth');
+      if (!isAuth) return;
+      const authData = JSON.parse(isAuth);
+      if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
+        try {
+          const res = await fetch(`/api/profile?email=${authData.email}`);
+          if (res.ok) {
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              const remoteUser = await res.json();
+              if (remoteUser.profile) {
+                const p = remoteUser.profile;
+                setUserProfile(p);
+                if (p.screeningQuestions) setScreeningQuestions(p.screeningQuestions);
+                if (p.screeningAnswers) setScreeningAnswers(p.screeningAnswers);
+                if (p.screenedJobIds) setScreenedJobIds(p.screenedJobIds);
+                localStorage.setItem('rojgarmatch_profile', JSON.stringify(p));
+              }
+            }
+          }
+        } catch (e) { console.error('Profile sync error:', e); }
+      }
+    };
+    syncProfile();
   }, [fetchJobs]);
 
+  const openAIScreening = () => {
+    setIsAIScreening(true);
+  };
 
+  const runAIScreening = async () => {
+    if (!userProfile || recommendedJobs.length === 0) return;
+
+    setIsScreeningLoading(true);
+    setIsAIScreening(true);
+
+    try {
+      const matchedPostsContext = recommendedJobs.flatMap(job =>
+        job.matchedPosts.map((post: any) => ({
+          name: post.name,
+          jobTitle: job.title,
+          prerequisite: post.prerequisite,
+          qualification: post.qualification, // Includes level name and extra text
+          course: post.course // Includes specific required courses/branches
+        }))
+      );
+
+      const res = await fetch('/api/ai/screening', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userProfile: {
+            qualifications: userProfile.qualifications,
+            gender: userProfile.gender,
+            dob: userProfile.dob
+          },
+          matchedPosts: matchedPostsContext
+        })
+      });
+
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
+      }
+
+      if (!res.ok) throw new Error('Screening failed');
+      const data = await res.json();
+      const newQuestions = data.questions || [];
+
+      setScreeningQuestions(newQuestions);
+
+      // Update Profile Record
+      const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
+      const updatedProfile = {
+        ...existingProfile,
+        screeningQuestions: newQuestions,
+        // We clear answers to ensure user re-verifies against the latest analysis
+        screeningAnswers: {}
+      };
+
+      setScreeningAnswers({});
+      localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+
+      if (userProfile.email !== 'guest@rojgarmatch.local') {
+        await fetch('/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userProfile.email, profile: updatedProfile }),
+        });
+      }
+    } catch (e: any) {
+      console.error('AIScreening Error:', e.message);
+    } finally {
+      setIsScreeningLoading(false);
+    }
+  };
+
+  const handleAnswer = async (questionId: string, answer: boolean | null) => {
+    const newAnswers = { ...screeningAnswers, [questionId]: answer };
+    setScreeningAnswers(newAnswers);
+
+    // 🛡️ PER-USER DB PERSISTENCE (Like qualifications)
+    const isAuth = localStorage.getItem('rojgarmatch_auth');
+    if (isAuth) {
+      const authData = JSON.parse(isAuth);
+      const email = authData.email;
+
+      // Update Local Storage for ALL (Guest & Logged In)
+      const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
+      const updatedProfile = { ...existingProfile, screeningAnswers: newAnswers };
+      localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify(newAnswers));
+
+      // Sync to DB only if NOT guest
+      if (email && email !== 'guest@rojgarmatch.local') {
+        await fetch('/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, profile: updatedProfile }),
+        });
+      }
+    } else {
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify(newAnswers));
+    }
+  };
+
+  const handleFilterByText = async (text: string) => {
+    if (!userProfile) return;
+    setIsScreeningLoading(true);
+    try {
+      const allMatchedPosts = recommendedJobs.flatMap(job =>
+        job.matchedPosts.map((post: any) => ({
+          name: post.name,
+          jobTitle: job.title,
+          prerequisite: post.prerequisite,
+          qualification: post.qualification,
+          course: post.course
+        }))
+      );
+
+      const res = await fetch('/api/ai/filter-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userText: text, matchedPosts: allMatchedPosts })
+      });
+
+      if (!res.ok) throw new Error('Filter failed');
+      const data = await res.json();
+
+      if (data.blockedPostNames) {
+        const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
+        const updatedProfile = {
+          ...existingProfile,
+          blockedPostNames: data.blockedPostNames
+        };
+
+        setUserProfile(updatedProfile);
+        localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
+
+        if (userProfile.email && userProfile.email !== 'guest@rojgarmatch.local') {
+          await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userProfile.email, profile: updatedProfile }),
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Filter Error:', e);
+    } finally {
+      setIsScreeningLoading(false);
+    }
+  };
+
+  const handleClearScreening = async () => {
+    setScreeningAnswers({});
+    localStorage.removeItem('rojgarmatch_screening_answers');
+
+    const isAuth = localStorage.getItem('rojgarmatch_auth');
+    if (isAuth) {
+      const authData = JSON.parse(isAuth);
+      const email = authData.email;
+      const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
+      const updatedProfile = { ...existingProfile, screeningAnswers: {}, blockedPostNames: [] };
+
+      setUserProfile(updatedProfile);
+      localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
+
+      if (email && email !== 'guest@rojgarmatch.local') {
+        await fetch('/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, profile: updatedProfile }),
+        });
+      }
+    }
+  };
+
+
+
+  // ── RECRUITMENT MATCHING LOGIC ──
+  const recommendedJobs = React.useMemo(() => {
+    if (!userProfile || !userProfile.qualifications || userProfile.qualifications.length === 0) {
+      return [];
+    }
+    const matched = getEligibleJobs(userProfile, dbJobs);
+    let filtered = matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore, matchedOn: m.matchedOn }));
+
+    // 🛡️ STAGE 2: AI Soft Filter (Screening)
+    if (Object.keys(screeningAnswers).length > 0 || (userProfile.blockedPostNames && userProfile.blockedPostNames.length > 0)) {
+      filtered = filtered.filter(job => {
+        // A job remains eligible if it has at least one post that isn't blocked by a "No" answer or text filter
+        const hasEligiblePost = job.matchedPosts.some((post: any) => {
+          const isBlockedByQuestion = screeningQuestions.some((q: any) =>
+            q.impactedPostNames?.includes(post.name) && screeningAnswers[q.id] === false
+          );
+          const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
+          return !isBlockedByQuestion && !isBlockedByText;
+        });
+        return hasEligiblePost;
+      });
+    }
+
+    return filtered;
+  }, [userProfile, dbJobs, screeningAnswers, screeningQuestions]);
 
   // ── STABILIZED CATEGORY ITEMS ──
   // Pre-mapping all categories helps ensure that the DOM nodes are stable 
   // and prevents "jumps" during re-renders like hovering.
   const categorizedItems = useMemo(() => {
     return CATEGORIES.map((cat) => {
-      const items = cat === 'All Jobs'
-        ? dbJobs.slice(0, 30).map((job) => ({
+      let items = [];
+      if (cat === 'All Jobs') {
+        // If user has matches (including AI filtering), show those, else show recent jobs
+        const sourceJobs = (recommendedJobs && recommendedJobs.length > 0) ? recommendedJobs : dbJobs;
+        items = sourceJobs.slice(0, 30).map((job) => ({
           id: job.id || job._id,
           text: job.title,
           time: getTimeAgo(job.createdAt || job.updatedAt),
           isJob: true
-        }))
-        : (cat === 'Important'
+        }));
+      } else {
+        items = (cat === 'Important'
           ? (registry ? (registry.notifications || []) : NOTIFICATIONS)
           : (registry ? (registry.categories[cat] || []) : ((CATEGORY_DATA as any)[cat] || []))
         ).map((b: any) => ({
@@ -166,9 +458,10 @@ export default function Home() {
           time: b.createdAt ? getTimeAgo(b.createdAt) : b.time,
           isJob: false
         }));
+      }
       return { cat, items };
     });
-  }, [dbJobs, registry]);
+  }, [dbJobs, registry, recommendedJobs]);
 
   // ── INFINITE SLIDER LOGIC ──
   // Slider layout: [Clone of Last, All, Important, Syllabus, Admission, Result, Admit Card, Clone of All]
@@ -252,20 +545,11 @@ export default function Home() {
     return matchesSearch && matchesType;
   });
 
-  // ── RECRUITMENT MATCHING LOGIC ──
-  const recommendedJobs = React.useMemo(() => {
-    if (!userProfile || !userProfile.qualifications || userProfile.qualifications.length === 0) {
-      return [];
-    }
-    const matched = getEligibleJobs(userProfile, dbJobs);
-    return matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore, matchedOn: m.matchedOn }));
-  }, [userProfile, dbJobs]);
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
       {/* ⚡ PRELOAD HERO ASSETS */}
-      <link rel="preload" as="image" href="/mobilehero.png" />
-      <link rel="preload" as="image" href="/herobg1.png" />
+      <link rel="preload" as="image" href="/mobilehero.png" media="(max-width: 1023px)" />
+      <link rel="preload" as="image" href="/herobg1.png" media="(min-width: 1024px)" />
 
       <main className="flex-1 pb-32 md:pb-48 animate-in fade-in duration-700">
 
@@ -308,8 +592,8 @@ export default function Home() {
               </div>
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-8 md:py-10">
-                <div className="max-w-[800px] text-left space-y-2 md:space-y-6">
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-3 md:py-10">
+                <div className="max-w-[800px] text-left space-y-1 md:space-y-6">
                   <h1 className="text-xl md:text-6xl font-serif font-bold text-navy/90 leading-tight drop-shadow-sm">
                     Government Jobs For You
                   </h1>
@@ -323,29 +607,58 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto pt-8 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-2 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
-                    <div className="flex items-center gap-4">
-                      <h2 className="text-[15px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
+                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-2 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
+                    <div className="min-w-0">
+                      <h2 className="text-[13px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight truncate">
                         Recruitment For You
                       </h2>
                     </div>
-                    <button
-                      onClick={() => fetchJobs(true)}
-                      disabled={isRefreshing}
-                      className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-                      title="Refresh Jobs"
-                    >
-                      <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={openAIScreening}
+                        disabled={isScreeningLoading}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-navy/5 text-navy text-[11px] md:text-sm font-bold rounded-xl hover:bg-navy hover:text-white transition-all active:scale-95 border border-navy/5 ${isScreeningLoading ? 'animate-pulse' : ''}`}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <span className="animate-pulse">✨</span>
+                          <span>{isScreeningLoading ? '...' : (
+                            <>
+                              <span className="hidden md:inline">Filter more with AI</span>
+                              <span className="md:hidden">AI Filter</span>
+                            </>
+                          )}</span>
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => fetchJobs(true)}
+                        disabled={isRefreshing}
+                        className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                      >
+                        <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+                      </button>
+                    </div>
                   </header>
 
                   <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
+                    {/* 🧠 AI SCREENING MODAL */}
+                    <ScreeningModal
+                      isOpen={isAIScreening}
+                      isLoading={isScreeningLoading}
+                      questions={screeningQuestions}
+                      answers={screeningAnswers}
+                      onAnswer={handleAnswer}
+                      onClose={() => setIsAIScreening(false)}
+                      onClearAll={handleClearScreening}
+                      onGenerateQuestions={runAIScreening}
+                      onFilterByText={handleFilterByText}
+                      hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
+                    />
                     {isLoading ? (
                       <div className="space-y-6">
                         {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
@@ -518,7 +831,7 @@ export default function Home() {
                       </div>
 
                       <div
-                        className="p-4 relative overflow-hidden marquee-viewer touch-pan-y"
+                        className="p-0 relative overflow-hidden marquee-viewer touch-pan-y"
                         onTouchStart={(e) => { (window as any)._swipeX = e.touches[0].clientX; }}
                         onTouchEnd={(e) => {
                           const startX = (window as any)._swipeX;
@@ -536,7 +849,7 @@ export default function Home() {
                       >
                         {/* THE SLIDING CONTENT TRACK */}
                         <div
-                          className={`flex h-full ${isTransitioning ? 'transition-transform duration-[250ms] ease-out' : ''}`}
+                          className={`flex h-full w-full ${isTransitioning ? 'transition-transform duration-[250ms] ease-out' : ''}`}
                           style={{
                             transform: `translateX(-${currentCatIndex * 100}%)`,
                             transitionProperty: isTransitioning ? 'transform' : 'none'
@@ -548,7 +861,7 @@ export default function Home() {
                             const itemKey = `${cat}-${catIdx}`;
 
                             return (
-                              <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-1">
+                              <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-5">
                                 <div
                                   className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
                                   style={{

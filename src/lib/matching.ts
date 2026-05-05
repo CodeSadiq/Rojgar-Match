@@ -14,6 +14,10 @@ export interface CandidateProfile {
   gender?: string;
   // Support for multiple qualifications across different levels
   qualifications: QualificationEntry[];
+  screeningAnswers?: Record<string, boolean | null>;
+  screeningQuestions?: any[];
+  screenedJobIds?: string;
+  blockedPostNames?: string[];
 }
 
 export interface MatchedJob {
@@ -42,7 +46,7 @@ export function getEligibleJobs(
     // 1. GENDER FILTER
     if (job.eligibleGender && job.eligibleGender.length > 0) {
       const userGender = candidate.gender?.toLowerCase();
-      
+
       // If candidate is 'other', show both types (bypass restrictions) as requested
       if (userGender !== 'other') {
         const isEligible = userGender && job.eligibleGender.some(g => g.toLowerCase() === userGender);
