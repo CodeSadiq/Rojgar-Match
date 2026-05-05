@@ -59,6 +59,11 @@ export async function POST(req: Request) {
       throw new Error(data.error?.message || `OpenRouter API failed with status ${response.status}`);
     }
 
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('[OpenRouter No Choices Error]:', data);
+      throw new Error('AI provider returned an empty or invalid response');
+    }
+
     const aiText = data.choices[0].message.content;
 
     // Clean JSON extraction
