@@ -120,10 +120,10 @@ export default function ProfilePage() {
     // 2. Update answers locally
     const currentAnswers = userProfile.screeningAnswers || {};
     const updatedAnswers = { ...currentAnswers, [questionId]: answer };
-    
+
     // 3. Create full updated profile object
-    const updatedProfile = { 
-      ...userProfile, 
+    const updatedProfile = {
+      ...userProfile,
       screeningAnswers: updatedAnswers,
       fullName: authData.fullName,
       email: authData.email
@@ -196,7 +196,7 @@ export default function ProfilePage() {
       });
 
       if (!res.ok) throw new Error('Failed to save profile');
-      
+
       // Update local storage with merged identity
       const isAuth = localStorage.getItem('rojgarmatch_auth');
       if (isAuth) {
@@ -252,10 +252,10 @@ export default function ProfilePage() {
         fullName: authData.fullName,
         email: authData.email
       };
-      
+
       localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedLocalStorageProfile));
       localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
-      
+
       // Notify other components (Navbar, etc.)
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
 
@@ -298,8 +298,8 @@ export default function ProfilePage() {
             <BackButton />
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-5 md:p-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 shadow-sm text-center md:text-left transition-all">
-            <div className="flex flex-col items-center md:items-start gap-3 md:gap-5">
+          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 shadow-sm text-center md:text-left transition-all">
+            <div className="flex flex-col items-center md:items-start gap-4 md:gap-5">
               <div className="space-y-0.5 md:space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
                   <>
@@ -313,22 +313,23 @@ export default function ProfilePage() {
                   </>
                 )}
               </div>
-              <div className={`inline-flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] px-3 md:px-4 py-1.5 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
+              <div className={`inline-flex items-center gap-2 text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
                 {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
               </div>
             </div>
-            <button onClick={handleLogout} className="px-6 py-2 md:px-8 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[9px] md:text-[11px] font-black uppercase tracking-widest border border-red-100/50">
+            <button onClick={handleLogout} className="w-full md:w-auto px-8 py-3.5 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-xl md:rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest border border-red-100/50 active:scale-95">
               Sign Out
             </button>
           </div>
 
-          <div className="max-w-[1100px] mt-6">
-            <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-10 shadow-sm space-y-6 md:space-y-8">
+          <div className="max-w-[1100px] mt-6 space-y-6 md:space-y-8">
+            {/* SECTION 1: CORE QUALIFICATIONS */}
+            <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 shadow-sm space-y-6 md:space-y-8">
               <div className="space-y-4 md:space-y-6">
                 <h2 className="text-lg md:text-xl font-bold text-navy">Select Gender <span className="text-red-500">*</span></h2>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {['Male', 'Female', 'Other'].map((g) => (
-                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`flex-1 h-10 md:h-12 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"}`}>
+                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-12 md:h-14 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all border shadow-sm ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"}`}>
                       {g}
                     </button>
                   ))}
@@ -338,7 +339,7 @@ export default function ProfilePage() {
               <div className="space-y-1.5 pt-4 border-t border-gray-50">
                 <h2 className="text-lg md:text-xl font-bold text-navy">Set Qualification</h2>
                 <p className="text-[12px] md:text-[13.5px] text-navy/70 font-medium leading-relaxed">
-                  Update your qualifications level-wise to discover eligible jobs. If you do not have a qualification for a specific section, leave it as "-- No Record --".
+                  Update your qualifications level-wise to discover eligible jobs.
                 </p>
               </div>
 
@@ -370,64 +371,70 @@ export default function ProfilePage() {
                     </div>
                   );
                 })}
-
-                {screeningResults.length > 0 && (
-                  <div className="pt-10 border-t border-gray-100">
-                    <div className="bg-navy/[0.02] border border-navy/5 rounded-2xl md:rounded-[32px] p-4 md:p-8">
-                      <h2 className="text-lg md:text-xl font-bold text-navy mb-6">Specialized Requirements</h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {screeningResults.map((res) => (
-                          <div key={res.id} className="p-3 md:p-4 bg-white border border-gray-100 rounded-xl flex flex-col justify-between gap-3 shadow-sm hover:border-navy/10 transition-all">
-                            <p className="text-[12px] md:text-[13px] font-bold text-navy leading-snug">{res.text}</p>
-                            <div className="flex gap-1.5">
-                              <button
-                                onClick={() => handleUpdateScreening(res.id, true)}
-                                className={`flex-1 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600 shadow-md shadow-green-200" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
-                              >
-                                Yes
-                              </button>
-                              <button
-                                onClick={() => handleUpdateScreening(res.id, false)}
-                                className={`flex-1 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600 shadow-md shadow-red-200" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
-                              >
-                                No
-                              </button>
-                              <button
-                                onClick={() => handleUpdateScreening(res.id, null)}
-                                className={`flex-1 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-200" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
-                              >
-                                Not Sure
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                  <div className="flex flex-row gap-2 md:gap-3 pt-6 border-t border-gray-100">
-                    <button 
-                      onClick={handleSave} 
-                      disabled={isSaving} 
-                      className="flex-1 h-10 md:h-12 bg-navy text-white font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg shadow-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
-                    >
-                      <svg className="w-3.5 h-3.5 md:w-4 md:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                      <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
-                      <span className="xs:hidden">{isSaving ? 'Saving...' : 'Save'}</span>
-                    </button>
-                    <button 
-                      onClick={handleReset} 
-                      disabled={isSaving} 
-                      className="flex-1 h-10 md:h-12 bg-red-50 text-red-600 font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg border border-red-100 hover:bg-red-600 hover:text-white transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
-                    >
-                      <svg className="w-3.5 h-3.5 md:w-4 md:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                      <span className="hidden xs:inline">Reset Qualification</span>
-                      <span className="xs:hidden">Reset</span>
-                    </button>
-                  </div>
               </div>
             </section>
+
+            {/* SECTION 2: SCREENING QUESTIONS */}
+            {screeningResults.length > 0 && (
+              <section className="bg-gradient-to-br from-[#F0F7FF] to-[#F8FAFF] border-2 border-blue-100/50 rounded-[32px] p-6 md:p-12 shadow-sm relative overflow-hidden group">
+                {/* Decorative Accent */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors"></div>
+
+                <div className="space-y-8 relative z-10">
+                  <h2 className="text-lg md:text-xl font-bold text-navy">Specialized Requirements</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    {screeningResults.map((res) => (
+                      <div key={res.id} className="p-5 md:p-7 bg-white border border-blue-50 rounded-2xl flex flex-col justify-between gap-5 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300">
+                        <p className="text-[14px] md:text-[15px] font-bold text-navy leading-relaxed">{res.text}</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleUpdateScreening(res.id, true)}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600 shadow-lg shadow-green-200" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={() => handleUpdateScreening(res.id, false)}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-200" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
+                          >
+                            No
+                          </button>
+                          <button
+                            onClick={() => handleUpdateScreening(res.id, null)}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-200" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
+                          >
+                            Not Sure
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ACTION AREA */}
+            <div className="flex flex-row gap-2 md:gap-3">
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex-1 h-12 md:h-14 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl shadow-lg shadow-navy/10 hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
+                <span className="xs:hidden">{isSaving ? 'Saving...' : 'Save'}</span>
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={isSaving}
+                className="flex-1 h-12 md:h-14 bg-red-50 text-red-600 font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                <span className="hidden xs:inline">Reset Qualification</span>
+                <span className="xs:hidden">Reset</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>

@@ -13,10 +13,10 @@ export async function POST(req: Request) {
       You are an expert Government Recruitment Screener.
       Analyze these job requirements and generate Yes/No screening questions.
 
-      USER PROFILE (What the user has already provided):
+      USER PROFILE:
       ${JSON.stringify(userProfile)}
 
-      MATCHED POST DETAILS (Requirements from the jobs):
+      MATCHED POST DETAILS:
       ${JSON.stringify(matchedPosts)}
 
       RULES:
@@ -30,17 +30,17 @@ export async function POST(req: Request) {
       8. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
     `;
 
-    // Calling OpenRouter API
+    // Calling OpenRouter API with a cost-effective & fast model
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000", // Optional, for OpenRouter rankings
-        "X-Title": "Rojgar Match" // Optional
+        "HTTP-Referer": "https://rojgarmatch.com",
+        "X-Title": "Rojgar Match"
       },
       body: JSON.stringify({
-        "model": "openrouter/auto",
+        "model": "google/gemini-2.0-flash-001", // Fast, Cheap, and Reliable for high traffic
         "messages": [
           { "role": "user", "content": prompt }
         ]

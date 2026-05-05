@@ -323,30 +323,31 @@ export default function ForYouPage() {
           </BackButton>
         </div>
 
-        <header className="mb-4 md:mb-8 border-b-2 border-navy pb-2 md:pb-5 flex items-center justify-between gap-4 pl-7 pr-4 md:px-0">
-          <div className="flex items-start gap-3 text-left min-w-0">
-            <BackButton className="md:hidden mt-1 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0">
+          <div className="flex items-center gap-2 text-left">
+            <BackButton className="md:hidden text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
-            <div className="min-w-0">
-              <h1 className="text-lg md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight truncate">Recruitments for You</h1>
+            <div>
+              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap">Recruitments for You</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={openAIScreening}
               disabled={isScreeningLoading}
-              className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-navy/5 text-navy text-[11px] md:text-sm font-bold rounded-xl hover:bg-navy hover:text-white transition-all active:scale-95 border border-navy/5 ${isScreeningLoading ? 'animate-pulse' : ''}`}
+              className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-blue-50 text-blue-700 text-[9px] md:text-[11px] lg:text-sm font-black uppercase tracking-wider rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-95 border border-blue-100 shadow-sm shadow-blue-100/50"
             >
-              <span className="flex items-center gap-1.5">
-                <span className="animate-pulse">✨</span>
-                <span>{isScreeningLoading ? '...' : (
-                  <>
-                    <span className="hidden md:inline">Filter more with AI</span>
-                    <span className="md:hidden">AI Filter</span>
-                  </>
-                )}</span>
-              </span>
+              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+              </svg>
+              <span>{isScreeningLoading ? '...' : (
+                <>
+                  <span className="hidden lg:inline">Filter more with AI</span>
+                  <span className="lg:hidden">AI Filter</span>
+                </>
+              )}</span>
             </button>
             <button
               onClick={() => fetchJobs(true)}

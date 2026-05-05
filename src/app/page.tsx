@@ -592,7 +592,7 @@ export default function Home() {
               </div>
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-3 md:py-10">
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-3 md:py-10 -mt-8 md:mt-0">
                 <div className="max-w-[800px] text-left space-y-1 md:space-y-6">
                   <h1 className="text-xl md:text-6xl font-serif font-bold text-navy/90 leading-tight drop-shadow-sm">
                     Government Jobs For You
@@ -613,7 +613,7 @@ export default function Home() {
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-2 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
+                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-3 md:pb-8 mb-2 md:mb-10 px-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="min-w-0">
                       <h2 className="text-[13px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight truncate">
                         Recruitment For You
@@ -623,17 +623,18 @@ export default function Home() {
                       <button
                         onClick={openAIScreening}
                         disabled={isScreeningLoading}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-navy/5 text-navy text-[11px] md:text-sm font-bold rounded-xl hover:bg-navy hover:text-white transition-all active:scale-95 border border-navy/5 ${isScreeningLoading ? 'animate-pulse' : ''}`}
+                        className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-blue-50 text-blue-700 text-[9px] md:text-[12px] font-black uppercase tracking-wider rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-95 border border-blue-100 shadow-sm shadow-blue-100/50"
                       >
-                        <span className="flex items-center gap-1.5">
-                          <span className="animate-pulse">✨</span>
-                          <span>{isScreeningLoading ? '...' : (
-                            <>
-                              <span className="hidden md:inline">Filter more with AI</span>
-                              <span className="md:hidden">AI Filter</span>
-                            </>
-                          )}</span>
-                        </span>
+                        <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                          <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                        </svg>
+                        <span>{isScreeningLoading ? '...' : (
+                          <>
+                            <span className="hidden md:inline">Filter more with AI</span>
+                            <span className="md:hidden">AI Filter</span>
+                          </>
+                        )}</span>
                       </button>
                       <button
                         onClick={() => fetchJobs(true)}

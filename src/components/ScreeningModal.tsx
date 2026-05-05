@@ -110,9 +110,9 @@ export default function ScreeningModal({
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || 'Upload failed');
       }
-      
+
       const data = await res.json();
-      
+
       if (data.text) {
         setQualificationText(data.text.substring(0, 5000));
         setStep('textInput');
@@ -127,19 +127,19 @@ export default function ScreeningModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-10"
       role="dialog"
       aria-modal="true"
       aria-label="AI Screening"
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-navy/40 backdrop-blur-sm animate-in fade-in duration-200"
+        className="absolute inset-0 bg-navy/40 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
       {/* Modal Panel */}
-      <div className="relative w-full md:max-w-2xl lg:max-w-3xl mx-0 md:mx-4 max-h-[92dvh] md:max-h-[88vh] flex flex-col bg-white rounded-t-3xl md:rounded-2xl shadow-2xl shadow-navy/20 animate-in slide-in-from-bottom md:slide-in-from-bottom-4 duration-300 overflow-hidden">
+      <div className="relative w-full md:max-w-2xl lg:max-w-3xl mx-auto max-h-[90vh] md:max-h-[85vh] flex flex-col bg-white rounded-[32px] shadow-2xl shadow-navy/30 animate-in zoom-in-95 fade-in slide-in-from-bottom-10 duration-500 overflow-hidden">
 
         {/* Header */}
         <div className="flex-shrink-0 bg-navy px-6 md:px-8 py-5 md:py-6 relative overflow-hidden">
@@ -269,7 +269,7 @@ export default function ScreeningModal({
                   * You can write in English, Hindi, or Hinglish (e.g. "Maine B.A kiya hai")
                 </p>
               </div>
-              
+
               <div className="flex flex-col items-center gap-6">
                 <button
                   onClick={() => handleTextSubmit()}
@@ -277,7 +277,7 @@ export default function ScreeningModal({
                   className="w-full py-5 bg-navy text-white rounded-2xl text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-navy/20 hover:bg-[#06142E] hover:shadow-navy/40 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-                  
+
                   {isSubmittingText ? (
                     <>
                       <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
@@ -286,16 +286,16 @@ export default function ScreeningModal({
                   ) : (
                     <>
                       <span>Filter Jobs Now</span>
-                      <svg className="group-hover:translate-x-1.5 transition-transform duration-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      <svg className="group-hover:translate-x-1.5 transition-transform duration-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </>
                   )}
                 </button>
 
-                <button 
+                <button
                   onClick={() => setStep('selection')}
                   className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all group/back"
                 >
-                  <svg className="group-hover/back:-translate-x-1 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                  <svg className="group-hover/back:-translate-x-1 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
                   Go Back
                 </button>
               </div>
@@ -306,15 +306,30 @@ export default function ScreeningModal({
                 const currentAnswer = answers[q.id];
                 const isAnswered = currentAnswer !== undefined;
                 return (
-                  <div key={q.id} className={`flex flex-col gap-3 p-4 md:p-5 rounded-xl border transition-all duration-300 ${isAnswered ? 'bg-gray-50/60 border-gray-100 opacity-60' : 'bg-white border-gray-100 shadow-sm hover:border-navy/20 hover:shadow-md'}`}>
-                    <div className="flex items-start gap-3">
-                      <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-navy text-white text-[11px] font-bold flex items-center justify-center mt-0.5 shadow-sm">{idx + 1}</span>
-                      <p className="text-[13px] md:text-[14px] font-bold text-gray-900 leading-snug flex-1">{q.text}</p>
+                  <div key={q.id} className={`flex flex-col gap-4 p-5 md:p-7 rounded-[24px] border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'}`}>
+                    <div className="flex items-start gap-4">
+                      <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-navy text-white text-[12px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
+                      <p className="text-[14px] md:text-[16px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
                     </div>
-                    <div className="flex items-center gap-2 pl-9">
-                      <button onClick={() => onAnswer(q.id, true)} className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${currentAnswer === true ? 'bg-green-600 text-white' : 'bg-white border-2 border-gray-300 text-black'}`}>✓ Yes</button>
-                      <button onClick={() => onAnswer(q.id, false)} className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${currentAnswer === false ? 'bg-red-600 text-white' : 'bg-white border-2 border-gray-300 text-black'}`}>✕ No</button>
-                      <button onClick={() => onAnswer(q.id, null)} className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${currentAnswer === null ? 'bg-orange-500 text-white' : 'bg-white border-2 border-gray-300 text-black'}`}>~ Not Sure</button>
+                    <div className="flex flex-row items-center gap-2 pl-0 md:pl-12">
+                      <button
+                        onClick={() => onAnswer(q.id, true)}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => onAnswer(q.id, false)}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
+                      >
+                        No
+                      </button>
+                      <button
+                        onClick={() => onAnswer(q.id, null)}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
+                      >
+                        Not Sure
+                      </button>
                     </div>
                   </div>
                 );
