@@ -36,14 +36,13 @@ export async function POST(req: Request) {
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000", // Optional, for OpenRouter rankings
-        "X-Title": "Rojgar Match" // Optional
       },
       body: JSON.stringify({
-        "model": "openrouter/auto",
+        "model": "google/gemini-2.0-flash-lite-001",
         "messages": [
           { "role": "user", "content": prompt }
-        ]
+        ],
+        "response_format": { "type": "json_object" }
       })
     });
 
@@ -51,11 +50,13 @@ export async function POST(req: Request) {
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       const errorText = await response.text();
-      throw new Error(`OpenRouter returned non-JSON response (${response.status}): ${errorText.slice(0, 200)}`);
+      console.error(`[OpenRouter Raw Error ${response.status}]:`, errorText);
+      throw new Error(`OpenRouter returned non-JSON response (${response.status})`);
     }
 
     const data = await response.json();
     if (!response.ok) {
+      console.error('[OpenRouter API Error Data]:', data);
       throw new Error(data.error?.message || `OpenRouter API failed with status ${response.status}`);
     }
 
