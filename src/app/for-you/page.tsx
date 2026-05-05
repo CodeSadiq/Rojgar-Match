@@ -109,7 +109,7 @@ export default function ForYouPage() {
           qualification: post.qualification,
           course: post.course
         }))
-      ).slice(0, 15);
+      );
 
       const res = await fetch('/api/ai/screening', {
         method: 'POST',
@@ -130,10 +130,8 @@ export default function ForYouPage() {
         throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
       }
 
+      if (!res.ok) throw new Error('Screening failed');
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Screening failed');
-      }
       const newQuestions = data.questions || [];
 
       setScreeningQuestions(newQuestions);

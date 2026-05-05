@@ -46,18 +46,17 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "model": "google/gemini-2.0-flash-lite-001",
+        "model": "openrouter/auto",
         "messages": [
           { "role": "user", "content": prompt }
-        ],
-        "response_format": { "type": "json_object" }
+        ]
       })
     });
 
     const data = await response.json();
     if (!response.ok) {
-      console.error('[AI Filter API Error Data]:', data);
-      throw new Error(data.error?.message || `AI Call Failed (${response.status})`);
+      console.error('[AI Filter API Error]:', data);
+      throw new Error(data.error?.message || 'AI Call Failed');
     }
 
     if (!data.choices || !data.choices[0]) {
