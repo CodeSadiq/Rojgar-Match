@@ -126,38 +126,34 @@ export default function ScreeningModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-10"
-      role="dialog"
-      aria-modal="true"
-      aria-label="AI Screening"
-    >
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true" aria-label="AI Screening">
+      {/* Backdrop: Full Screen Fade */}
       <div
-        className="absolute inset-0 bg-navy/40 backdrop-blur-sm animate-in fade-in duration-300"
+        className="fixed inset-0 bg-navy/40 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
-      {/* Modal Panel */}
-      <div className="relative w-full md:max-w-2xl lg:max-w-3xl mx-auto max-h-[90vh] md:max-h-[85vh] flex flex-col bg-white rounded-[32px] shadow-2xl shadow-navy/30 animate-in zoom-in-95 fade-in slide-in-from-bottom-10 duration-500 overflow-hidden">
+      {/* Panel Container: Centered with Padding */}
+      <div className="absolute inset-0 flex items-center justify-center p-4 md:p-10 pointer-events-none">
+        <div className="relative w-full md:max-w-2xl lg:max-w-3xl mx-auto max-h-[85vh] md:max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl shadow-navy/30 animate-in zoom-in-95 fade-in slide-in-from-bottom-10 duration-500 overflow-hidden pointer-events-auto">
 
         {/* Header */}
-        <div className="flex-shrink-0 bg-navy px-6 md:px-8 py-5 md:py-6 relative overflow-hidden">
+        <div className="flex-shrink-0 bg-navy px-4 md:px-8 py-1.5 md:py-6 relative overflow-hidden">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex items-start justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 shadow-inner text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex items-center justify-between gap-4 relative z-10">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-6 h-6 md:w-10 md:h-10 rounded bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 shadow-inner text-white">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                   <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                 </svg>
               </div>
               <div>
-                <h2 className="text-[15px] md:text-lg font-bold text-white leading-tight">
+                <h2 className="text-[12px] md:text-lg font-bold text-white leading-tight">
                   {step === 'selection' ? 'Choose AI Filter Mode' : step === 'textInput' ? 'Describe Your Qualification' : step === 'resumeUpload' ? 'Upload Your Resume' : 'AI Screening Questions'}
                 </h2>
-                <p className="text-[10px] md:text-[11px] font-semibold text-white/50 uppercase tracking-widest mt-0.5">
+                <p className="hidden md:block text-[11px] font-semibold text-white/50 uppercase tracking-widest mt-0.5">
                   {step === 'selection' ? 'Select how you want to filter jobs' : step === 'textInput' ? 'The AI will filter jobs based on your details' : step === 'resumeUpload' ? 'Extract details automatically from PDF' : 'Answer to filter jobs more precisely'}
                 </p>
               </div>
@@ -166,22 +162,22 @@ export default function ScreeningModal({
               {step !== 'selection' && !isLoading && (
                 <button
                   onClick={() => setStep('selection')}
-                  className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[9px] md:text-[10px] font-bold uppercase tracking-widest rounded-lg border border-white/10 transition-all active:scale-95"
+                  className="px-2 py-1 bg-white/10 hover:bg-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-widest rounded-lg border border-white/10 transition-all active:scale-95"
                 >
                   Switch Mode
                 </button>
               )}
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-all active:scale-90"
+                className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-all active:scale-90"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
           </div>
 
           {step === 'questions' && !isLoading && totalCount > 0 && (
-            <div className="mt-4 relative z-10">
+            <div className="mt-1 md:mt-4 relative z-10">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Progress</span>
                 <span className="text-[9px] font-black uppercase tracking-widest text-white/60">{answeredCount}/{totalCount}</span>
@@ -202,10 +198,10 @@ export default function ScreeningModal({
               </p>
             </div>
           ) : step === 'selection' ? (
-            <div className="p-6 md:p-10 flex flex-col gap-4">
+            <div className="p-4 md:p-10 flex flex-col gap-2 md:gap-4">
               <button
                 onClick={() => setStep('textInput')}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
               >
                 <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
@@ -218,7 +214,7 @@ export default function ScreeningModal({
 
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
               >
                 <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
@@ -232,7 +228,7 @@ export default function ScreeningModal({
 
               <button
                 onClick={() => { onGenerateQuestions(); setStep('questions'); }}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
               >
                 <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
@@ -242,12 +238,12 @@ export default function ScreeningModal({
                     <h4 className="text-[15px] font-bold text-navy">Generate screening questions</h4>
                     <span className="px-2 py-0.5 bg-green-50 text-green-600 text-[9px] font-bold uppercase tracking-widest rounded-md border border-green-100">Recommended</span>
                   </div>
-                  <p className="text-[12px] text-navy/40 font-medium">Answer simple Yes/No questions based on job requirements.</p>
+                  <p className="text-[11px] md:text-[12px] text-navy/40 font-medium">Answer simple Yes/No questions based on job requirements.</p>
                 </div>
               </button>
             </div>
           ) : step === 'textInput' ? (
-            <div className="p-6 md:p-10 space-y-8">
+            <div className="p-4 md:p-10 space-y-8">
               <div className="space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.2em] text-navy ml-1">Your Qualifications & Details</label>
                 <div className="relative group">
@@ -255,7 +251,7 @@ export default function ScreeningModal({
                     value={qualificationText}
                     onChange={(e) => setQualificationText(e.target.value)}
                     placeholder="Example: Maine 12th science se pass kiya hai 80% marks ke saath. Mere paas CCC certificate bhi hai..."
-                    className="w-full h-48 md:h-64 p-6 rounded-2xl border-2 border-gray-200 focus:border-navy focus:ring-8 focus:ring-navy/5 text-[16px] font-bold text-navy placeholder:text-navy/30 leading-relaxed resize-none bg-white transition-all shadow-sm"
+                    className="w-full h-48 md:h-64 p-6 rounded-xl border-2 border-gray-200 focus:border-navy focus:ring-8 focus:ring-navy/5 text-[16px] font-bold text-navy placeholder:text-navy/30 leading-relaxed resize-none bg-white transition-all shadow-sm"
                   />
                   <div className="absolute bottom-4 right-4 pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
                     <div className="flex gap-1">
@@ -274,7 +270,7 @@ export default function ScreeningModal({
                 <button
                   onClick={() => handleTextSubmit()}
                   disabled={isSubmittingText || !qualificationText.trim()}
-                  className="w-full py-5 bg-navy text-white rounded-2xl text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-navy/20 hover:bg-[#06142E] hover:shadow-navy/40 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden"
+                  className="w-full py-5 bg-navy text-white rounded-xl text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-navy/20 hover:bg-[#06142E] hover:shadow-navy/40 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
 
@@ -301,32 +297,32 @@ export default function ScreeningModal({
               </div>
             </div>
           ) : (
-            <div className="px-5 md:px-8 py-5 md:py-6 space-y-3">
+            <div className="px-4 md:px-8 py-3 md:py-6 space-y-2 md:space-y-3">
               {questions.map((q, idx) => {
                 const currentAnswer = answers[q.id];
                 const isAnswered = currentAnswer !== undefined;
                 return (
-                  <div key={q.id} className={`flex flex-col gap-4 p-5 md:p-7 rounded-[24px] border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'}`}>
+                  <div key={q.id} className={`flex flex-col gap-3 md:gap-4 p-4 md:p-7 rounded-xl border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'}`}>
                     <div className="flex items-start gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-navy text-white text-[12px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
-                      <p className="text-[14px] md:text-[16px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
+                      <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-navy text-white text-[10px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
+                      <p className="text-[12px] md:text-[15px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
                     </div>
                     <div className="flex flex-row items-center gap-2 pl-0 md:pl-12">
                       <button
                         onClick={() => onAnswer(q.id, true)}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
+                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
                       >
                         Yes
                       </button>
                       <button
                         onClick={() => onAnswer(q.id, false)}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
+                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
                       >
                         No
                       </button>
                       <button
                         onClick={() => onAnswer(q.id, null)}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
+                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
                       >
                         Not Sure
                       </button>
@@ -344,6 +340,7 @@ export default function ScreeningModal({
             <button onClick={onClearAll} className="text-[10px] font-black text-navy/30 hover:text-red-600 uppercase tracking-widest transition-colors">Clear & Reset</button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

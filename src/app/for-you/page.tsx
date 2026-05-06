@@ -336,9 +336,9 @@ export default function ForYouPage() {
             <button
               onClick={openAIScreening}
               disabled={isScreeningLoading}
-              className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-blue-50 text-blue-700 text-[9px] md:text-[11px] lg:text-sm font-black uppercase tracking-wider rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-95 border border-blue-100 shadow-sm shadow-blue-100/50"
+              className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-white text-navy/30 text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider rounded-full hover:bg-navy/5 hover:text-navy transition-all active:scale-95 border border-gray-200"
             >
-              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                 <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
               </svg>
