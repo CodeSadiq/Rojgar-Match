@@ -810,34 +810,34 @@ export default function Home() {
 
                           {/* Desktop Arrows */}
                           <div className="hidden md:flex gap-3 flex-shrink-0">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (isMoving) return;
-                              setIsMoving(true);
-                              setCurrentCatIndex((prev) => prev - 1);
-                            }}
-                            className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
-                            title="Previous"
-                          >
-                            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isMoving) return;
+                                setIsMoving(true);
+                                setCurrentCatIndex((prev) => prev - 1);
+                              }}
+                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
+                              title="Previous"
+                            >
+                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                              </div>
                             </div>
-                          </div>
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (isMoving) return;
-                              setIsMoving(true);
-                              setCurrentCatIndex((prev) => prev + 1);
-                            }}
-                            className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
-                            title="Next"
-                          >
-                            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isMoving) return;
+                                setIsMoving(true);
+                                setCurrentCatIndex((prev) => prev + 1);
+                              }}
+                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
+                              title="Next"
+                            >
+                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                              </div>
                             </div>
-                          </div>
                           </div>
                         </div>
                       </div>

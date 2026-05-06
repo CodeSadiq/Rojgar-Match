@@ -23,7 +23,7 @@ export default function HowItWorksPage() {
           </p>
 
           <div className="space-y-16 md:space-y-24">
-            
+
             {/* STEP 01 */}
             <div className="space-y-4">
               <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-navy/40">Step 01</h3>
