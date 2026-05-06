@@ -780,58 +780,65 @@ export default function Home() {
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
                   >
                     <div className="p-0 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between px-5 h-14 md:h-16 bg-[#0D244D] text-white shadow-lg relative z-10">
+                      <div className="flex items-center justify-between px-5 py-4 bg-[#0D244D] text-white shadow-lg relative z-10">
                         <div className="flex-1 flex items-center gap-4 min-w-0 pr-4">
                           <div className="p-2 md:p-2.5 bg-white/10 text-white rounded-xl flex-shrink-0 backdrop-blur-md border border-white/10 shadow-inner">
                             <IconBell />
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <h3 className="text-[12px] md:text-[14px] font-bold uppercase tracking-[0.2em] text-white truncate">
+                            <h3 className="text-[12px] md:text-[14px] font-bold uppercase tracking-[0.2em] text-white truncate mb-1">
                               {activeCategory}
                             </h3>
+                            <Link
+                              href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
+                              className="hidden md:flex text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest items-center gap-1 transition-all no-underline"
+                            >
+                              <span>View All</span>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                            </Link>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          {/* Desktop Arrows */}
-                          <div className="hidden md:flex gap-3 flex-shrink-0">
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (isMoving) return;
-                                setIsMoving(true);
-                                setCurrentCatIndex((prev) => prev - 1);
-                              }}
-                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
-                              title="Previous"
-                            >
-                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-                              </div>
-                            </div>
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (isMoving) return;
-                                setIsMoving(true);
-                                setCurrentCatIndex((prev) => prev + 1);
-                              }}
-                              className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
-                              title="Next"
-                            >
-                              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Mobile View All (Placed where slider buttons were) */}
+                          {/* Mobile View All (Old Style) */}
                           <Link
                             href={`/${(activeCategory || 'all-jobs').toLowerCase().replace(' ', '-')}`}
-                            className="md:hidden text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white"
+                            className="md:hidden text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline"
                           >
                             View All ›
                           </Link>
+
+                          {/* Desktop Arrows */}
+                          <div className="hidden md:flex gap-3 flex-shrink-0">
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isMoving) return;
+                              setIsMoving(true);
+                              setCurrentCatIndex((prev) => prev - 1);
+                            }}
+                            className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
+                            title="Previous"
+                          >
+                            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                            </div>
+                          </div>
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isMoving) return;
+                              setIsMoving(true);
+                              setCurrentCatIndex((prev) => prev + 1);
+                            }}
+                            className="w-12 h-12 flex items-center justify-center cursor-pointer group/nav -m-2 z-50"
+                            title="Next"
+                          >
+                            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white group-hover/nav:bg-white group-hover/nav:text-[#0D244D] transition-all shadow-sm active:scale-90 border border-white/5">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                            </div>
+                          </div>
+                          </div>
                         </div>
                       </div>
 
@@ -901,7 +908,7 @@ export default function Home() {
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
-                      <div className="px-4 mt-auto flex flex-col items-center">
+                      <div className="px-4 mt-auto flex flex-col items-center pb-4 md:pb-10">
                         <div className="flex gap-1.5 h-1 w-full px-2 mb-2">
                           {CATEGORIES.map((_, idx) => {
                             const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
@@ -930,16 +937,7 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* ENHANCED VIEW ALL BUTTON (Desktop Only) */}
-                      <div className="hidden md:block mt-3 px-4 pb-4">
-                        <Link
-                          href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
-                          className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
-                        >
-                          View All {activeCategory}
-                          <svg className="group-hover/btn:translate-x-1 transition-transform" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                        </Link>
-                      </div>
+
                     </div>
                   </div>
                 </div>
