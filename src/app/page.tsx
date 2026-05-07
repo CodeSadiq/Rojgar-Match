@@ -461,8 +461,8 @@ export default function Home() {
     return CATEGORIES.map((cat) => {
       let items = [];
       if (cat === 'All Jobs') {
-        // If user has matches (including AI filtering), show those, else show recent jobs
-        const sourceJobs = (recommendedJobs && recommendedJobs.length > 0) ? recommendedJobs : dbJobs;
+        // Always show all recent jobs in the 'All Jobs' slider category
+        const sourceJobs = dbJobs;
         items = sourceJobs.slice(0, 30).map((job) => ({
           id: job.id || job._id,
           text: job.title,
