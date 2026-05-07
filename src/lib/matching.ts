@@ -10,7 +10,6 @@ export interface QualificationEntry {
 export interface CandidateProfile {
   fullName?: string;
   email?: string;
-  dob?: string;
   gender?: string;
   // Support for multiple qualifications across different levels
   qualifications: QualificationEntry[];

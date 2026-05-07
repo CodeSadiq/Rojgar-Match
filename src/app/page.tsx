@@ -246,9 +246,14 @@ export default function Home() {
         job.matchedPosts.map((post: any) => ({
           name: post.name,
           jobTitle: job.title,
-          prerequisite: post.prerequisite,
-          qualification: post.qualification, // Includes level name and extra text
-          course: post.course // Includes specific required courses/branches
+          prerequisite: post.prerequisite || [],
+          qualification: {
+            course: Array.isArray(post.qualification?.course)
+              ? post.qualification.course
+              : (post.qualification?.course ? [post.qualification.course] : []),
+            branch: post.qualification?.branch || [],
+            extraQualificationText: post.qualification?.extraQualificationText || ""
+          }
         }))
       );
 
@@ -259,7 +264,8 @@ export default function Home() {
           userProfile: {
             qualifications: userProfile.qualifications,
             gender: userProfile.gender,
-            dob: userProfile.dob
+            screeningAnswers: screeningAnswers,
+            existingQuestions: screeningQuestions.map(q => q.text)
           },
           matchedPosts: matchedPostsContext
         })
@@ -273,22 +279,31 @@ export default function Home() {
 
       if (!res.ok) throw new Error('Screening failed');
       const data = await res.json();
-      const newQuestions = data.questions || [];
+      const newQuestionsRaw = data.questions || [];
 
-      setScreeningQuestions(newQuestions);
+      // Ensure IDs are globally unique to avoid React key collisions
+      const newQuestions = newQuestionsRaw.map((q: any, idx: number) => ({
+        ...q,
+        id: q.id ? `q_${Date.now()}_${idx}_${q.id}` : `q_${Date.now()}_${idx}`
+      }));
+
+      setScreeningQuestions(prev => {
+        const existingIds = new Set(prev.map(q => q.id));
+        const filteredNew = newQuestions.filter((q: any) => !existingIds.has(q.id));
+        return [...prev, ...filteredNew];
+      });
 
       // Update Profile Record
       const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
       const updatedProfile = {
         ...existingProfile,
-        screeningQuestions: newQuestions,
-        // We clear answers to ensure user re-verifies against the latest analysis
-        screeningAnswers: {}
+        screeningQuestions: [...(existingProfile.screeningQuestions || []), ...newQuestions.filter((q: any) => !(existingProfile.screeningQuestions || []).some((ex: any) => ex.id === q.id))],
+        // PRESERVE ANSWERS for phased screening
+        screeningAnswers: screeningAnswers
       };
 
-      setScreeningAnswers({});
       localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
-      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify(screeningAnswers));
 
       if (userProfile.email !== 'guest@rojgarmatch.local') {
         await fetch('/api/profile', {
@@ -383,6 +398,7 @@ export default function Home() {
 
   const handleClearScreening = async () => {
     setScreeningAnswers({});
+    setScreeningQuestions([]);
     localStorage.removeItem('rojgarmatch_screening_answers');
 
     const isAuth = localStorage.getItem('rojgarmatch_auth');
@@ -390,7 +406,12 @@ export default function Home() {
       const authData = JSON.parse(isAuth);
       const email = authData.email;
       const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
-      const updatedProfile = { ...existingProfile, screeningAnswers: {}, blockedPostNames: [] };
+      const updatedProfile = {
+        ...existingProfile,
+        screeningQuestions: [],
+        screeningAnswers: {},
+        blockedPostNames: []
+      };
 
       setUserProfile(updatedProfile);
       localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
@@ -545,6 +566,9 @@ export default function Home() {
     return matchesSearch && matchesType;
   });
 
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
+
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
       {/* ⚡ PRELOAD HERO ASSETS */}
@@ -623,18 +647,23 @@ export default function Home() {
                       <button
                         onClick={openAIScreening}
                         disabled={isScreeningLoading}
-                        className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-white text-navy/30 text-[9px] md:text-[12px] font-bold uppercase tracking-wider rounded-full hover:bg-navy/5 hover:text-navy transition-all active:scale-95 border border-gray-200"
+                        className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
                       >
-                        <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
                           <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                           <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                         </svg>
-                        <span>{isScreeningLoading ? '...' : (
-                          <>
-                            <span className="hidden md:inline">Filter more with AI</span>
-                            <span className="md:hidden">AI Filter</span>
-                          </>
-                        )}</span>
+                        <span className="text-[9px] md:text-[12px] font-bold uppercase tracking-wider">
+                          {isScreeningLoading ? '...' : (
+                            <>
+                              <span className="hidden md:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
+                              <span className="md:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
+                            </>
+                          )}
+                        </span>
+                        {isFilterApplied && !isScreeningLoading && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
+                        )}
                       </button>
                       <button
                         onClick={() => fetchJobs(true)}

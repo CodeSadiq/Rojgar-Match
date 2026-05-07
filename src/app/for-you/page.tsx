@@ -105,9 +105,14 @@ export default function ForYouPage() {
         job.matchedPosts.map((post: any) => ({
           name: post.name,
           jobTitle: job.title,
-          prerequisite: post.prerequisite,
-          qualification: post.qualification,
-          course: post.course
+          prerequisite: post.prerequisite || [],
+          qualification: {
+            course: Array.isArray(post.qualification?.course)
+              ? post.qualification.course
+              : (post.qualification?.course ? [post.qualification.course] : []),
+            branch: post.qualification?.branch || [],
+            extraQualificationText: post.qualification?.extraQualificationText || ""
+          }
         }))
       );
 
@@ -118,7 +123,8 @@ export default function ForYouPage() {
           userProfile: {
             qualifications: userProfile.qualifications,
             gender: userProfile.gender,
-            dob: userProfile.dob
+            screeningAnswers: screeningAnswers,
+            existingQuestions: screeningQuestions.map(q => q.text)
           },
           matchedPosts: matchedPostsContext
         })
@@ -132,22 +138,32 @@ export default function ForYouPage() {
 
       if (!res.ok) throw new Error('Screening failed');
       const data = await res.json();
-      const newQuestions = data.questions || [];
+      const newQuestionsRaw = data.questions || [];
 
-      setScreeningQuestions(newQuestions);
+      // Ensure IDs are globally unique
+      const newQuestions = newQuestionsRaw.map((q: any, idx: number) => ({
+        ...q,
+        id: q.id ? `q_${Date.now()}_${idx}_${q.id}` : `q_${Date.now()}_${idx}`
+      }));
+
+      // Sync everything to Profile Record
+      setScreeningQuestions(prev => {
+        const existingIds = new Set(prev.map(q => q.id));
+        const filteredNew = newQuestions.filter((q: any) => !existingIds.has(q.id));
+        return [...filteredNew, ...prev];
+      });
 
       // Sync everything to Profile Record
       const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
       const updatedProfile = {
         ...existingProfile,
-        screeningQuestions: newQuestions,
-        screeningAnswers: {}
+        screeningQuestions: [...newQuestions.filter((q: any) => !(existingProfile.screeningQuestions || []).some((ex: any) => ex.id === q.id)), ...(existingProfile.screeningQuestions || [])],
+        screeningAnswers: screeningAnswers
       };
 
-      setScreeningAnswers({});
       setUserProfile(updatedProfile);
       localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
-      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify(screeningAnswers));
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
 
       if (userProfile.email && userProfile.email !== 'guest@rojgarmatch.local') {
@@ -249,18 +265,32 @@ export default function ForYouPage() {
 
   const handleClearScreening = async () => {
     setScreeningAnswers({});
+    setScreeningQuestions([]);
     localStorage.removeItem('rojgarmatch_screening_answers');
 
     const isAuth = localStorage.getItem('rojgarmatch_auth');
     if (isAuth) {
       const authData = JSON.parse(isAuth);
       const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
-      const updatedProfile = { ...existingProfile, screeningAnswers: {}, blockedPostNames: [] };
+      const updatedProfile = {
+        ...existingProfile,
+        screeningQuestions: [],
+        screeningAnswers: {},
+        blockedPostNames: []
+      };
 
       setUserProfile(updatedProfile);
       localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedProfile));
       localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
+
+      if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
+        await fetch('/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: authData.email, profile: updatedProfile }),
+        });
+      }
 
       if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
         await fetch('/api/profile', {
@@ -314,6 +344,9 @@ export default function ForYouPage() {
     fetchJobs(false);
   }, [fetchJobs]);
 
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
+
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
@@ -336,18 +369,23 @@ export default function ForYouPage() {
             <button
               onClick={openAIScreening}
               disabled={isScreeningLoading}
-              className="flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 bg-white text-navy/30 text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider rounded-full hover:bg-navy/5 hover:text-navy transition-all active:scale-95 border border-gray-200"
+              className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
             >
-              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                 <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
               </svg>
-              <span>{isScreeningLoading ? '...' : (
-                <>
-                  <span className="hidden lg:inline">Filter more with AI</span>
-                  <span className="lg:hidden">AI Filter</span>
-                </>
-              )}</span>
+              <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
+                {isScreeningLoading ? '...' : (
+                  <>
+                    <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
+                    <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
+                  </>
+                )}
+              </span>
+              {isFilterApplied && !isScreeningLoading && (
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
+              )}
             </button>
             <button
               onClick={() => fetchJobs(true)}

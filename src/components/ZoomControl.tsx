@@ -11,6 +11,12 @@ export default function ZoomControl() {
       const z = parseInt(savedZoom);
       setZoom(z);
       document.documentElement.style.setProperty('--app-zoom', (z / 100).toString());
+    } else {
+      // Default zoom for new users: 70% on mobile, 100% on desktop
+      const isMobile = window.innerWidth < 768;
+      const initialZoom = isMobile ? 70 : 100;
+      setZoom(initialZoom);
+      document.documentElement.style.setProperty('--app-zoom', (initialZoom / 100).toString());
     }
   }, []);
 

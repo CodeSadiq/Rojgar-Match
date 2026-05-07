@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const { userProfile, matchedPosts } = await req.json();
+
+    if (!matchedPosts || matchedPosts.length === 0) {
+      return NextResponse.json({ questions: [] });
+    }
     const apiKey = process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
@@ -19,15 +23,22 @@ export async function POST(req: Request) {
       MATCHED POST DETAILS:
       ${JSON.stringify(matchedPosts)}
 
-      RULES:
-      1. SOURCE DATA: Use "prerequisite" and "qualification.extraQualificationText" to find screening requirements.
-      2. EXCLUSION RULE: Use the user's profile and the job's "qualification.name" and "course" fields to identify basic requirements. Do NOT generate questions for anything already covered by these fields (e.g., if a post requires "12th" in "Science" or "B.Tech", do not ask about them).
-      3. CRITICAL: Do NOT generate questions for requirements that are already explicitly mentioned in the USER PROFILE. 
-      4. Focus ONLY on specialized prerequisites: specific certifications (e.g., CCC, NCC, O-Level), physical standards (height/weight), work experience, or specialized skills.
-      5. Generate ONE separate question for EACH distinct specialized requirement.
-      6. Do NOT merge or combine different requirements into a single question.
-      7. Return a JSON array of objects with: "id", "text", "category", and "impactedPostNames".
-      8. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
+      STRICT RULES:
+      1. SOURCE-LOCKED: ONLY use text found in "prerequisite" and "qualification.extraQualificationText". 
+      2. NO INFERENCE: Do NOT use the job titles/designations to guess or infer requirements from your internal knowledge. If a requirement is not explicitly written in the source fields, it does not exist.
+      3. IGNORE GENERIC TEXT: Ignore sentences that are just document references (e.g., "As per SSB Notification", "According to advertisement", "See website for details", "As per Recruitment 2026 Notification"). 
+      4. NULL CASE: If the source fields ("prerequisite" and "extraQualificationText") ONLY contain generic references or are empty, you MUST generate ZERO questions for that post.
+      5. EXCLUSION RULE: Only skip requirements that are EXACTLY and EXPLICITLY matched in the USER PROFILE "qualifications" array. 
+      6. GAP ANALYSIS: If a post requires a specific degree, diploma, or certificate (e.g., B.Ed, D.El.Ed, BTC, ITI) and the user has not listed that EXACT qualification in their profile, you MUST generate a question for it. 
+      7. AVOID DUPLICATES: Do NOT generate questions for requirements already mentioned in USER PROFILE, already answered in "screeningAnswers", or ALREADY ASKED in "existingQuestions".
+      8. PHASED SCREENING: Generate a MAXIMUM of 5 questions. Focus on:
+         a) Major academic gaps (e.g., if B.Ed is required but missing from profile).
+         b) Specialized certifications (CCC, NCC, O-Level).
+         c) Physical standards and work experience.
+      9. Generate ONE separate question for EACH distinct specialized requirement.
+      10. Do NOT merge or combine different requirements into a single question.
+      11. Return a JSON array of objects with: "id", "text", "category", and "impactedPostNames".
+      12. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
     `;
 
     // Calling OpenRouter API with a cost-effective & fast model

@@ -39,6 +39,25 @@ export default function ScreeningModal({
   const [isSubmittingText, setIsSubmittingText] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const lastCountRef = useRef(0);
+
+  // Auto-scroll logic for phased questions
+  useEffect(() => {
+    if (isLoading) {
+      // Keep track of count before loading
+      lastCountRef.current = questions.length;
+    } else {
+      // 2. When loading ends, scroll to the NEW first question (at the top)
+      if (questions.length > lastCountRef.current && lastCountRef.current > 0) {
+        setTimeout(() => {
+          topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }
+      lastCountRef.current = questions.length;
+    }
+  }, [isLoading, questions.length]);
 
   // Reset step when modal opens
   useEffect(() => {
@@ -189,8 +208,8 @@ export default function ScreeningModal({
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto overscroll-contain">
-          {isLoading || isUploading ? (
+        <div className="flex-1 overflow-y-auto overscroll-contain modal-scroll-container">
+          {isUploading || (isLoading && questions.length === 0) ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-5 text-center px-8">
               <div className="w-12 h-12 border-4 border-navy/10 border-t-navy rounded-full animate-spin" />
               <p className="text-[10px] font-black uppercase tracking-widest text-navy/40 animate-pulse">
@@ -298,46 +317,99 @@ export default function ScreeningModal({
             </div>
           ) : (
             <div className="px-4 md:px-8 py-3 md:py-6 space-y-2 md:space-y-3">
-              {questions.map((q, idx) => {
-                const currentAnswer = answers[q.id];
-                const isAnswered = currentAnswer !== undefined;
-                return (
-                  <div key={q.id} className={`flex flex-col gap-3 md:gap-4 p-4 md:p-7 rounded-xl border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'}`}>
-                    <div className="flex items-start gap-4">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-navy text-white text-[10px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
-                      <p className="text-[12px] md:text-[15px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
-                    </div>
-                    <div className="flex flex-row items-center gap-2 pl-0 md:pl-12">
-                      <button
-                        onClick={() => onAnswer(q.id, true)}
-                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
-                      >
-                        Yes
-                      </button>
-                      <button
-                        onClick={() => onAnswer(q.id, false)}
-                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
-                      >
-                        No
-                      </button>
-                      <button
-                        onClick={() => onAnswer(q.id, null)}
-                        className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
-                      >
-                        Not Sure
-                      </button>
-                    </div>
+              {questions.length === 0 && !isLoading ? (
+                <div className="py-20 flex flex-col items-center justify-center space-y-4 text-center px-8">
+                  <div className="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-2">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   </div>
-                );
-              })}
+                  <h3 className="text-lg font-bold text-navy">Screening Complete</h3>
+                  <p className="text-[12px] text-navy/40 font-medium max-w-[280px]">
+                    No more screening questions found for your matched jobs. You can close this modal and browse the jobs.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div ref={topRef} />
+                  
+                  {questions.map((q, idx) => {
+                    const currentAnswer = answers[q.id];
+                    const isAnswered = currentAnswer !== undefined;
+                    return (
+                      <div 
+                        key={q.id} 
+                        id={`q-container-${q.id}`}
+                        className={`flex flex-col gap-3 md:gap-4 p-4 md:p-7 rounded-xl border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'} ${idx > 0 ? 'mt-2 md:mt-3' : ''}`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-navy text-white text-[10px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
+                          <p className="text-[12px] md:text-[15px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
+                        </div>
+                        <div className="flex flex-row items-center gap-2 pl-0 md:pl-12">
+                          <button
+                            onClick={() => onAnswer(q.id, true)}
+                            className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={() => onAnswer(q.id, false)}
+                            className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
+                          >
+                            No
+                          </button>
+                          <button
+                            onClick={() => onAnswer(q.id, null)}
+                            className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
+                          >
+                            Not Sure
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Inline Loading State for Next Phase (NOW AT BOTTOM) */}
+                  {isLoading && questions.length > 0 && (
+                    <div className="flex flex-col gap-4 p-7 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 animate-pulse mt-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-6 h-6 rounded-lg bg-navy/10" />
+                        <div className="h-4 bg-navy/10 rounded-full w-3/4" />
+                      </div>
+                      <div className="flex gap-2 pl-12">
+                        <div className="h-10 bg-white border border-gray-100 rounded-xl flex-1" />
+                        <div className="h-10 bg-white border border-gray-100 rounded-xl flex-1" />
+                        <div className="h-10 bg-white border border-gray-100 rounded-xl flex-1" />
+                      </div>
+                      <p className="text-[10px] font-bold text-navy/20 uppercase tracking-widest text-center mt-2">AI is analyzing next requirements...</p>
+                    </div>
+                  )}
+                  <div ref={bottomRef} />
+                </>
+              )}
             </div>
           )}
         </div>
 
         {((step === 'questions' && answeredCount > 0) || hasTextFilter) && (
-          <div className="flex-shrink-0 border-t border-gray-100 px-6 md:px-8 py-4 flex items-center justify-between bg-white/90 backdrop-blur-sm">
-            <p className="text-[10px] font-bold text-navy/30 uppercase tracking-widest">AI Filter Active</p>
-            <button onClick={onClearAll} className="text-[10px] font-black text-navy/30 hover:text-red-600 uppercase tracking-widest transition-colors">Clear & Reset</button>
+          <div className="flex-shrink-0 border-t border-gray-100 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between bg-white/90 backdrop-blur-sm">
+            <div className="flex flex-col gap-0.5">
+              <button onClick={onClearAll} className="text-[9px] font-black text-red-500/40 hover:text-red-600 uppercase tracking-widest transition-colors text-left">Clear & Reset</button>
+            </div>
+            
+            {step === 'questions' && answeredCount > 0 && (
+              <button 
+                onClick={onGenerateQuestions}
+                disabled={isLoading}
+                className="px-5 py-2.5 bg-navy text-white text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-lg shadow-navy/10 hover:bg-[#06142E] transition-all active:scale-95 flex items-center gap-2"
+              >
+                {isLoading ? (
+                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
+                )}
+                <span>Filter & Next Phase</span>
+              </button>
+            )}
           </div>
         )}
         </div>
