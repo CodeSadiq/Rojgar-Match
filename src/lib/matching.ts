@@ -55,7 +55,7 @@ export function getEligibleJobs(
     }
 
     // 2. EXPIRATION FILTER: Skip if expired for more than 30 days
-    const lastDate = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+    const lastDate = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || (job as any).lastDate;
     if (lastDate) {
       const daysDiff = daysFromNow(lastDate);
       if (daysDiff !== null && daysDiff < -30) continue;
