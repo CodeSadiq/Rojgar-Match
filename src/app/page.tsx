@@ -617,13 +617,13 @@ export default function Home() {
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
               <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-3 md:py-10 -mt-8 md:mt-0">
-                <div className="max-w-[800px] text-left space-y-1 md:space-y-6">
+                <div className="max-w-[800px] text-left space-y-0.5 md:space-y-2">
                   <h1 className="text-xl md:text-6xl font-serif font-bold text-navy/90 leading-tight drop-shadow-sm">
                     Government Jobs For You
                   </h1>
                   <div className="max-w-[450px] md:max-w-[650px]">
                     <p className="text-[10px] md:text-[16px] text-navy/40 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                      See gov openings matched to your qualifications.
+                      See government openings matched to your qualifications.
                     </p>
                   </div>
                 </div>
@@ -702,15 +702,11 @@ export default function Home() {
 
                         <div className="relative z-10 max-w-[800px] w-full">
                           <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.25em] text-navy/40 mb-2 md:mb-3">
-                            Welcome to RojgarMatch
+                            Welcome to Rojgar Match
                           </p>
 
-                          <h2 className="text-2xl md:text-5xl font-serif font-bold text-navy leading-tight mb-2 md:mb-5">
-                            Find Government Jobs and Updates
-                          </h2>
-
-                          <p className="text-[13px] md:text-[16px] text-navy/60 font-medium mb-6 md:mb-12 leading-relaxed max-w-[400px] md:max-w-[540px] mx-auto">
-                            Add your education to see government jobs that match your qualification.
+                          <p className="text-[15px] md:text-[19px] text-navy/70 font-medium mb-8 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
+                            Find government jobs and updates that match your qualifications.
                           </p>
 
                           <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-5 mb-6 md:mb-12 text-left">
@@ -820,12 +816,27 @@ export default function Home() {
                             </h3>
                             <Link
                               href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
-                              className="hidden md:flex text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest items-center gap-1 transition-all no-underline"
+                              className="hidden md:flex text-[11px] font-black text-white/60 hover:text-white uppercase tracking-[0.2em] items-center gap-1.5 transition-all no-underline"
                             >
                               <span>View All</span>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                             </Link>
                           </div>
+                        </div>
+
+                        {/* Mobile Dot Indicators in Heading Bar (Top Middle) */}
+                        <div className="absolute top-[8px] left-1/2 -translate-x-1/2 flex gap-1.5 items-center md:hidden">
+                          {CATEGORIES.map((_, idx) => {
+                            const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+                            const isActive = idx === realIndex;
+                            return (
+                              <div
+                                key={idx}
+                                className={`w-1 h-1 rounded-full transition-all duration-300 ${isActive ? 'bg-white w-2.5' : 'bg-white/30'
+                                  }`}
+                              />
+                            );
+                          })}
                         </div>
 
                         <div className="flex items-center gap-3 flex-shrink-0">
@@ -870,6 +881,8 @@ export default function Home() {
                           </div>
                         </div>
                       </div>
+
+
 
                       <div
                         className="p-0 relative overflow-hidden marquee-viewer touch-pan-y"
@@ -937,7 +950,7 @@ export default function Home() {
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
-                      <div className="px-4 mt-auto flex flex-col items-center pb-4 md:pb-10">
+                      <div className="px-4 mt-auto hidden md:flex flex-col items-center pb-4 md:pb-10">
                         <div className="flex gap-1.5 h-1 w-full px-2 mb-2">
                           {CATEGORIES.map((_, idx) => {
                             const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
@@ -957,12 +970,6 @@ export default function Home() {
                               </div>
                             );
                           })}
-                        </div>
-
-                        {/* Mobile Swipe Indicator */}
-                        <div className="md:hidden flex items-center justify-center gap-2 py-2 opacity-30 mt-1">
-                          <span className="text-[9px] font-bold text-navy uppercase tracking-[0.2em]">Swipe to explore</span>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-navy"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                         </div>
                       </div>
 

@@ -187,7 +187,7 @@ export default function LoginPage() {
         <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
 
           {/* 🔙 BACK NAVIGATION (Repositioned) */}
-          <div className="mb-2 md:mb-6">
+          <div className="mb-2 md:mb-4">
             <BackButton
               href="/"
               className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2"
@@ -197,13 +197,13 @@ export default function LoginPage() {
             </BackButton>
           </div>
 
-          <div className="text-center mb-4 md:mb-6">
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-none mb-1">Login</h2>
+          <div className="text-center mb-3 md:mb-4">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy leading-none mb-1">Login</h2>
           </div>
 
           {/* AUTH CARD */}
           <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50 mx-1 md:mx-0">
-            <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4 md:space-y-6">
+            <form onSubmit={handleLogin} className="p-5 md:py-6 md:px-8 space-y-3.5 md:space-y-4.5">
 
               {error && (
                 <div className="bg-red/5 border-2 border-red/10 text-red text-[10px] font-black uppercase tracking-widest p-4 rounded-xl md:rounded-2xl animate-in fade-in slide-in-from-top-2">
@@ -211,10 +211,10 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <div className="space-y-4 md:space-y-6">
+              <div className="space-y-3.5 md:space-y-4.5">
                 {/* EMAIL */}
                 <div>
-                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-1.5 md:mb-2 block px-1">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-navy/50 mb-1 block px-1">
                     Email Address
                   </label>
                   <div className="relative group/field">
@@ -227,7 +227,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Email"
-                      className="w-full bg-white border-2 border-gray-100 py-3 md:py-4 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
+                      className="w-full bg-white border-2 border-gray-100 py-2.5 md:py-3 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
                     />
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-white border-2 border-gray-100 py-3 md:py-4 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
+                      className="w-full bg-white border-2 border-gray-100 py-2.5 md:py-3 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
                     />
                     <button
                       type="button"
@@ -271,11 +271,11 @@ export default function LoginPage() {
               </div>
 
               {/* MAIN ACTION */}
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3.5 md:py-4 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-3.5 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
@@ -318,7 +318,7 @@ export default function LoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-3 md:py-4 px-8 font-black text-[9px] md:text-[10px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 rounded-xl md:rounded-2xl active:scale-[0.95] group/guest"
+                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-2.5 md:py-3.5 px-8 font-black text-[9px] md:text-[10px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 rounded-xl md:rounded-2xl active:scale-[0.95] group/guest"
               >
                 <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all scale-90 md:scale-100">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -338,7 +338,7 @@ export default function LoginPage() {
             </form>
 
             {/* BOTTOM LINK */}
-            <div className="bg-gray-50/50 p-6 text-center border-t border-gray-100">
+            <div className="bg-gray-50/50 p-4 md:p-5 text-center border-t border-gray-100">
               <p className="text-[14px] font-sans font-medium text-gray-500 items-center justify-center gap-2 flex">
                 Don't have an account?
                 <Link href="/signup" className="text-navy font-bold hover:text-[#1d4ed8] transition-colors no-underline">
