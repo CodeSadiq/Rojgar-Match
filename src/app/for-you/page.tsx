@@ -349,7 +349,7 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto px-0 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
         <div className="hidden md:block mb-6 pt-6">
           <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
             <IconArrowLeft /> Back to Dashboard
@@ -415,17 +415,17 @@ export default function ForYouPage() {
         />
 
         {isLoading ? (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 px-4 md:px-0">
             {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="flex flex-col gap-1 md:gap-6">
+          <div className="flex flex-col gap-1 md:gap-6 px-4 md:px-0">
             {jobs.map((job, idx) => (
               <RecruitmentCard key={idx} job={job} isMatched={true} />
             ))}
           </div>
         ) : (
-          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
+          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center mx-4 md:mx-0">
             <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>

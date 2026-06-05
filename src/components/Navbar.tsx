@@ -24,15 +24,15 @@ export default function Navbar() {
     const checkAuth = () => {
       const authStr = localStorage.getItem('rojgarmatch_auth');
       const profileStr = localStorage.getItem('rojgarmatch_profile');
-      
+
       let authData: any = null;
       let profileData: any = null;
 
       if (authStr) {
-        try { authData = JSON.parse(authStr); } catch (e) {}
+        try { authData = JSON.parse(authStr); } catch (e) { }
       }
       if (profileStr) {
-        try { profileData = JSON.parse(profileStr); } catch (e) {}
+        try { profileData = JSON.parse(profileStr); } catch (e) { }
       }
 
       setIsLoggedIn(!!authData);

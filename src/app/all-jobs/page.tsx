@@ -188,11 +188,11 @@ function JobsPageContent() {
         {/* JOB LISTING */}
         <section className="space-y-12 h-full">
           {isLoading ? (
-            <div className="flex flex-col gap-1 md:gap-6">
+            <div className="flex flex-col gap-1 md:gap-6 px-4 md:px-0">
               {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : (
-            <div className="flex flex-col gap-1 md:gap-6">
+            <div className="flex flex-col gap-1 md:gap-6 px-4 md:px-0">
               {filteredJobs.length === 0 ? (
                 <div className="py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
               ) : (

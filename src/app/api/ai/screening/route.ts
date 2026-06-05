@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         "X-Title": "Rojgar Match"
       },
       body: JSON.stringify({
-        "model": "google/gemini-2.0-flash-001", // Fast, Cheap, and Reliable for high traffic
+        "model": "openai/gpt-4o-mini", // Fast, Cheap, and Reliable for high traffic
         "messages": [
           { "role": "user", "content": prompt }
         ]

@@ -277,7 +277,10 @@ export default function Home() {
         throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
       }
 
-      if (!res.ok) throw new Error('Screening failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || errData.details || `Screening failed with status ${res.status}`);
+      }
       const data = await res.json();
       const newQuestionsRaw = data.questions || [];
 
@@ -581,6 +584,20 @@ export default function Home() {
         {/* VIEW: FOR YOU */}
         {activeTab === 'for-you' && (
           <>
+            {/* MOBILE HERO (ROJGAR MATCH) */}
+            <div className="flex md:hidden w-full bg-[#FAFAFA] relative py-12 px-6 items-center justify-center flex-col text-center border-b-2 border-gray-100 overflow-hidden">
+              <div className="absolute inset-0 bg-cover bg-bottom bg-[url('/mobilehero.png')] opacity-[0.25] z-0" />
+              <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-[#FAFAFA] to-transparent z-1" />
+              <div className="relative z-10 flex flex-col items-center mt-2">
+                <h1 className="text-[38px] font-serif font-black text-[#0D244D] tracking-tight leading-[1.1] mb-3">
+                  Rojgar Match
+                </h1>
+                <p className="text-[10px] font-black text-navy/50 uppercase tracking-[0.25em]">
+                  Government Jobs Portal
+                </p>
+              </div>
+            </div>
+
             {/* HERO: UPPER TEXT ALIGNMENT (SKY-TEXT / BASE-BUILDING) */}
             <div className="hidden md:flex w-full bg-[#FAFAFA] relative h-[160px] md:h-[220px] items-center overflow-hidden border-b-2 border-gray-100">
               {/* Background Layer (Anchored at Bottom for upper-text space) */}
@@ -638,38 +655,46 @@ export default function Home() {
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
                   <header className={`flex-col md:flex-row md:items-center justify-between bg-[#0D244D] md:bg-transparent px-5 md:px-0 py-4 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
-                    <div className="flex items-center justify-between w-full md:w-auto min-w-0">
-                      <div className="min-w-0">
-                        <h2 className="text-[13px] md:text-2xl font-serif font-bold text-white md:text-navy uppercase tracking-widest md:normal-case md:tracking-tight truncate">
-                          Recruitment For You
+                    <div className="flex flex-col w-full md:w-auto">
+                      <div className="flex items-center justify-between w-full mb-3 md:mb-0">
+                        <h2 className="text-[13px] md:text-3xl font-serif font-bold text-white md:text-[#0D244D] uppercase md:normal-case tracking-[0.12em] md:tracking-tight truncate pr-2">
+                          <span>Recruitments for You</span>
                         </h2>
+                        <Link href="/for-you" className="md:hidden text-[10px] font-black text-white/70 uppercase tracking-widest hover:text-white no-underline whitespace-nowrap pl-1">
+                          View All ›
+                        </Link>
                       </div>
                       
-                      {/* Mobile Top Row Right (AI + Refresh + View All) */}
-                      <div className="flex md:hidden items-center gap-2 flex-shrink-0 pl-1">
-                        {/* Mobile Short AI Button */}
-                        {recommendedJobs.length > 0 && (
+                      <div className="flex md:hidden items-center justify-between w-full">
+                        {/* Mobile Full AI Button */}
+                        {recommendedJobs.length > 0 ? (
                           <button
                             onClick={openAIScreening}
                             disabled={isScreeningLoading}
-                            className={`flex items-center justify-center gap-1 h-6 px-2 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-500/30 text-blue-200 border-blue-400/50' : 'bg-white/10 text-white/80 border-white/10 hover:bg-white/20 hover:text-white'}`}
+                            className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#0D244D] hover:bg-gray-50'}`}
                           >
-                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                               <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                             </svg>
-                            <span className="text-[9px] font-bold tracking-wider uppercase">
-                              {isScreeningLoading ? '...' : (isFilterApplied ? 'ON' : 'AI')}
+                            <span className="text-[10px] font-black tracking-wider uppercase">
+                              {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filter Active' : 'Filter more with AI')}
                             </span>
                             {isFilterApplied && !isScreeningLoading && (
-                              <span className="w-1 h-1 rounded-full bg-blue-600 ml-0.5" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />
                             )}
                           </button>
-                        )}
+                        ) : <div />}
 
-                        <Link href="/for-you" className="text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline whitespace-nowrap pl-1">
-                          View All ›
-                        </Link>
+                        {/* Mobile Refresh Button */}
+                        <button
+                          onClick={() => fetchJobs(true)}
+                          disabled={isRefreshing}
+                          className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                          title="Refresh Jobs"
+                        >
+                          <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                        </button>
                       </div>
                     </div>
 
@@ -845,8 +870,9 @@ export default function Home() {
                 </div>
               </section>
 
-              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-8 md:mt-0 px-0">
-                <div ref={sidebarRef} className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-8 md:mt-0 px-0 pb-10">
+                {/* DESKTOP ONLY SLIDER PANEL */}
+                <div ref={sidebarRef} className="hidden md:flex bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(prev => !prev)}
                     onMouseEnter={() => setIsAutoPlaying(false)}
@@ -934,7 +960,7 @@ export default function Home() {
 
 
                       <div
-                        className="p-0 relative overflow-hidden marquee-viewer touch-pan-y"
+                        className="p-0 relative overflow-hidden marquee-viewer touch-pan-y bg-[#F8FAFC] md:bg-transparent pt-4 md:pt-0"
                         onTouchStart={(e) => { (window as any)._swipeX = e.touches[0].clientX; }}
                         onTouchEnd={(e) => {
                           const startX = (window as any)._swipeX;
@@ -977,14 +1003,14 @@ export default function Home() {
                                     <Link
                                       href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
                                       key={`${n.id}-${i}`}
-                                      className="group block py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-navy/[0.02] px-1 no-underline"
+                                      className="group block p-4 md:p-0 md:py-4 mb-3 md:mb-0 bg-white md:bg-transparent border-2 md:border-0 border-gray-100 md:border-b md:border-gray-100 rounded-xl md:rounded-none shadow-sm md:shadow-none md:last:border-b-0 transition-all hover:border-navy/20 md:hover:border-gray-100 hover:bg-navy/[0.02] md:px-1 no-underline"
                                     >
-                                      <div className="text-[13px] md:text-[14px] font-bold text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                      <div className="text-[14px] md:text-[14px] font-serif md:font-sans font-bold text-[#0D244D] md:text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
                                         {n.text}
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
-                                        <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                                        <span className={`w-1.5 md:w-1 h-1.5 md:h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                        <div className="text-[10px] md:text-[8px] font-bold md:font-black uppercase tracking-[0.1em] text-navy/40 group-hover:text-navy/50">{n.time}</div>
                                       </div>
                                     </Link>
                                   ))}
@@ -1025,6 +1051,46 @@ export default function Home() {
 
                     </div>
                   </div>
+                </div>
+
+                {/* MOBILE ONLY MULTIPLE PANELS */}
+                <div className="flex md:hidden flex-col gap-6">
+                  {categorizedItems.map(category => (
+                    <div key={category.cat} className="bg-[#F8FAFC] border-2 border-gray-100 rounded-[28px] overflow-hidden shadow-sm flex flex-col">
+                      <div className="flex items-center justify-between px-5 py-4 bg-[#0D244D] text-white">
+                        <div className="flex items-center min-w-0">
+                          <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] text-white truncate">
+                            {category.cat}
+                          </h3>
+                        </div>
+                        <Link
+                          href={`/${category.cat.toLowerCase().replace(' ', '-')}`}
+                          className="text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline flex-shrink-0 ml-3"
+                        >
+                          View All ›
+                        </Link>
+                      </div>
+                      <div className="p-4 pt-5 pb-5">
+                        {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => (
+                          <Link
+                            href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                            key={`${n.id}-${i}`}
+                            className="group block p-4 mb-3 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
+                          >
+                            <div className="text-[14px] font-serif font-bold text-[#0D244D] leading-snug mb-2 line-clamp-2">
+                              {n.text}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`w-1.5 h-1.5 rounded-full ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                              <div className="text-[10px] font-black uppercase tracking-[0.1em] text-navy/40">{n.time}</div>
+                            </div>
+                          </Link>
+                        )) : (
+                          <div className="py-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </aside>
 
