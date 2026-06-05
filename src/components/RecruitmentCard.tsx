@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { fmtDate } from '@/lib/helpers';
 
 interface RecruitmentCardProps {
   job: any;
@@ -10,8 +11,9 @@ interface RecruitmentCardProps {
 }
 
 const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highlighted }) => {
-  const lastDateVal = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
-  const isFallback = !lastDateVal?.toString().includes('202');
+  const rawLastDate = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
+  const lastDateVal = fmtDate(rawLastDate);
+  const isFallback = !rawLastDate?.toString().includes('202');
 
   return (
     <Link

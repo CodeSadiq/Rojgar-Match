@@ -23,7 +23,7 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
 
   .jd {
-    --serif:  'Libre Baskerville', Georgia, serif;
+    --serif:  'Source Sans 3', system-ui, sans-serif;
     --sans:   'Source Sans 3', system-ui, sans-serif;
     --mono:   'Roboto Mono', monospace;
 
@@ -44,7 +44,6 @@ const styles = `
     --amber:      #78350f;
 
     font-family: var(--sans);
-    font-size: 18px;
     line-height: 1.6;
     color: var(--ink);
     background: var(--paper);
@@ -158,12 +157,11 @@ const styles = `
 
   /* ── LEDE ── */
   .jd-lede {
-    font-size: 15px;
+    font-size: 17px;
     color: var(--ink-light);
+    font-weight: 500;
     font-style: italic;
     line-height: 1.7;
-    border-left: 3px solid var(--navy);
-    padding-left: 16px;
     margin: 24px 0;
   }
 
@@ -286,7 +284,9 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
 
             return (
               <div key={i} className="qual-course-block">
-                <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{name}</div>
+                <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>
+                  <Editable editable={editable} value={name} path={isGeneral ? `qualification.courses.${i}.name` : `posts.${postIndex}.qualification.courses.${i}.name`} onUpdate={onUpdate} />
+                </div>
                 {branches.length > 0 && (
                   <div className="qual-branch-line" style={{ marginTop: '1px' }}>
                     <span className="qual-branch-label" style={{ fontSize: '9px' }}>Stream: </span>
@@ -304,6 +304,17 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
             );
           })}
         </div>
+        
+        {editable && (
+          <div style={{ marginTop: courses.length > 0 ? '8px' : '0' }}>
+            <button
+              onClick={() => onUpdate(isGeneral ? "qualification.courses" : `posts.${postIndex}.qualification.courses`, [...courses, { name: "New Course", branches: [] }])}
+              className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-2 py-1 rounded text-[10px] font-bold transition-all"
+            >
+              + Add Course
+            </button>
+          </div>
+        )}
 
         {(extra || editable) && (
           <div className="qual-extra" style={{ marginTop: '8px', padding: '4px 8px' }}>
@@ -318,7 +329,22 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
           </div>
         )}
 
-        {post.prerequisite?.length > 0 && <div className="qual-prereq" style={{ fontSize: '10px' }}>⚠ {post.prerequisite.join("; ")}</div>}
+        {((post.prerequisite && post.prerequisite.length > 0) || editable) && (
+          <div className="qual-prereq" style={{ fontSize: '10px', marginTop: '6px' }}>
+            <span style={{ fontWeight: 600 }}>⚠ Prereq: </span>
+            {editable ? (
+              <Editable
+                editable={editable}
+                value={(post.prerequisite || []).join("; ")}
+                path={isGeneral ? "prerequisite" : `posts.${postIndex}.prerequisite`}
+                placeholder="Requirements (comma separated)"
+                onUpdate={(path: string, val: string) => onUpdate(path, val ? val.split(/[;,]/).map(s => s.trim()).filter(Boolean) : [])}
+              />
+            ) : (
+              post.prerequisite.join("; ")
+            )}
+          </div>
+        )}
         {post.appearingEligible && (
           <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
             <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
@@ -329,7 +355,21 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
     );
   }
   const qualArr: any[] = Array.isArray(q) ? q : q ? [q] : [];
-  if (qualArr.length === 0) return <td className="qual-cell" style={{ color: "var(--ink-muted)", fontStyle: "italic" }}>Not specified</td>;
+  if (qualArr.length === 0) {
+    if (editable) {
+      return (
+        <td className="qual-cell center" style={{ verticalAlign: "middle" }}>
+          <button
+            onClick={() => onUpdate(isGeneral ? "qualification" : `posts.${postIndex}.qualification`, { courses: [{ name: "New Qualification", branches: [] }], extraQualificationText: "" })}
+            className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all"
+          >
+            + Add Qualification
+          </button>
+        </td>
+      );
+    }
+    return <td className="qual-cell" style={{ color: "var(--ink-muted)", fontStyle: "italic" }}>Not specified</td>;
+  }
   return (
     <td className="qual-cell">
       {qualArr.map((item, i) => {
@@ -360,7 +400,22 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
           </React.Fragment>
         );
       })}
-      {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
+      {((post.prerequisite && post.prerequisite.length > 0) || editable) && (
+        <div className="qual-prereq" style={{ fontSize: '10px', marginTop: '6px' }}>
+          <span style={{ fontWeight: 600 }}>⚠ Prereq: </span>
+          {editable ? (
+            <Editable
+              editable={editable}
+              value={(post.prerequisite || []).join("; ")}
+              path={isGeneral ? "prerequisite" : `posts.${postIndex}.prerequisite`}
+              placeholder="Requirements (comma separated)"
+              onUpdate={(path: string, val: string) => onUpdate(path, val ? val.split(/[;,]/).map(s => s.trim()).filter(Boolean) : [])}
+            />
+          ) : (
+            post.prerequisite.join("; ")
+          )}
+        </div>
+      )}
       {post.appearingEligible && (
         <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
           <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
@@ -372,18 +427,26 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
 }
 
 // ── AGE CELL ─────────────────────────────────────────────────────────────────
-function AgeCell({ post, job }: { post: any; job: any }) {
+function AgeCell({ post, job, editable, onUpdate, postIndex, isGeneral }: any) {
   const pAL = post?.ageLimit || {};
   const jAL = job?.ageLimit || {};
   const min = pAL.min ?? jAL.min;
   const max = pAL.max ?? jAL.max;
   const asOn = pAL.asOnDate ?? jAL.asOnDate;
-  if (!min && !max) return <td className="center mono" style={{ color: "var(--ink-muted)", border: "1px solid var(--border)" }}>—</td>;
+  if (!min && !max && !editable) return <td className="center mono" style={{ color: "var(--ink-muted)", border: "1px solid var(--border)" }}>—</td>;
   const rawRelax = (pAL.relaxation && Object.keys(pAL.relaxation).length > 0) ? pAL.relaxation : jAL.relaxation;
   const relaxEntries = rawRelax ? Object.entries(rawRelax).filter(([, v]) => v != null && v !== 0 && !isNaN(Number(v))) as [string, number][] : [];
   return (
     <td className="center" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)" }}>
-      <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>{min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}</div>
+      {editable ? (
+        <div style={{ display: "flex", gap: "4px", justifyContent: "center", alignItems: "center" }}>
+          <Editable editable={true} value={min} path={isGeneral ? "ageLimit.min" : `posts.${postIndex}.ageLimit.min`} placeholder="Min" onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} />
+          <span>-</span>
+          <Editable editable={true} value={max} path={isGeneral ? "ageLimit.max" : `posts.${postIndex}.ageLimit.max`} placeholder="Max" onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} />
+        </div>
+      ) : (
+        <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>{min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}</div>
+      )}
       {asOn && <div className="age-ason" style={{ fontSize: "10px", color: "var(--ink-muted)", marginTop: "2px", fontWeight: 500 }}>as on {fmtDate(asOn)}</div>}
       {relaxEntries.length > 0 && (
         <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
@@ -400,35 +463,62 @@ function AgeCell({ post, job }: { post: any; job: any }) {
 }
 
 // ── SALARY CELL ───────────────────────────────────────────────────────────────
-function SalaryCell({ post, job }: { post: any; job: any }) {
+function SalaryCell({ post, job, editable, onUpdate, postIndex, isGeneral }: any) {
   const pSal = post?.salary || {};
   const jSal = job?.salary || {};
   const payLevel = pSal.payLevel ?? jSal.payLevel;
   const min = pSal.min ?? jSal.min;
   const max = pSal.max ?? jSal.max;
-  if (!payLevel && !min && !max) return <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
+  if (!payLevel && !min && !max && !editable) return <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
   return (
     <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
-      {payLevel != null && <div className="sal-level" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "13px" }}>Level {payLevel}</div>}
-      {(min || max) ? (
-        <div className="sal-range" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>{min ? fmtMoney(min) : ""}{min && max ? " – " : ""}{max ? fmtMoney(max) : ""}</div>
-      ) : null}
+      {editable ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
+            <span style={{ fontSize: "11px" }}>Lvl</span>
+            <Editable editable={true} value={payLevel} path={isGeneral ? "salary.payLevel" : `posts.${postIndex}.salary.payLevel`} onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "2px", justifyContent: "center" }}>
+            <Editable editable={true} value={min} path={isGeneral ? "salary.min" : `posts.${postIndex}.salary.min`} onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} placeholder="Min" />
+            <span>-</span>
+            <Editable editable={true} value={max} path={isGeneral ? "salary.max" : `posts.${postIndex}.salary.max`} onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} placeholder="Max" />
+          </div>
+        </div>
+      ) : (
+        <>
+          {payLevel != null && <div className="sal-level" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "13px" }}>Level {payLevel}</div>}
+          {(min || max) ? (
+            <div className="sal-range" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>{min ? fmtMoney(min) : ""}{min && max ? " – " : ""}{max ? fmtMoney(max) : ""}</div>
+          ) : null}
+        </>
+      )}
     </td>
   );
 }
 
 // ── CATEGORY VAC CELL ─────────────────────────────────────────────────────────
-function CatVacCell({ post, job }: { post: any; job: any }) {
-  const catVac = post?.categoryWiseVacancy || job?.categoryWiseVacancy;
+function CatVacCell({ post, job, editable, onUpdate, postIndex, isGeneral }: any) {
+  const catVac = post?.categoryWiseVacancy || job?.categoryWiseVacancy || {};
   const hasData = hasCategoryData(catVac);
-  if (!hasData) return <td className="center mono" style={{ fontSize: 15, padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
+  if (!hasData && !editable) return <td className="center mono" style={{ fontSize: 15, padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
   return (
     <td style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
       <div className="cat-vac-grid">
         {catCols.map((c) => (
           <div key={c} className="cat-vac-chip">
             <span className="cat-vac-chip-label">{CAT_LABELS[c]}</span>
-            <span className="cat-vac-chip-val">{catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}</span>
+            <span className="cat-vac-chip-val">
+              {editable ? (
+                <Editable 
+                  editable={true} 
+                  path={isGeneral ? `categoryWiseVacancy.${c}` : `posts.${postIndex}.categoryWiseVacancy.${c}`}
+                  value={catVac[c] != null ? String(catVac[c]) : ""} 
+                  onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
+                />
+              ) : (
+                catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"
+              )}
+            </span>
           </div>
         ))}
       </div>
@@ -540,7 +630,7 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
     }
   });
 
-  const rawPosts: any[] = (job.posts || []).length > 0 ? job.posts : [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }];
+  const rawPosts: any[] = job.posts ? job.posts : [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }];
 
   // Salary derivation
   const salaryValues = rawPosts.map((p) => `${p.salary?.payLevel || ''}|${p.salary?.min || ''}|${p.salary?.max || ''}`);
@@ -571,21 +661,18 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           <div className="jd-hero-cell accent">
             <div className="jd-hero-label">Total Vacancies</div>
             <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-            <div className="jd-hero-sub">Posts to be filled</div>
           </div>
           <div className="jd-hero-cell">
             <div className="jd-hero-label">Application Start Date</div>
-            <div className="jd-hero-value" style={{ fontSize: 20 }}>
+            <div className="jd-hero-value" style={{ fontSize: 22 }}>
               {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
             </div>
-            <div className="jd-hero-sub">Application opens</div>
           </div>
           <div className="jd-hero-cell">
             <div className="jd-hero-label">Application Last Date</div>
-            <div className="jd-hero-value" style={{ fontSize: 19 }}>
+            <div className="jd-hero-value" style={{ fontSize: 22, color: '#D93025', fontWeight: 'bold' }}>
               {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
             </div>
-            <div className="jd-hero-sub">Application deadline</div>
           </div>
         </div>
 
@@ -776,39 +863,100 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                 <th className="center" style={{ minWidth: 130 }}>Age Limit (incl. Relaxation)</th>
                 <th className="center" style={{ minWidth: 120 }}>Salary / Pay Level</th>
                 <th style={{ minWidth: 280 }}>Qualification & Requirements</th>
+                {editable && <th className="center" style={{ width: 60 }}>Actions</th>}
               </tr>
             </thead>
             <tbody>
-              {rawPosts.map((p: any, idx: number) => (
-                <tr key={idx}>
-                  <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
-                    {p.name}
-                  </td>
-                  <td className="center bold mono" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
-                    {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
-                  </td>
-                  <CatVacCell post={p} job={job} />
-                  <AgeCell post={p} job={job} />
-                  <SalaryCell post={p} job={job} />
-                  <QualCell
-                    post={p}
-                    editable={editable}
-                    onUpdate={onUpdate}
-                    postIndex={idx}
-                    isGeneral={!(job.posts || []).length}
-                  />
-                </tr>
-              ))}
+              {rawPosts.map((p: any, idx: number) => {
+                const isGeneral = !(job.posts || []).length;
+                return (
+                  <tr key={idx}>
+                    <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
+                      <Editable 
+                        editable={editable} 
+                        value={p.name} 
+                        path={isGeneral ? "title" : `posts.${idx}.name`} 
+                        onUpdate={onUpdate} 
+                      />
+                    </td>
+                    <td className="center bold mono" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
+                      <Editable 
+                        editable={editable} 
+                        value={p.totalVacancy != null ? String(p.totalVacancy) : ""} 
+                        path={isGeneral ? "totalVacancy" : `posts.${idx}.totalVacancy`} 
+                        onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
+                      />
+                    </td>
+                    <CatVacCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />
+                    <AgeCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />
+                    <SalaryCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />
+                    <QualCell post={p} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />
+                    {editable && (
+                      <td className="center" style={{ verticalAlign: "middle", border: "1px solid var(--border)" }}>
+                        <button
+                          onClick={() => {
+                            if (window.confirm("Are you sure you want to delete this post?")) {
+                              const newPosts = [...rawPosts];
+                              newPosts.splice(idx, 1);
+                              onUpdate("posts", newPosts);
+                            }
+                          }}
+                          className="bg-red-50 text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"
+                          title="Delete Post"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
               <tr className="tr-total">
                 <td>Total (All Posts)</td>
                 <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                  {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
+                  {editable ? (
+                    <Editable 
+                      editable={editable} 
+                      value={job.totalVacancy != null ? String(job.totalVacancy) : ""} 
+                      path="totalVacancy" 
+                      onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
+                    />
+                  ) : (
+                    job.totalVacancy?.toLocaleString("en-IN") ?? "—"
+                  )}
                 </td>
                 <td />
                 <td />
                 <td />
                 <td />
+                {editable && <td />}
               </tr>
+              {editable && (
+                <tr>
+                  <td colSpan={7} className="center" style={{ padding: "16px", border: "1px solid var(--border)" }}>
+                    <button
+                      onClick={() => {
+                        const newPost = { 
+                          name: "New Post", 
+                          totalVacancy: 0, 
+                          ageLimit: { min: null, max: null, asOnDate: null, relaxation: {} }, 
+                          salary: { payLevel: null, min: null, max: null }, 
+                          categoryWiseVacancy: { general: null, ews: null, obc: null, sc: null, st: null, pwd: null },
+                          qualification: { courses: [], extraQualificationText: "" },
+                          prerequisite: [],
+                          appearingEligible: false,
+                          appearingConditions: ""
+                        };
+                        onUpdate("posts", [...rawPosts, newPost]);
+                      }}
+                      className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-5 py-2 rounded-md font-bold text-sm transition-all inline-flex items-center gap-2"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      Add New Post
+                    </button>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

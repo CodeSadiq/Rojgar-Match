@@ -5,11 +5,13 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
 import { getRegistryData } from '@/lib/data-service';
+import { daysFromNow } from '@/lib/helpers';
 
 function AdminPageContent() {
   const [publishedJobs, setPublishedJobs] = useState<any[]>([]);
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const [filterExpired, setFilterExpired] = useState(false);
 
   const fetchPublishedJobs = async () => {
     setIsLoadingJobs(true);
@@ -72,6 +74,11 @@ function AdminPageContent() {
   };
 
   const filteredJobs = publishedJobs.filter(job => {
+    const lastDate = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+    const isExpired = lastDate ? (daysFromNow(lastDate) ?? 0) < 0 : false;
+
+    if (filterExpired && !isExpired) return false;
+
     const queryTerms = adminSearchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
     return queryTerms.length === 0 || queryTerms.every(term => 
       isFuzzyMatch(job.title, term) ||
@@ -185,6 +192,16 @@ function AdminPageContent() {
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </div>
+              <button
+                onClick={() => setFilterExpired(!filterExpired)}
+                className={`px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border-2 ${filterExpired ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-gray-100 text-navy/40 hover:text-navy hover:border-gray-200'}`}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                {filterExpired ? 'All Posts' : `Find Expired (${publishedJobs.filter(job => {
+                  const ld = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+                  return ld ? (daysFromNow(ld) ?? 0) < 0 : false;
+                }).length})`}
+              </button>
               <Link
                 href="/admin/editor"
                 className="px-8 py-4 bg-navy text-white rounded-xl text-[11px] font-black uppercase tracking-widest no-underline hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
@@ -192,6 +209,15 @@ function AdminPageContent() {
                 Assemble New Listing <span className="text-lg leading-none">+</span>
               </Link>
             </div>
+
+
+
+            {filterExpired && (
+              <div className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-red-600">⚠ Currently showing only expired recruitments for cleanup</span>
+                <button onClick={() => setFilterExpired(false)} className="text-[10px] font-black uppercase tracking-widest text-red-600 underline bg-transparent border-none cursor-pointer">Clear Filter</button>
+              </div>
+            )}
 
             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden divide-y divide-gray-100 shadow-sm">
               {isLoadingJobs ? (
@@ -203,8 +229,17 @@ function AdminPageContent() {
                   <div key={job.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-gray-50/50 transition-colors">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        <span className={`w-1.5 h-1.5 rounded-full ${(() => {
+                          const ld = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+                          const expired = ld ? (daysFromNow(ld) ?? 0) < 0 : false;
+                          return expired ? 'bg-red-500' : 'bg-green-500';
+                        })()}`}></span>
                         <code className="text-[9px] font-black text-navy/30 uppercase tracking-widest">{job.id}</code>
+                        {(() => {
+                          const ld = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+                          const expired = ld ? (daysFromNow(ld) ?? 0) < 0 : false;
+                          return expired && <span className="text-[8px] font-black bg-red-100 text-red-600 px-2 py-0.5 rounded uppercase tracking-widest">Expired</span>;
+                        })()}
                       </div>
                       <h3 className="text-base font-serif font-bold text-navy truncate">{job.title}</h3>
                     </div>

@@ -1,4 +1,5 @@
 import { JobPost, Post } from '@/types/job';
+import { daysFromNow } from './helpers';
 
 export interface QualificationEntry {
   name: string;
@@ -51,6 +52,13 @@ export function getEligibleJobs(
         const isEligible = userGender && job.eligibleGender.some(g => g.toLowerCase() === userGender);
         if (!isEligible) continue;
       }
+    }
+
+    // 2. EXPIRATION FILTER: Skip if expired for more than 30 days
+    const lastDate = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate;
+    if (lastDate) {
+      const daysDiff = daysFromNow(lastDate);
+      if (daysDiff !== null && daysDiff < -30) continue;
     }
 
     const { matchedPosts, matchedOn } = getMatchedPostsForJob(candidate, job);

@@ -623,7 +623,7 @@ export default function Home() {
                   </h1>
                   <div className="max-w-[450px] md:max-w-[650px]">
                     <p className="text-[10px] md:text-[16px] text-navy/40 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                      Verified openings matched to your qualifications.
+                      See gov openings matched to your qualifications.
                     </p>
                   </div>
                 </div>

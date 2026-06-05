@@ -115,6 +115,14 @@ export default function ScreeningModal({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // 🛡️ Mitigation: 2MB file size limit
+    const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+    if (file.size > MAX_SIZE) {
+      alert('File is too large. Please upload a PDF smaller than 2MB.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -217,52 +225,54 @@ export default function ScreeningModal({
               </p>
             </div>
           ) : step === 'selection' ? (
-            <div className="p-4 md:p-10 flex flex-col gap-2 md:gap-4">
+            <div className="p-3 md:p-10 flex flex-col gap-2 md:gap-4">
               <button
                 onClick={() => setStep('textInput')}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-3 md:gap-5 p-3.5 md:p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
               >
-                <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
+                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-[15px] font-bold text-navy mb-1">Write everything about your qualification</h4>
-                  <p className="text-[12px] text-navy/40 font-medium">Explain your skills, experience and degrees in your own words.</p>
+                  <h4 className="text-[13px] md:text-[15px] font-bold text-navy mb-0.5 md:mb-1 leading-tight">Write everything about your qualification</h4>
+                  <p className="text-[10px] md:text-[12px] text-navy/40 font-medium leading-relaxed">Explain your skills, experience and degrees in your own words.</p>
                 </div>
               </button>
 
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
-              >
-                <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-[15px] font-bold text-navy mb-1">Upload Resume (AI Analysis)</h4>
-                  <p className="text-[12px] text-navy/40 font-medium">Automatically extract details from your PDF resume for filtering.</p>
-                </div>
-                <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf" className="hidden" />
-              </button>
+              {false && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group flex items-center gap-3 md:gap-5 p-3.5 md:p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                >
+                  <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
+                    <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-[13px] md:text-[15px] font-bold text-navy mb-0.5 md:mb-1 leading-tight">Upload Resume (AI Analysis)</h4>
+                    <p className="text-[10px] md:text-[12px] text-navy/40 font-medium leading-relaxed">Automatically extract details from your PDF resume for filtering.</p>
+                  </div>
+                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf" className="hidden" />
+                </button>
+              )}
 
               <button
                 onClick={() => { onGenerateQuestions(); setStep('questions'); }}
-                className="group flex items-center gap-5 p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-3 md:gap-5 p-3.5 md:p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
               >
-                <div className="w-14 h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
+                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                 </div>
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h4 className="text-[15px] font-bold text-navy">Generate screening questions</h4>
-                    <span className="px-2 py-0.5 bg-green-50 text-green-600 text-[9px] font-bold uppercase tracking-widest rounded-md border border-green-100">Recommended</span>
+                  <div className="flex flex-wrap items-center gap-2 mb-0.5 md:mb-1">
+                    <h4 className="text-[13px] md:text-[15px] font-bold text-navy leading-tight">Generate screening questions</h4>
+                    <span className="px-1.5 py-0.5 bg-green-50 text-green-600 text-[8px] md:text-[9px] font-bold uppercase tracking-widest rounded-md border border-green-100">Recommended</span>
                   </div>
-                  <p className="text-[11px] md:text-[12px] text-navy/40 font-medium">Answer simple Yes/No questions based on job requirements.</p>
+                  <p className="text-[10px] md:text-[12px] text-navy/40 font-medium leading-relaxed">Answer simple Yes/No questions based on job requirements.</p>
                 </div>
               </button>
             </div>
           ) : step === 'textInput' ? (
-            <div className="p-4 md:p-10 space-y-8">
+            <div className="p-3 md:p-10 space-y-5 md:space-y-8">
               <div className="space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.2em] text-navy ml-1">Your Qualifications & Details</label>
                 <div className="relative group">
@@ -270,7 +280,7 @@ export default function ScreeningModal({
                     value={qualificationText}
                     onChange={(e) => setQualificationText(e.target.value)}
                     placeholder="Example: Maine 12th science se pass kiya hai 80% marks ke saath. Mere paas CCC certificate bhi hai..."
-                    className="w-full h-48 md:h-64 p-6 rounded-xl border-2 border-gray-200 focus:border-navy focus:ring-8 focus:ring-navy/5 text-[16px] font-bold text-navy placeholder:text-navy/30 leading-relaxed resize-none bg-white transition-all shadow-sm"
+                    className="w-full h-40 md:h-64 p-4 md:p-6 rounded-xl border-2 border-gray-200 focus:border-navy focus:ring-8 focus:ring-navy/5 text-[15px] md:text-[16px] font-bold text-navy placeholder:text-navy/30 leading-relaxed resize-none bg-white transition-all shadow-sm"
                   />
                   <div className="absolute bottom-4 right-4 pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
                     <div className="flex gap-1">
@@ -285,33 +295,29 @@ export default function ScreeningModal({
                 </p>
               </div>
 
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center gap-2 md:gap-4 pt-2">
+                <button
+                  onClick={() => setStep('selection')}
+                  className="flex-1 py-4 md:py-5 bg-gray-100 text-navy/60 rounded-xl text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] transition-all hover:bg-gray-200 active:scale-[0.98] flex items-center justify-center whitespace-nowrap"
+                >
+                  Go Back
+                </button>
+
                 <button
                   onClick={() => handleTextSubmit()}
                   disabled={isSubmittingText || !qualificationText.trim()}
-                  className="w-full py-5 bg-navy text-white rounded-xl text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-navy/20 hover:bg-[#06142E] hover:shadow-navy/40 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden"
+                  className="flex-1 py-4 md:py-5 bg-navy text-white rounded-xl text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-navy/20 hover:bg-[#06142E] hover:shadow-navy/40 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
 
                   {isSubmittingText ? (
                     <>
-                      <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin mr-3" />
                       <span>Processing...</span>
                     </>
                   ) : (
-                    <>
-                      <span>Filter Jobs Now</span>
-                      <svg className="group-hover:translate-x-1.5 transition-transform duration-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                    </>
+                    <span>Filter Now</span>
                   )}
-                </button>
-
-                <button
-                  onClick={() => setStep('selection')}
-                  className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all group/back"
-                >
-                  <svg className="group-hover/back:-translate-x-1 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-                  Go Back
                 </button>
               </div>
             </div>
@@ -338,7 +344,7 @@ export default function ScreeningModal({
                       <div 
                         key={q.id} 
                         id={`q-container-${q.id}`}
-                        className={`flex flex-col gap-3 md:gap-4 p-4 md:p-7 rounded-xl border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'} ${idx > 0 ? 'mt-2 md:mt-3' : ''}`}
+                        className={`flex flex-col gap-2.5 md:gap-4 p-3.5 md:p-7 rounded-xl border-2 transition-all duration-300 ${isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'} ${idx > 0 ? 'mt-2 md:mt-3' : ''}`}
                       >
                         <div className="flex items-start gap-4">
                           <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-navy text-white text-[10px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>

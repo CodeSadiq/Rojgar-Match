@@ -9,6 +9,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
+    // 🛡️ Backend Safety: 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File size exceeds 2MB limit' }, { status: 400 });
+    }
+
     // Directly importing the library logic to avoid the buggy index.js 
     // which incorrectly enters debug mode in some environments.
     const pdf = require('pdf-parse/lib/pdf-parse.js');

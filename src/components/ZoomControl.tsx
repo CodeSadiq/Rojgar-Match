@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import BackButton from './BackButton';
 
 export default function ZoomControl() {
   const [zoom, setZoom] = useState(100);
@@ -28,16 +29,23 @@ export default function ZoomControl() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100]">
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end">
+      <BackButton className="bg-white/95 backdrop-blur shadow-xl border border-gray-200 rounded-full p-2 flex items-center justify-center text-navy hover:bg-navy hover:text-white transition-all w-12 h-12">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </BackButton>
+      
       <div className="bg-white/95 backdrop-blur shadow-xl border border-gray-200 rounded-full p-1 flex items-center gap-1">
-        <button 
+        <button
           onClick={() => changeZoom(10)}
           className="w-10 h-10 flex items-center justify-center bg-gray-50 text-navy rounded-full active:bg-navy active:text-white transition-all font-bold text-xl"
           aria-label="Zoom In"
         >
           +
         </button>
-        <button 
+        <button
           onClick={() => changeZoom(-10)}
           className="w-10 h-10 flex items-center justify-center bg-gray-50 text-navy rounded-full active:bg-navy active:text-white transition-all font-bold text-xl"
           aria-label="Zoom Out"

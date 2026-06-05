@@ -78,7 +78,7 @@ const styles = `
     --amber:      #78350f;
 
     font-family: var(--sans);
-    font-size: calc(14px * var(--app-zoom, 1));
+    font-size: calc(16px * var(--app-zoom, 1));
     line-height: 1.5;
     color: var(--ink);
     background: var(--paper);
@@ -181,7 +181,7 @@ const styles = `
   .jd-hero-cell.accent { background: var(--navy); }
   .jd-hero-label {
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-muted);
@@ -201,12 +201,11 @@ const styles = `
 
   /* ── LEDE ── */
   .jd-lede {
-    font-size: 15px;
+    font-size: 20px;
     color: var(--ink-light);
+    font-weight: 500;
     font-style: italic;
     line-height: 1.7;
-    border-left: 3px solid var(--navy);
-    padding-left: 16px;
     margin: 24px 0;
   }
 
@@ -222,7 +221,7 @@ const styles = `
   .jd-section-icon { color: var(--crimson); display: flex; }
   .jd-section-title {
     font-family: var(--serif);
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 700;
     color: var(--navy);
   }
@@ -238,7 +237,7 @@ const styles = `
     background: var(--navy);
     color: #fff;
     font-family: var(--sans);
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
     text-align: left;
     padding: 9px 12px;
@@ -251,7 +250,7 @@ const styles = `
     border: 1px solid var(--border);
     vertical-align: middle;
     color: var(--ink);
-    font-size: 16px;
+    font-size: 17px;
     word-break: break-word;
     overflow-wrap: break-word;
   }
@@ -305,7 +304,7 @@ const styles = `
   .qual-course-pill {
     display: inline-block;
     font-family: var(--sans);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--navy);
     background: rgba(30,58,95,0.07);
@@ -316,7 +315,7 @@ const styles = `
   }
 
   .qual-branch-line {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--ink-light);
     margin: 5px 0 0 2px;
     line-height: 1.5;
@@ -554,7 +553,7 @@ const styles = `
     flex-shrink: 0;
     margin-top: 2px;
   }
-  .jd-step-text { font-size: 14px; line-height: 1.6; color: var(--ink-light); }
+  .jd-step-text { font-size: 16px; line-height: 1.6; color: var(--ink-light); }
 
   /* ── APPLY CTA ── */
   .jd-apply {
@@ -599,7 +598,7 @@ const styles = `
     .jd-hero-value { font-size: 19px !important; letter-spacing: -0.02em; line-height: 1.1; }
     .jd-hero-sub { font-size: 10px; opacity: 0.8; margin-top: 1px; }
 
-    .jd-lede { font-size: 11px; margin: 12px 0; padding-left: 8px; line-height: 1.5; border-left-width: 3px; }
+    .jd-lede { font-size: 14px; margin: 12px 0; line-height: 1.5; }
     
     .jd-section { margin: 50px 0 14px; padding-bottom: 4px; }
     .jd-section-title { font-size: 13px; letter-spacing: 0.05em; }
@@ -962,17 +961,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <ForceScrollTop />
       <div className="jd">
         <div className="jd-wrap">
-          <div className="mt-4 md:mt-8 mb-6 md:mb-10">
-            <BackButton className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all pt-0 -ml-2 md:-ml-4 no-underline bg-transparent border-none cursor-pointer group">
-              <div className="w-9 h-9 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-navy group-hover:text-white transition-all">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12"></line>
-                  <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-              </div>
-              <span className="font-bold">Back</span>
-            </BackButton>
-          </div>
 
           {/* ── MASTHEAD ── */}
           <header className="jd-masthead">
@@ -997,21 +985,18 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <div className="jd-hero-cell accent">
               <div className="jd-hero-label">Total Vacancies</div>
               <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-              <div className="jd-hero-sub">{rawPosts.length} post{rawPosts.length !== 1 ? "s" : ""}</div>
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Application Start Date</div>
-              <div className="jd-hero-value" style={{ fontSize: 19 }}>
+              <div className="jd-hero-value" style={{ fontSize: 22 }}>
                 {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
               </div>
-              <div className="jd-hero-sub">Application opens</div>
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Application Last Date</div>
-              <div className="jd-hero-value" style={{ fontSize: 19, color: '#D93025', fontWeight: 'bold' }}>
+              <div className="jd-hero-value" style={{ fontSize: 22, color: '#D93025', fontWeight: 'bold' }}>
                 {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
               </div>
-              <div className="jd-hero-sub">Application deadline</div>
             </div>
           </div>
 
