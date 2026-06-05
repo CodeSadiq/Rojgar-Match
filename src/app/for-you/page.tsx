@@ -366,27 +366,29 @@ export default function ForYouPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={openAIScreening}
-              disabled={isScreeningLoading}
-              className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
-            >
-              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-              </svg>
-              <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
-                {isScreeningLoading ? '...' : (
-                  <>
-                    <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
-                    <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
-                  </>
+            {(userProfile?.qualifications && userProfile.qualifications.length > 0) && (
+              <button
+                onClick={openAIScreening}
+                disabled={isScreeningLoading}
+                className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
+              >
+                <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                  <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                </svg>
+                <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
+                  {isScreeningLoading ? '...' : (
+                    <>
+                      <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
+                      <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
+                    </>
+                  )}
+                </span>
+                {isFilterApplied && !isScreeningLoading && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
                 )}
-              </span>
-              {isFilterApplied && !isScreeningLoading && (
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
-              )}
-            </button>
+              </button>
+            )}
             <button
               onClick={() => fetchJobs(true)}
               disabled={isRefreshing || isLoading}

@@ -582,7 +582,7 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* HERO: UPPER TEXT ALIGNMENT (SKY-TEXT / BASE-BUILDING) */}
-            <div className="w-full bg-[#FAFAFA] relative h-[160px] md:h-[220px] flex items-center overflow-hidden border-b-2 border-gray-100">
+            <div className="hidden md:flex w-full bg-[#FAFAFA] relative h-[160px] md:h-[220px] items-center overflow-hidden border-b-2 border-gray-100">
               {/* Background Layer (Anchored at Bottom for upper-text space) */}
               <div
                 className="absolute inset-0 bg-cover bg-bottom lg:bg-[right_-150px_center] bg-[url('/mobilehero.png')] lg:bg-[url('/herobg1.png')] z-0 transition-opacity duration-1000"
@@ -631,51 +631,80 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto pt-2 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-6 md:pt-12 pb-20 px-4 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-3 md:pb-8 mb-2 md:mb-10 px-4 md:px-0 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
-                    <div className="min-w-0">
-                      <h2 className="text-[13px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight truncate">
-                        Recruitment For You
-                      </h2>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={openAIScreening}
-                        disabled={isScreeningLoading}
-                        className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
-                      >
-                        <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
-                          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                          <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-                        </svg>
-                        <span className="text-[9px] md:text-[12px] font-bold uppercase tracking-wider">
-                          {isScreeningLoading ? '...' : (
-                            <>
-                              <span className="hidden md:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
-                              <span className="md:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
-                            </>
-                          )}
-                        </span>
-                        {isFilterApplied && !isScreeningLoading && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
+                <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
+                  <header className={`flex-col md:flex-row md:items-center justify-between bg-[#0D244D] md:bg-transparent px-5 md:px-0 py-4 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
+                    <div className="flex items-center justify-between w-full md:w-auto min-w-0">
+                      <div className="min-w-0">
+                        <h2 className="text-[13px] md:text-2xl font-serif font-bold text-white md:text-navy uppercase tracking-widest md:normal-case md:tracking-tight truncate">
+                          Recruitment For You
+                        </h2>
+                      </div>
+                      
+                      {/* Mobile Top Row Right (AI + Refresh + View All) */}
+                      <div className="flex md:hidden items-center gap-2 flex-shrink-0 pl-1">
+                        {/* Mobile Short AI Button */}
+                        {recommendedJobs.length > 0 && (
+                          <button
+                            onClick={openAIScreening}
+                            disabled={isScreeningLoading}
+                            className={`flex items-center justify-center gap-1 h-6 px-2 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-500/30 text-blue-200 border-blue-400/50' : 'bg-white/10 text-white/80 border-white/10 hover:bg-white/20 hover:text-white'}`}
+                          >
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                              <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                            </svg>
+                            <span className="text-[9px] font-bold tracking-wider uppercase">
+                              {isScreeningLoading ? '...' : (isFilterApplied ? 'ON' : 'AI')}
+                            </span>
+                            {isFilterApplied && !isScreeningLoading && (
+                              <span className="w-1 h-1 rounded-full bg-blue-600 ml-0.5" />
+                            )}
+                          </button>
                         )}
-                      </button>
+
+                        <Link href="/for-you" className="text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline whitespace-nowrap pl-1">
+                          View All ›
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Desktop AI Filter & Refresh */}
+                    <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+                      {recommendedJobs.length > 0 && (
+                        <button
+                          onClick={openAIScreening}
+                          disabled={isScreeningLoading}
+                          className={`flex justify-center items-center gap-1.5 h-9 px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
+                        >
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                            <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                          </svg>
+                          <span className="text-[12px] font-bold uppercase tracking-wider">
+                            {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filters Active' : 'Filter more with AI')}
+                          </span>
+                          {isFilterApplied && !isScreeningLoading && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
+                          )}
+                        </button>
+                      )}
+
                       <button
                         onClick={() => fetchJobs(true)}
                         disabled={isRefreshing}
-                        className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                        className={`hidden md:flex p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
                       >
                         <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
                       </button>
                     </div>
                   </header>
 
-                  <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
+                  <div className="space-y-4 md:space-y-6 flex-1 flex flex-col p-4 md:p-0">
                     {/* 🧠 AI SCREENING MODAL */}
                     <ScreeningModal
                       isOpen={isAIScreening}
@@ -695,53 +724,73 @@ export default function Home() {
                       </div>
                     ) : (!isLoggedIn && !userProfile) ? (
                       /* 🔗 CASE 1: LOGGED OUT / NEW VISITOR - SHOW RICH HERO (COMPACT) */
-                      <div className="flex-1 py-8 md:py-20 px-4 md:px-6 flex flex-col items-center justify-center text-center mx-0 md:mx-0 overflow-hidden relative">
+                      <div className="flex-1 py-10 md:py-20 px-5 md:px-8 bg-transparent md:bg-white border-0 md:border md:border-gray-100/70 shadow-none md:shadow-sm rounded-none md:rounded-[32px] flex flex-col items-center justify-center text-center mx-0 overflow-hidden relative">
                         {/* Background Decor */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-navy/[0.02] rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
 
                         <div className="relative z-10 max-w-[800px] w-full">
-                          <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.25em] text-navy/40 mb-2 md:mb-3">
+                          <p className="text-[20px] md:text-[18px] font-extrabold text-navy md:text-navy/40 mb-2 md:mb-3">
                             Welcome to Rojgar Match
                           </p>
 
-                          <p className="text-[15px] md:text-[19px] text-navy/70 font-medium mb-8 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
+                          <p className="text-[15px] md:text-[19px] text-navy/70 font-medium mb-12 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
                             Find government jobs and updates that match your qualifications.
                           </p>
 
-                          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-5 mb-6 md:mb-12 text-left">
+                          <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:gap-5 mb-8 md:mb-12 text-left w-full max-w-[480px] md:max-w-none mx-auto">
                             {/* ITEM 1 */}
-                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
-                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-navy/5 text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
                               </div>
-                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2 flex items-center gap-1.5">
-                                Eligible Jobs
-                              </h4>
-                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
-                                See jobs that you are exactly eligible for based on your specific <b>Course</b> and <b>Branch</b>, plus <b>AI Filter</b> for specialized requirements.
-                              </p>
-                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Matched to your Course, Branch &amp; <b>AI Filtered</b>.</p>
+                              <div className="space-y-0.5">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
+                                  Eligible Jobs
+                                </h4>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                  See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.
+                                </p>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
+                                  Matched directly to your course, branch, and AI-filtered requirements.
+                                </p>
+                              </div>
                             </div>
 
                             {/* ITEM 2 */}
-                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
-                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-navy/5 text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                               </div>
-                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">All Jobs</h4>
-                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Browse through <b>all government jobs</b> or see <b>recommended ones</b> that match your qualification.</p>
-                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">All &amp; recommended jobs.</p>
+                              <div className="space-y-0.5">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
+                                  All Jobs
+                                </h4>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                  Browse through all government jobs or see recommended ones that match your qualification.
+                                </p>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
+                                  Browse the full national registry or view custom recommendations.
+                                </p>
+                              </div>
                             </div>
 
                             {/* ITEM 3 */}
-                            <div className="bg-gray-50/80 p-3 md:p-6 rounded-xl border border-gray-100">
-                              <div className="w-7 h-7 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2 md:mb-3 text-navy">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-navy/5 text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                               </div>
-                              <h4 className="text-[10px] md:text-[13px] font-bold text-navy mb-1 md:mb-2">Email Alerts</h4>
-                              <p className="text-[9px] md:text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">Get a direct email alert the moment a government job matching your education is posted.</p>
-                              <p className="text-[9px] text-navy/50 leading-relaxed font-medium md:hidden">Instant job match alerts.</p>
+                              <div className="space-y-0.5">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
+                                  Email Alerts
+                                </h4>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                  Get a direct email alert the moment a government job matching your education is posted.
+                                </p>
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
+                                  Get notified instantly when new matching openings are broadcasted.
+                                </p>
+                              </div>
                             </div>
                           </div>
 
@@ -756,7 +805,7 @@ export default function Home() {
                       </div>
                     ) : (isLoggedIn || userProfile) && (!userProfile?.qualifications || userProfile?.qualifications?.length === 0) ? (
                       /* 👤 LOGGED IN NO EDUCATION: SHOW SIMPLE PROMPT */
-                      <div className="flex-1 py-14 md:py-24 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-3xl mx-4 md:mx-0">
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent md:bg-white border-0 md:border-2 md:border-gray-100 flex flex-col items-center justify-center text-center shadow-none md:shadow-sm rounded-none md:rounded-3xl mx-0">
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
                           Set your qualification details to see eligible gov jobs.
                         </p>
@@ -767,7 +816,7 @@ export default function Home() {
                       </div>
                     ) : recommendedJobs.length === 0 ? (
                       /* ❌ NO MATCHES STATE */
-                      <div className="flex-1 py-14 md:py-24 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-3xl mx-4 md:mx-0">
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent md:bg-white border-0 md:border-2 md:border-gray-100 flex flex-col items-center justify-center text-center shadow-none md:shadow-sm rounded-none md:rounded-3xl mx-0">
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center">
                           No recruitments currently match your specific qualification level and branch.
                         </p>
@@ -780,7 +829,7 @@ export default function Home() {
 
                         {/* View All Button */}
                         {recommendedJobs.length > 0 && (
-                          <div className="px-4 md:px-0 mt-6 mb-8">
+                          <div className="hidden md:block px-0 mt-6 mb-8">
                             <Link
                               href="/for-you"
                               className="w-full flex items-center justify-center gap-2 py-4 bg-navy text-white text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-[#06142E] transition-all shadow-xl shadow-navy/10 active:scale-[0.98] group no-underline"
@@ -796,7 +845,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-4 md:px-0">
+              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-8 md:mt-0 px-0">
                 <div ref={sidebarRef} className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(prev => !prev)}
