@@ -148,32 +148,42 @@ function JobsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-6 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
 
 
-        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
-          <div className="flex items-center gap-2 text-left">
-            <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
-              <IconArrowLeft />
-            </BackButton>
-            <div>
+        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-4 md:pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 px-4 md:px-0 pt-1 md:pt-0">
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <div className="flex items-center gap-2 text-left">
+              <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+                <IconArrowLeft />
+              </BackButton>
               <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
             </div>
+            {/* Mobile Refresh Button */}
+            <button
+              onClick={() => fetchJobs(true)}
+              disabled={isRefreshing || isLoading}
+              className={`md:hidden h-9 aspect-square flex items-center justify-center rounded-xl bg-white border-2 border-gray-100 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Registry"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <label className="flex flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
+            <label className="flex flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 h-11 md:h-12 items-center gap-3 md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
               <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-[11px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-200"
+                className="bg-transparent border-none outline-none text-[12px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-200"
                 placeholder="Search index..."
               />
             </label>
+            {/* Desktop Refresh Button */}
             <button
               onClick={() => fetchJobs(true)}
               disabled={isRefreshing || isLoading}
-              className={`h-9 md:h-12 aspect-square flex items-center justify-center rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              className={`hidden md:flex h-12 aspect-square items-center justify-center rounded-xl bg-white border-2 border-gray-50 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
               title="Refresh Registry"
             >
               <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />

@@ -596,15 +596,15 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* MOBILE HERO (ROJGAR MATCH) */}
-            <div className="flex md:hidden w-full bg-gradient-to-b from-white via-[#F8FAFC] to-[#E2E8F0] relative py-14 px-6 items-center justify-center flex-col text-center border-b border-gray-200 overflow-hidden">
+            <div className="flex md:hidden w-full bg-gradient-to-b from-white via-[#F8FAFC] to-[#E2E8F0] relative py-10 px-6 items-center justify-center flex-col text-center border-b border-gray-200 overflow-hidden">
               <div className="absolute inset-0 bg-cover bg-bottom bg-[url('/mobilehero.png')] opacity-[0.28] z-0" />
               <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-white to-transparent z-1" />
               <div className="relative z-10 flex flex-col items-center mt-1">
-                <h1 className="text-[36px] sm:text-[40px] font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0D244D] via-[#1a3a8f] to-[#3b5fe2] tracking-tight leading-normal py-2 px-1 drop-shadow-sm mb-2">
+                <h1 className="text-[36px] sm:text-[40px] font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0D244D] via-[#1a3a8f] to-[#3b5fe2] tracking-tight leading-normal py-2 px-1 drop-shadow-sm">
                   Rojgar Match
                 </h1>
 
-                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-navy/60 pl-[0.25em] mt-1">
+                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-navy/60 pl-[0.25em] -mt-1">
                   Government Jobs Portal
                 </span>
               </div>
@@ -841,7 +841,7 @@ export default function Home() {
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
                           Set your qualification details to see eligible gov jobs.
                         </p>
-                        <Link href="/profile" className="inline-flex items-center gap-3 px-8 py-3 bg-[#166534] md:bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]">
+                        <Link href="/profile" className="inline-flex items-center gap-3 px-6 py-3 bg-[#166534] md:bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline group active:scale-[0.98] whitespace-nowrap">
                           <span>setup qualification</span>
                           <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                         </Link>

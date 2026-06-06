@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 export default function ZoomControl() {
   const [zoom, setZoom] = useState(100);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const savedZoom = localStorage.getItem('rojgarmatch_zoom');
@@ -20,6 +22,20 @@ export default function ZoomControl() {
       setZoom(initialZoom);
       document.documentElement.style.setProperty('--app-zoom', (initialZoom / 100).toString());
     }
+
+    setIsMounted(true);
+
+    // MutationObserver to hide/show during routing loads
+    const checkLoading = () => {
+      const loadingEl = document.getElementById('loading-screen');
+      setIsLoading(!!loadingEl);
+    };
+
+    checkLoading();
+    const observer = new MutationObserver(checkLoading);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
   }, []);
 
   const changeZoom = (delta: number) => {
@@ -29,10 +45,16 @@ export default function ZoomControl() {
     document.documentElement.style.setProperty('--app-zoom', (newZoom / 100).toString());
   };
 
+  const isVisible = isMounted && !isLoading;
+
   return (
     <>
       {/* Desktop View: Bottom-6 Right-6, Includes Back Button */}
-      <div className="hidden md:flex fixed bottom-6 right-6 z-[100] flex-col gap-3 items-end">
+      <div className={`hidden md:flex fixed bottom-6 right-6 z-[100] flex-col gap-3 items-end transition-all duration-300 ease-out ${
+        isVisible 
+          ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
+          : 'opacity-0 scale-75 translate-y-4 pointer-events-none'
+      }`}>
         <button 
           onClick={() => router.back()} 
           className="bg-white/95 backdrop-blur shadow-xl border border-gray-200 rounded-full p-2 flex items-center justify-center text-navy hover:bg-navy hover:text-white transition-all w-12 h-12"
@@ -63,7 +85,11 @@ export default function ZoomControl() {
       </div>
 
       {/* Mobile View: Bottom-6 (back button is placed above at bottom-20) */}
-      <div className="md:hidden fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end">
+      <div className={`md:hidden fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end transition-all duration-300 ease-out ${
+        isVisible 
+          ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
+          : 'opacity-0 scale-75 translate-y-4 pointer-events-none'
+      }`}>
         <div className="bg-white/95 backdrop-blur shadow-xl border border-gray-200 rounded-full p-1 flex items-center gap-1">
           <button
             onClick={() => changeZoom(10)}
