@@ -17,6 +17,26 @@ export default function ProfilePage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [screeningResults, setScreeningResults] = useState<any[]>([]);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setToast({ message, type });
+  };
+
+  const showConfirm = (message: string, onConfirm: () => void) => {
+    setConfirmDialog({ isOpen: true, message, onConfirm });
+  };
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const fetchProfile = React.useCallback(async () => {
     const isAuth = localStorage.getItem('rojgarmatch_auth');
@@ -175,7 +195,7 @@ export default function ProfilePage() {
       };
 
       if (!userProfile.gender) {
-        alert('Please select your Gender to proceed. ⚠️');
+        showToast('Please select your Gender to proceed.', 'warning');
         setIsSaving(false);
         return;
       }
@@ -184,7 +204,7 @@ export default function ProfilePage() {
         localStorage.setItem('rojgarmatch_profile', JSON.stringify(profileData));
         window.dispatchEvent(new Event('rojgarmatch_auth_change'));
         setCompleted(qualifications.length > 0);
-        alert('Guest profile updated! ✅');
+        showToast('Guest profile updated!', 'success');
         setIsSaving(false);
         return;
       }
@@ -210,72 +230,75 @@ export default function ProfilePage() {
       }
 
       await fetchProfile();
-      alert('Profile Updated Successfully! ✅');
+      showToast('Profile Updated Successfully!', 'success');
     } catch (err) {
       console.error(err);
-      alert('Profile Sync Failed');
+      showToast('Profile Sync Failed', 'error');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleReset = async () => {
-    if (!confirm('Are you sure you want to reset all your qualifications and screening data? This cannot be undone. ⚠️')) return;
+  const handleReset = () => {
+    showConfirm(
+      'Are you sure you want to reset all your qualifications and screening data? This cannot be undone.',
+      async () => {
+        setIsSaving(true);
+        try {
+          const authStr = localStorage.getItem('rojgarmatch_auth');
+          if (!authStr) return;
+          const authData = JSON.parse(authStr);
 
-    setIsSaving(true);
-    try {
-      const authStr = localStorage.getItem('rojgarmatch_auth');
-      if (!authStr) return;
-      const authData = JSON.parse(authStr);
+          const clearedProfile = {
+            gender: '',
+            qualifications: [],
+            screeningQuestions: [],
+            screeningAnswers: {},
+            screenedJobIds: '',
+            blockedPostNames: []
+          };
 
-      const clearedProfile = {
-        gender: '',
-        qualifications: [],
-        screeningQuestions: [],
-        screeningAnswers: {},
-        screenedJobIds: '',
-        blockedPostNames: []
-      };
+          // Reset local state
+          setSelectedLevels({});
+          setUserProfile((prev: any) => ({
+            ...prev,
+            ...clearedProfile
+          }));
+          setCompleted(false);
+          setScreeningResults([]);
 
-      // Reset local state
-      setSelectedLevels({});
-      setUserProfile((prev: any) => ({
-        ...prev,
-        ...clearedProfile
-      }));
-      setCompleted(false);
-      setScreeningResults([]);
+          // Update Local Storage
+          const updatedLocalStorageProfile = {
+            ...clearedProfile,
+            fullName: authData.fullName,
+            email: authData.email
+          };
 
-      // Update Local Storage
-      const updatedLocalStorageProfile = {
-        ...clearedProfile,
-        fullName: authData.fullName,
-        email: authData.email
-      };
+          localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedLocalStorageProfile));
+          localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
 
-      localStorage.setItem('rojgarmatch_profile', JSON.stringify(updatedLocalStorageProfile));
-      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+          // Notify other components (Navbar, etc.)
+          window.dispatchEvent(new Event('rojgarmatch_auth_change'));
 
-      // Notify other components (Navbar, etc.)
-      window.dispatchEvent(new Event('rojgarmatch_auth_change'));
+          // Sync to DB if not guest
+          if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
+            const res = await fetch('/api/profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: authData.email, profile: clearedProfile }),
+            });
+            if (!res.ok) throw new Error('Failed to reset on server');
+          }
 
-      // Sync to DB if not guest
-      if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
-        const res = await fetch('/api/profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: authData.email, profile: clearedProfile }),
-        });
-        if (!res.ok) throw new Error('Failed to reset on server');
+          showToast('Profile Reset Successfully!', 'success');
+        } catch (err) {
+          console.error(err);
+          showToast('Reset Failed: ' + (err instanceof Error ? err.message : String(err)), 'error');
+        } finally {
+          setIsSaving(false);
+        }
       }
-
-      alert('Profile Reset Successfully! 🧹');
-    } catch (err) {
-      console.error(err);
-      alert('Reset Failed: ' + (err instanceof Error ? err.message : String(err)));
-    } finally {
-      setIsSaving(false);
-    }
+    );
   };
 
   const handleLogout = async () => {
@@ -292,58 +315,83 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
-      <main className="flex-1 overflow-y-auto px-4 md:px-12 pt-4 md:pt-3 pb-10">
+      <main className="flex-1 overflow-y-auto px-3 md:px-12 pt-3 md:pt-3 pb-6">
         <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
-          <div className="mb-4 md:mb-8 mt-2 md:mt-0 flex items-center justify-start">
+          <div className="mb-3 md:mb-8 mt-1 md:mt-0 flex items-center justify-start">
             <BackButton />
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left transition-all">
-            <div className="flex flex-col items-center md:items-start gap-4 md:gap-5">
-              <div className="space-y-0.5 md:space-y-1">
+          {/* DESKTOP VIEW HEADER CARD */}
+          <div className="hidden md:flex bg-white border border-gray-200 rounded-[32px] p-10 flex-row items-center justify-between gap-8 text-left transition-all">
+            <div className="flex flex-col items-start gap-5">
+              <div className="space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
                   <>
-                    <h1 className="text-xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
-                    <p className="text-[10px] md:text-base font-medium text-gray-400 capitalize">Guest Session</p>
+                    <h1 className="text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
+                    <p className="text-base font-medium text-gray-400 capitalize">Guest Session</p>
                   </>
                 ) : (
                   <>
-                    <h1 className="text-2xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
-                    <p className="text-gray-500 text-xs md:text-base font-medium">{userProfile.email}</p>
+                    <h1 className="text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
+                    <p className="text-gray-500 text-base font-medium">{userProfile.email}</p>
                   </>
                 )}
               </div>
-              <div className={`inline-flex items-center gap-2 text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
+              <div className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
                 {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
               </div>
             </div>
-            <button onClick={handleLogout} className="w-full md:w-auto px-8 py-3.5 md:py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-xl md:rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest border border-red-100/50 active:scale-95">
+            <button onClick={handleLogout} className="px-8 py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[11px] font-black uppercase tracking-widest border border-red-100/50 active:scale-95">
               Sign Out
             </button>
           </div>
 
-          <div className="max-w-[1100px] mt-6 space-y-6 md:space-y-8">
+          {/* MOBILE VIEW HEADER CARD */}
+          <div className="md:hidden bg-white border border-gray-200 rounded-xl p-4 flex flex-row items-center justify-between gap-4 text-left transition-all">
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+              <h1 className="text-base font-bold text-navy tracking-tight truncate">
+                {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
+              </h1>
+
+              {/* Session Info & Status Badge */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-50">
+                <span className="text-[10px] font-semibold text-gray-400 capitalize">
+                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Guest Session' : userProfile.email}
+                </span>
+                <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
+                <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
+                  {completed ? "Education Recorded" : "Education Not Recorded"}
+                </span>
+              </div>
+            </div>
+
+            <button onClick={handleLogout} className="shrink-0 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-lg text-[9px] font-black uppercase tracking-wider border border-red-100/50 active:scale-95">
+              Sign Out
+            </button>
+          </div>
+
+          <div className="max-w-[1100px] mt-4 space-y-4 md:space-y-8">
             {/* SECTION 1: CORE QUALIFICATIONS */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 space-y-6 md:space-y-8">
-              <div className="space-y-4 md:space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-navy">Select Gender <span className="text-red-500">*</span></h2>
+            <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-10 space-y-4 md:space-y-8">
+              <div className="space-y-3 md:space-y-6">
+                <h2 className="text-base md:text-xl font-bold text-navy">Select Gender <span className="text-red-500">*</span></h2>
                 <div className="grid grid-cols-3 gap-2">
                   {['Male', 'Female', 'Other'].map((g) => (
-                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-12 md:h-14 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/50 border-gray-200 hover:border-navy hover:text-navy hover:bg-navy/[0.02]"}`}>
+                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-10 md:h-14 rounded-lg text-[9px] md:text-[11px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/50 border-gray-200 hover:border-navy hover:text-navy hover:bg-navy/[0.02]"}`}>
                       {g}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-1.5 pt-4 border-t border-gray-50">
-                <h2 className="text-lg md:text-xl font-bold text-navy">Set Qualification</h2>
-                <p className="text-[12px] md:text-[13.5px] text-navy/70 font-medium leading-relaxed">
+              <div className="space-y-1 pt-3 border-t border-gray-50">
+                <h2 className="text-base md:text-xl font-bold text-navy">Set Qualification</h2>
+                <p className="text-[11px] md:text-[13.5px] text-navy/70 font-medium leading-relaxed">
                   Update your qualifications level-wise to discover eligible jobs.
                 </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {LEVEL_GROUPS.map((group) => {
                   const levelState = selectedLevels[group.id] || { qual: '', branch: '' };
                   const qualsForLevel = QUAL_TREE.filter(q => group.levels.includes(q.level));
@@ -352,23 +400,20 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={group.id}
-                      className="p-5 md:p-6 rounded-xl border border-gray-200/70 space-y-4"
+                      className="p-3.5 md:p-6 rounded-lg border border-gray-200/70 space-y-3 md:space-y-4"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 flex items-center justify-center rounded-full bg-navy text-white text-[10px] font-black">
-                          {group.id}
-                        </span>
-                        <h3 className="text-xs md:text-sm font-black uppercase text-navy tracking-wider">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-[10px] md:text-sm font-black uppercase text-navy tracking-wider">
                           {group.label}
                         </h3>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4 items-end">
+                        <div className="space-y-1">
                           <select
                             value={levelState.qual}
                             onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
-                            className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                            className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
                           >
                             <option value="">-- No Record --</option>
                             {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
@@ -376,14 +421,14 @@ export default function ProfilePage() {
                         </div>
 
                         {currentQual && currentQual.branches.length > 0 ? (
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-black uppercase text-navy/40 tracking-widest block px-1">
+                          <div className="space-y-1">
+                            <label className="text-[9px] md:text-[10px] font-black uppercase text-navy/40 tracking-widest block px-1">
                               {group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}
                             </label>
                             <select
                               value={levelState.branch}
                               onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
-                              className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                              className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
                             >
                               <option value="">-- No Record --</option>
                               {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
@@ -401,30 +446,30 @@ export default function ProfilePage() {
 
             {/* SECTION 2: SCREENING QUESTIONS */}
             {screeningResults.length > 0 && (
-              <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 space-y-6 md:space-y-8">
-                <div className="space-y-4 md:space-y-6">
-                  <h2 className="text-lg md:text-xl font-bold text-navy">Specialized Requirements</h2>
+              <section className="bg-white border border-gray-200 rounded-xl p-4 md:p-10 space-y-4 md:space-y-8">
+                <div className="space-y-3 md:space-y-6">
+                  <h2 className="text-base md:text-xl font-bold text-navy">Specialized Requirements</h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                     {screeningResults.map((res) => (
-                      <div key={res.id} className="p-5 md:p-6 bg-white border border-gray-200 rounded-xl flex flex-col justify-between gap-4 transition-all">
-                        <p className="text-[14px] md:text-[15px] font-bold text-navy leading-relaxed">{res.text}</p>
+                      <div key={res.id} className="p-4 md:p-6 bg-white border border-gray-200 rounded-xl flex flex-col justify-between gap-3 transition-all">
+                        <p className="text-xs md:text-[15px] font-bold text-navy leading-relaxed">{res.text}</p>
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleUpdateScreening(res.id, true)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
+                            className={`flex-1 py-2 md:py-3 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
                           >
                             Yes
                           </button>
                           <button
                             onClick={() => handleUpdateScreening(res.id, false)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
+                            className={`flex-1 py-2 md:py-3 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
                           >
                             No
                           </button>
                           <button
                             onClick={() => handleUpdateScreening(res.id, null)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
+                            className={`flex-1 py-2 md:py-3 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
                           >
                             Not Sure
                           </button>
@@ -441,18 +486,18 @@ export default function ProfilePage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex-1 h-12 md:h-14 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 flex items-center justify-center gap-2"
+                className="flex-1 h-10 md:h-14 bg-navy text-white font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
               >
-                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                 <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
                 <span className="xs:hidden">{isSaving ? 'Saving...' : 'Save'}</span>
               </button>
               <button
                 onClick={handleReset}
                 disabled={isSaving}
-                className="flex-1 h-12 md:h-14 bg-red-50 text-red-600 font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all disabled:opacity-30 flex items-center justify-center gap-2"
+                className="flex-1 h-10 md:h-14 bg-red-50 text-red-600 font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
               >
-                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
                 <span className="hidden xs:inline">Reset Qualification</span>
                 <span className="xs:hidden">Reset</span>
               </button>
@@ -460,6 +505,81 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
+
+      {toast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] animate-in fade-in slide-in-from-top-5 duration-300">
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-sm max-w-sm ${
+            toast.type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' :
+            toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
+            'bg-amber-50/95 border-amber-200 text-amber-800'
+          }`}>
+            {toast.type === 'success' && (
+              <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+              </svg>
+            )}
+            {toast.type === 'error' && (
+              <svg className="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            )}
+            {toast.type === 'warning' && (
+              <svg className="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            )}
+            <p className="text-sm font-bold tracking-tight">{toast.message}</p>
+            <button onClick={() => setToast(null)} className="ml-2 hover:opacity-70 shrink-0">
+              <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {confirmDialog && confirmDialog.isOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-100 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200 text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-navy">Confirm Action</h3>
+                <p className="text-sm font-medium text-navy/70 leading-relaxed">
+                  {confirmDialog.message}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col xs:flex-row justify-end gap-2.5 xs:gap-3">
+              <button
+                onClick={() => setConfirmDialog(null)}
+                className="w-full xs:w-auto px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-xl border border-gray-200/50 transition-all active:scale-95 text-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  confirmDialog.onConfirm();
+                  setConfirmDialog(null);
+                }}
+                className="w-full xs:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 text-center"
+              >
+                Yes, Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
