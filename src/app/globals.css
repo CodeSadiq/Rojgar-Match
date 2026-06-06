@@ -910,3 +910,11 @@ td.date-ok {
   padding: 1px 4px;
   color: var(--jp-ink-muted);
 }
+
+.gsi-button-wrapper {
+  overflow: hidden !important;
+  position: relative;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}

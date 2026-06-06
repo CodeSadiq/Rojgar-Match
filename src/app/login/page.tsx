@@ -202,7 +202,7 @@ export default function LoginPage() {
           </div>
 
           {/* AUTH CARD */}
-          <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden group shadow-2xl shadow-navy/5 border border-gray-100/50 mx-1 md:mx-0">
+          <div className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-200 mx-1 md:mx-0">
             <form onSubmit={handleLogin} className="p-5 md:py-6 md:px-8 space-y-3.5 md:space-y-4.5">
 
               {error && (
@@ -227,7 +227,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Email"
-                      className="w-full bg-white border-2 border-gray-100 py-2.5 md:py-3 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight shadow-sm focus:shadow-md"
+                      className="w-full bg-white border border-gray-200 py-2.5 md:py-3 pl-11 md:pl-12 pr-4 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all tracking-tight"
                     />
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowForgotModal(true)}
-                      className="text-[9px] font-black uppercase tracking-widest text-navy/60 hover:text-navy transition-colors underline decoration-navy/20 underline-offset-4"
+                      className="text-[9px] font-black uppercase tracking-widest text-navy/60 hover:text-navy hover:underline transition-colors"
                     >
                       Forgot?
                     </button>
@@ -256,7 +256,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-white border-2 border-gray-100 py-2.5 md:py-3 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all shadow-sm focus:shadow-md"
+                      className="w-full bg-white border border-gray-200 py-2.5 md:py-3 pl-11 md:pl-12 pr-12 text-[14px] md:text-[15px] font-sans font-medium text-navy placeholder:text-navy/30 rounded-xl md:rounded-2xl focus:outline-none focus:border-navy transition-all"
                     />
                     <button
                       type="button"
@@ -275,7 +275,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-3.5 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-3 md:py-3.5 px-8 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn rounded-xl md:rounded-2xl relative overflow-hidden active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
@@ -318,9 +318,9 @@ export default function LoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-2.5 md:py-3.5 px-8 font-black text-[9px] md:text-[10px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 rounded-xl md:rounded-2xl active:scale-[0.95] group/guest"
+                className="w-full bg-navy/[0.03] border border-navy/[0.08] hover:bg-navy/[0.06] hover:border-navy/[0.12] text-navy/60 hover:text-navy py-2.5 md:py-3.5 px-8 font-black text-[9px] md:text-[10px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 rounded-xl md:rounded-2xl active:scale-[0.95] group/guest"
               >
-                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all scale-90 md:scale-100">
+                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white flex items-center justify-center border border-gray-100 group-hover/guest:bg-navy group-hover/guest:text-white transition-all scale-90 md:scale-100">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <span>Continue as a guest</span>
@@ -356,7 +356,7 @@ export default function LoginPage() {
       {showForgotModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" onClick={() => setShowForgotModal(false)} />
-          <div className="relative w-full max-w-[400px] bg-white rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+          <div className="relative w-full max-w-[400px] bg-white rounded-[32px] overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-500">
             <div className="p-8 md:p-10">
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-navy/5 text-navy rounded-2xl">
@@ -410,7 +410,7 @@ export default function LoginPage() {
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
                       placeholder="Email"
-                      className="w-full bg-white border-2 border-gray-100 py-4 pl-12 pr-4 text-[14px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all"
+                      className="w-full bg-white border border-gray-200 py-4 pl-12 pr-4 text-[14px] font-sans font-medium text-navy placeholder:text-gray-400 rounded-2xl focus:outline-none focus:border-navy transition-all"
                     />
                   </div>
                 </div>

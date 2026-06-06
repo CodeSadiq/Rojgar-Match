@@ -291,14 +291,14 @@ export default function ProfilePage() {
   if (!isLoaded) return <GlobalLoading />;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
+    <div className="min-h-screen bg-[#F1F5F9] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
       <main className="flex-1 overflow-y-auto px-4 md:px-12 pt-4 md:pt-3 pb-10">
         <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
           <div className="mb-4 md:mb-8 mt-2 md:mt-0 flex items-center justify-start">
             <BackButton />
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 shadow-sm text-center md:text-left transition-all">
+          <div className="bg-white border border-gray-200 rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left transition-all">
             <div className="flex flex-col items-center md:items-start gap-4 md:gap-5">
               <div className="space-y-0.5 md:space-y-1">
                 {userProfile.email === 'guest@rojgarmatch.local' ? (
@@ -324,12 +324,12 @@ export default function ProfilePage() {
 
           <div className="max-w-[1100px] mt-6 space-y-6 md:space-y-8">
             {/* SECTION 1: CORE QUALIFICATIONS */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 shadow-sm space-y-6 md:space-y-8">
+            <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 space-y-6 md:space-y-8">
               <div className="space-y-4 md:space-y-6">
                 <h2 className="text-lg md:text-xl font-bold text-navy">Select Gender <span className="text-red-500">*</span></h2>
                 <div className="grid grid-cols-3 gap-2">
                   {['Male', 'Female', 'Other'].map((g) => (
-                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-12 md:h-14 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all border shadow-sm ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/30 border-gray-200 hover:border-navy/10"}`}>
+                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-12 md:h-14 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/50 border-gray-200 hover:border-navy hover:text-navy hover:bg-navy/[0.02]"}`}>
                       {g}
                     </button>
                   ))}
@@ -343,31 +343,56 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {LEVEL_GROUPS.map((group) => {
                   const levelState = selectedLevels[group.id] || { qual: '', branch: '' };
                   const qualsForLevel = QUAL_TREE.filter(q => group.levels.includes(q.level));
                   const currentQual = QUAL_TREE.find(q => q.name === levelState.qual);
 
                   return (
-                    <div key={group.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8 border-b border-gray-100 last:border-0 last:pb-0">
-                      <div className="space-y-2">
-                        <label className="text-[11px] font-bold text-navy/70 uppercase tracking-widest">{group.label}</label>
-                        <select value={levelState.qual} onChange={(e) => handleLevelQualChange(group.id, e.target.value)} className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-gray-50 border-gray-200 text-navy focus:border-navy"}`}>
-                          <option value="">-- No Record --</option>
-                          {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
-                        </select>
+                    <div
+                      key={group.id}
+                      className="p-5 md:p-6 rounded-xl border border-gray-200/70 space-y-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-6 h-6 flex items-center justify-center rounded-full bg-navy text-white text-[10px] font-black">
+                          {group.id}
+                        </span>
+                        <h3 className="text-xs md:text-sm font-black uppercase text-navy tracking-wider">
+                          {group.label}
+                        </h3>
                       </div>
 
-                      {currentQual && currentQual.branches.length > 0 && (
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-bold text-navy/70 uppercase tracking-widest">{group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}</label>
-                          <select value={levelState.branch} onChange={(e) => handleLevelBranchChange(group.id, e.target.value)} className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-gray-50 border-gray-200 text-navy focus:border-navy"}`}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                        <div className="space-y-1.5">
+                          <select
+                            value={levelState.qual}
+                            onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
+                            className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                          >
                             <option value="">-- No Record --</option>
-                            {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                            {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
                           </select>
                         </div>
-                      )}
+
+                        {currentQual && currentQual.branches.length > 0 ? (
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase text-navy/40 tracking-widest block px-1">
+                              {group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}
+                            </label>
+                            <select
+                              value={levelState.branch}
+                              onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
+                              className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                            >
+                              <option value="">-- No Record --</option>
+                              {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                            </select>
+                          </div>
+                        ) : (
+                          <div className="hidden md:block"></div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -376,33 +401,30 @@ export default function ProfilePage() {
 
             {/* SECTION 2: SCREENING QUESTIONS */}
             {screeningResults.length > 0 && (
-              <section className="bg-gradient-to-br from-[#F0F7FF] to-[#F8FAFF] border-2 border-blue-100/50 rounded-[32px] p-6 md:p-12 shadow-sm relative overflow-hidden group">
-                {/* Decorative Accent */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors"></div>
-
-                <div className="space-y-8 relative z-10">
+              <section className="bg-white border border-gray-200 rounded-2xl p-5 md:p-10 space-y-6 md:space-y-8">
+                <div className="space-y-4 md:space-y-6">
                   <h2 className="text-lg md:text-xl font-bold text-navy">Specialized Requirements</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     {screeningResults.map((res) => (
-                      <div key={res.id} className="p-5 md:p-7 bg-white border border-blue-50 rounded-2xl flex flex-col justify-between gap-5 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300">
+                      <div key={res.id} className="p-5 md:p-6 bg-white border border-gray-200 rounded-xl flex flex-col justify-between gap-4 transition-all">
                         <p className="text-[14px] md:text-[15px] font-bold text-navy leading-relaxed">{res.text}</p>
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleUpdateScreening(res.id, true)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600 shadow-lg shadow-green-200" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === true ? "bg-green-600 text-white border-green-600" : "bg-white text-green-600 border-green-100 hover:bg-green-50"}`}
                           >
                             Yes
                           </button>
                           <button
                             onClick={() => handleUpdateScreening(res.id, false)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-200" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === false ? "bg-red-600 text-white border-red-600" : "bg-white text-red-600 border-red-100 hover:bg-red-50"}`}
                           >
                             No
                           </button>
                           <button
                             onClick={() => handleUpdateScreening(res.id, null)}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-200" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border ${res.answer === null ? "bg-orange-500 text-white border-orange-500" : "bg-white text-orange-500 border-orange-100 hover:bg-orange-50"}`}
                           >
                             Not Sure
                           </button>
@@ -419,7 +441,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex-1 h-12 md:h-14 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl shadow-lg shadow-navy/10 hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2"
+                className="flex-1 h-12 md:h-14 bg-navy text-white font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                 <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
@@ -428,7 +450,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleReset}
                 disabled={isSaving}
-                className="flex-1 h-12 md:h-14 bg-red-50 text-red-600 font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2"
+                className="flex-1 h-12 md:h-14 bg-red-50 text-red-600 font-bold text-[10px] md:text-[11px] uppercase tracking-widest rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all disabled:opacity-30 flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
                 <span className="hidden xs:inline">Reset Qualification</span>
