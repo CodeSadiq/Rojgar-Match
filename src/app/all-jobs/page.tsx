@@ -99,7 +99,8 @@ function JobsPageContent() {
             ...job,
             isMatched: true,
             matchedPosts: matchData.matchedPosts,
-            matchScore: matchData.matchScore
+            matchScore: matchData.matchScore,
+            matchedOn: matchData.matchedOn
           };
         }
       }
@@ -148,20 +149,15 @@ function JobsPageContent() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-6 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
-        <div className="hidden md:block mb-6 pt-6">
-          <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
-            <IconArrowLeft /> Back to Dashboard
-          </BackButton>
-        </div>
+
 
         <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
-          <div className="flex items-start gap-1 text-left">
-            <BackButton className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+          <div className="flex items-center gap-2 text-left">
+            <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
             <div>
               <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
-              <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings</p>
             </div>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">

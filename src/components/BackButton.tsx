@@ -26,7 +26,7 @@ export default function BackButton({
   return (
     <button
       onClick={handleClick}
-      className={`bg-transparent border-none cursor-pointer p-0 m-0 inline-flex items-center ${className}`}
+      className={`bg-transparent border-none cursor-pointer p-0 m-0 hidden md:inline-flex items-center ${className}`}
     >
       {children}
     </button>

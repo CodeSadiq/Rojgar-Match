@@ -80,7 +80,7 @@ function AdminPageContent() {
     if (filterExpired && !isExpired) return false;
 
     const queryTerms = adminSearchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    return queryTerms.length === 0 || queryTerms.every(term => 
+    return queryTerms.length === 0 || queryTerms.every(term =>
       isFuzzyMatch(job.title, term) ||
       isFuzzyMatch(job.organization || job.org, term) ||
       isFuzzyMatch(job.id, term) ||
@@ -99,14 +99,29 @@ function AdminPageContent() {
   }, [searchParams]);
   const [bulletinSearch, setBulletinSearch] = useState('');
   const [dynamicRegistry, setDynamicRegistry] = useState<any>(null);
+  const [dbCategories, setDbCategories] = useState<any[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const fetchBulletins = async () => {
-    const data = await getRegistryData();
+    const data = await getRegistryData(true);
     setDynamicRegistry(data);
+  };
+
+  const fetchDbCategories = async () => {
+    try {
+      const res = await fetch('/api/bulletin-categories?all=true');
+      if (res.ok) {
+        const data = await res.json();
+        setDbCategories(Array.isArray(data) ? data : []);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
     fetchBulletins();
+    fetchDbCategories();
   }, []);
 
   const handleDeleteBulletin = async (id: string) => {
@@ -125,54 +140,158 @@ function AdminPageContent() {
     }
   };
 
+  const handleToggleBulletinVisibility = async (bulletin: any) => {
+    const nextActive = bulletin.active === false ? true : false;
+    try {
+      const payload = {
+        id: bulletin.id,
+        text: bulletin.text,
+        desc: bulletin.desc,
+        time: bulletin.time,
+        links: bulletin.links,
+        routedTo: bulletin.routedTo,
+        tags: bulletin.tags,
+        active: nextActive,
+        category: bulletin.dbCategory
+      };
+
+      const res = await fetch('/api/bulletins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        fetchBulletins();
+      } else {
+        const d = await res.json();
+        alert('Visibility toggle failed: ' + (d.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error during visibility toggle');
+    }
+  };
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+
+    try {
+      const res = await fetch('/api/bulletin-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCategoryName.trim(), active: true })
+      });
+
+      if (res.ok) {
+        setNewCategoryName('');
+        fetchDbCategories();
+        fetchBulletins();
+      } else {
+        const d = await res.json();
+        alert('Failed to add category: ' + (d.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error when adding category');
+    }
+  };
+
+  const handleToggleCategoryActive = async (cat: any) => {
+    const nextActive = cat.active === false ? true : false;
+    const actionText = nextActive ? 'show' : 'hide';
+    if (!window.confirm(`Are you sure you want to ${actionText} the "${cat.name}" panel and all its bulletins?`)) return;
+
+    try {
+      const res = await fetch('/api/bulletin-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: cat.name, active: nextActive })
+      });
+
+      if (res.ok) {
+        fetchDbCategories();
+        fetchBulletins();
+      } else {
+        const d = await res.json();
+        alert('Failed to toggle category: ' + (d.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error toggling category');
+    }
+  };
+
+  const handleDeleteCategory = async (name: string) => {
+    if (!window.confirm(`Are you sure you want to delete the custom panel "${name}"? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch(`/api/bulletin-categories?name=${encodeURIComponent(name)}`, {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        fetchDbCategories();
+        fetchBulletins();
+      } else {
+        const d = await res.json();
+        alert('Failed to delete category: ' + (d.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error deleting category');
+    }
+  };
+
   // BULLETIN DATA LOGIC (Archival Manifests only)
   const allBulletins = dynamicRegistry ? [
-    ...(dynamicRegistry.notifications || []).map((n: any) => ({ ...n, category: 'IMPORTANT' })),
-    ...Object.entries(dynamicRegistry.categories).flatMap(([cat, list]: [string, any]) => 
-      list.map((item: any) => ({ ...item, category: cat.toUpperCase() }))
+    ...(dynamicRegistry.notifications || []).map((n: any) => ({ ...n, displayCategory: 'IMPORTANT', dbCategory: 'Important' })),
+    ...Object.entries(dynamicRegistry.categories).flatMap(([cat, list]: [string, any]) =>
+      list.map((item: any) => ({ ...item, displayCategory: cat.toUpperCase(), dbCategory: cat }))
     )
   ] : [];
 
-  const filteredBulletins = allBulletins.filter(b => 
-    b.text.toLowerCase().includes(bulletinSearch.toLowerCase()) || 
+  const filteredBulletins = allBulletins.filter(b =>
+    b.text.toLowerCase().includes(bulletinSearch.toLowerCase()) ||
     b.id.toLowerCase().includes(bulletinSearch.toLowerCase())
   ).sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   return (
     <div className="min-h-screen bg-[#fafafa] p-6 lg:p-10 font-sans selection:bg-navy selection:text-white">
       <div className="max-w-[1100px] mx-auto space-y-8 animate-in fade-in duration-700">
-        
+
         {/* UNIFIED COMMAND HEADER */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-gray-100">
-           <div className="space-y-1">
-             <h1 className="text-2xl font-black text-navy uppercase tracking-tighter">Command Registry</h1>
-             <p className="text-[10px] text-navy/40 font-bold uppercase tracking-widest leading-none">Institutional Control Console</p>
-           </div>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-black text-navy uppercase tracking-tighter">Command Registry</h1>
+            <p className="text-[10px] text-navy/40 font-bold uppercase tracking-widest leading-none">Institutional Control Console</p>
+          </div>
 
-           <div className="flex gap-3">
-             <Link 
-               href="/admin/registry"
-               className="px-6 py-2.5 bg-white border border-gray-200 text-navy text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all no-underline flex items-center gap-2 shadow-sm"
-             >
-               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-               Edit Candidate Form
-             </Link>
-           </div>
-           
-           <div className="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-              <button 
-                onClick={() => setActiveTab('recruitment')}
-                className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'recruitment' ? 'bg-navy text-white shadow-lg' : 'bg-transparent text-navy/40 hover:text-navy'}`}
-              >
-                Recruitments
-              </button>
-              <button 
-                onClick={() => setActiveTab('bulletin')}
-                className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bulletin' ? 'bg-navy text-white shadow-lg' : 'bg-transparent text-navy/40 hover:text-navy'}`}
-              >
-                Bulletins
-              </button>
-           </div>
+          <div className="flex gap-3">
+            <Link
+              href="/admin/registry"
+              className="px-6 py-2.5 bg-white border border-gray-200 text-navy text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all no-underline flex items-center gap-2 shadow-sm"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Edit Candidate Form
+            </Link>
+          </div>
+
+          <div className="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
+            <button
+              onClick={() => setActiveTab('recruitment')}
+              className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'recruitment' ? 'bg-navy text-white shadow-lg' : 'bg-transparent text-navy/40 hover:text-navy'}`}
+            >
+              Recruitments
+            </button>
+            <button
+              onClick={() => setActiveTab('bulletin')}
+              className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bulletin' ? 'bg-navy text-white shadow-lg' : 'bg-transparent text-navy/40 hover:text-navy'}`}
+            >
+              Bulletins
+            </button>
+          </div>
         </div>
 
         {activeTab === 'recruitment' ? (
@@ -209,8 +328,6 @@ function AdminPageContent() {
                 Assemble New Listing <span className="text-lg leading-none">+</span>
               </Link>
             </div>
-
-
 
             {filterExpired && (
               <div className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center justify-between">
@@ -286,20 +403,94 @@ function AdminPageContent() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="px-2 py-0.5 bg-navy/5 text-navy/50 text-[8px] font-black uppercase tracking-widest rounded border border-navy/10">
-                          {b.category}
+                          {b.displayCategory}
                         </span>
+                        {b.active === false && (
+                          <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[8px] font-black uppercase tracking-widest rounded border border-amber-200">
+                            Hidden
+                          </span>
+                        )}
                         <code className="text-[9px] font-black text-navy/20 tracking-tighter uppercase">{b.id}</code>
                       </div>
                       <h3 className="text-base font-serif font-bold text-navy truncate">{b.text}</h3>
                     </div>
                     <div className="flex items-center gap-3">
                       <Link href={`/admin/bulletin-editor?id=${b.id}`} className="px-5 py-2 bg-navy text-white text-[9px] font-black uppercase tracking-widest rounded-lg no-underline hover:bg-slate-800">Edit</Link>
+                      <button
+                        onClick={() => handleToggleBulletinVisibility(b)}
+                        className={`px-5 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all active:scale-95 ${
+                          b.active === false
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                            : 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                        }`}
+                      >
+                        {b.active === false ? 'Unhide' : 'Hide'}
+                      </button>
                       <button onClick={() => handleDeleteBulletin(b.id)} className="px-5 py-2 text-red-500 text-[9px] font-black uppercase tracking-widest hover:text-red-700 bg-transparent border-none">Delete</button>
                     </div>
                   </div>
                 ))
               )}
             </div>
+
+            {/* MANAGE BULLETIN PANELS (CATEGORIES) */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-6 mt-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                <div>
+                  <h3 className="text-sm font-black text-navy uppercase tracking-wider">Manage Bulletin Panels</h3>
+                  <p className="text-[9px] text-navy/40 font-bold uppercase tracking-widest mt-0.5">Add, hide, or delete bulletin categories</p>
+                </div>
+                <form onSubmit={handleAddCategory} className="flex gap-2 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    placeholder="New panel name (e.g., Scholarships)..."
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="bg-gray-50 border border-gray-100 px-4 py-2 rounded-xl text-[10px] font-bold text-navy uppercase tracking-widest outline-none focus:border-navy transition-all"
+                  />
+                  <button type="submit" className="px-5 py-2 bg-navy text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all">
+                    Add Panel
+                  </button>
+                </form>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {dbCategories.map((cat) => (
+                  <div key={cat.name} className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-navy truncate block">
+                        {cat.name}
+                      </span>
+                      <span className="text-[8px] text-navy/40 font-bold uppercase tracking-wider block mt-0.5">
+                        Custom panel
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleToggleCategoryActive(cat)}
+                        className={`px-3 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg border transition-all active:scale-95 ${
+                          cat.active === false
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                            : 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                        }`}
+                      >
+                        {cat.active === false ? 'Show' : 'Hide'}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleDeleteCategory(cat.name)}
+                        className="w-7 h-7 rounded-lg text-red-500 hover:bg-red-50 flex items-center justify-center text-[10px] border border-transparent hover:border-red-100 transition-all"
+                        title="Delete Panel"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
       </div>

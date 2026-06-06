@@ -350,15 +350,11 @@ export default function ForYouPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto px-0 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
-        <div className="hidden md:block mb-6 pt-6">
-          <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
-            <IconArrowLeft /> Back to Dashboard
-          </BackButton>
-        </div>
+
 
         <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0">
           <div className="flex items-center gap-2 text-left">
-            <BackButton className="md:hidden text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+            <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
             <div>

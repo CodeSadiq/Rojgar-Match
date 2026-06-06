@@ -16,13 +16,23 @@ function BulletinEditorContent() {
 
    const [bulletinJson, setBulletinJson] = useState('');
    const [bulletinCategory, setBulletinCategory] = useState('Important');
+   const [categories, setCategories] = useState<any[]>([]);
    const [isPublishing, setIsPublishing] = useState(false);
    const [isEditMode, setIsEditMode] = useState(true);
    const [publishedJobs, setPublishedJobs] = useState<any[]>([]);
    const [jobSearchQuery, setJobSearchQuery] = useState('');
 
-   // 🏛 Fetch Master Job Registry for Fuzzy Matching
+   // 🏛 Fetch Categories and Master Job Registry
    useEffect(() => {
+      fetch('/api/bulletin-categories?all=true')
+         .then(res => res.json())
+         .then(data => {
+            if (Array.isArray(data)) {
+               setCategories(data);
+            }
+         })
+         .catch(e => console.error('Failed to load categories:', e));
+
       fetch('/api/jobs')
          .then(res => res.json())
          .then(data => setPublishedJobs(Array.isArray(data) ? data : []))
@@ -180,11 +190,9 @@ function BulletinEditorContent() {
                            onChange={(e) => setBulletinCategory(e.target.value)}
                            className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-[10px] font-bold text-navy uppercase tracking-widest focus:border-navy transition-all"
                         >
-                           <option value="Important">IMPORTANT</option>
-                           <option value="Admission">ADMISSION</option>
-                           <option value="Admit Card">ADMIT CARD</option>
-                           <option value="Syllabus">SYLLABUS</option>
-                           <option value="Result">RESULT</option>
+                           {categories.map((c) => (
+                              <option key={c.name} value={c.name}>{c.name.toUpperCase()}</option>
+                           ))}
                         </select>
                      </label>
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getRegistryData } from '@/lib/data-service';
 import { getTimeAgo } from '@/lib/helpers';
 import ForceScrollTop from '@/components/ForceScrollTop';
+import BackButton from '@/components/BackButton';
 import { getCachedRegistry, setCachedRegistry } from '@/lib/store';
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
@@ -129,10 +130,7 @@ export default function BulletinViewer() {
       `}</style>
 
       <main className="jd-wrap animate-in fade-in duration-700">
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all mb-8 pt-0 -ml-2 md:-ml-4 no-underline bg-transparent border-none cursor-pointer group"
-        >
+        <BackButton className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all mb-8 pt-0 -ml-2 md:-ml-4 no-underline group">
           <div className="w-9 h-9 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-navy group-hover:text-white transition-all">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -140,7 +138,7 @@ export default function BulletinViewer() {
             </svg>
           </div>
           Back
-        </button>
+        </BackButton>
 
         {/* 🏛 Institutional Header */}
         <header className="mb-10 pt-6">

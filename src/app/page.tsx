@@ -18,10 +18,9 @@ const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="non
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
 const IconRefresh = ({ className }: { className?: string }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
 
-const CATEGORIES = ['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card'];
-
 export default function Home() {
   const router = useRouter();
+  const [categories, setCategories] = useState<string[]>(['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card']);
   const [activeTab, setActiveTab] = useState<'for-you' | 'all' | 'notifications'>('for-you');
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,6 +49,17 @@ export default function Home() {
   useEffect(() => {
     setIsMounted(true);
     setWindowWidth(window.innerWidth);
+
+    // Fetch dynamic categories
+    fetch('/api/bulletin-categories')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const activeNames = data.map((c: any) => c.name);
+          setCategories(['All Jobs', ...activeNames]);
+        }
+      })
+      .catch(e => console.error('Failed to load categories:', e));
 
     const savedJobs = localStorage.getItem('rojgarmatch_jobs');
     if (savedJobs) { try { setDbJobs(JSON.parse(savedJobs)); } catch (e) { } }
@@ -119,10 +129,10 @@ export default function Home() {
     if (!isAutoPlaying || !isInViewport || isMobile) return;
 
     const timer = setTimeout(() => {
-      setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
+      setCurrentCatIndex((prev) => (prev + 1) % categories.length);
     }, 12000);
     return () => clearTimeout(timer);
-  }, [currentCatIndex, isAutoPlaying, isInViewport, windowWidth, isMounted]);
+  }, [currentCatIndex, isAutoPlaying, isInViewport, windowWidth, isMounted, categories]);
 
   const [registry, setRegistry] = useState<any>(null);
 
@@ -461,7 +471,7 @@ export default function Home() {
   // Pre-mapping all categories helps ensure that the DOM nodes are stable 
   // and prevents "jumps" during re-renders like hovering.
   const categorizedItems = useMemo(() => {
-    return CATEGORIES.map((cat) => {
+    return categories.map((cat) => {
       let items = [];
       if (cat === 'All Jobs') {
         // Always show all recent jobs in the 'All Jobs' slider category
@@ -485,7 +495,7 @@ export default function Home() {
       }
       return { cat, items };
     });
-  }, [dbJobs, registry, recommendedJobs]);
+  }, [dbJobs, registry, recommendedJobs, categories]);
 
   // ── INFINITE SLIDER LOGIC ──
   // Slider layout: [Clone of Last, All, Important, Syllabus, Admission, Result, Admit Card, Clone of All]
@@ -498,7 +508,7 @@ export default function Home() {
     ];
   }, [categorizedItems]);
 
-  const activeCategory = CATEGORIES[(currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length] || CATEGORIES[0];
+  const activeCategory = categories[(currentCatIndex - 1 + categories.length) % categories.length] || categories[0];
   const activeItems = categorizedItems.find(c => c.cat === activeCategory)?.items || [];
 
   // Seamless jump effect
@@ -509,7 +519,7 @@ export default function Home() {
     if (currentCatIndex === 0) {
       const snapTimer = setTimeout(() => {
         setIsTransitioning(false);
-        setCurrentCatIndex(CATEGORIES.length);
+        setCurrentCatIndex(categories.length);
         // We wait a tiny bit after the index update to allow the snap to paint
         // and THEN we can unlock isMoving.
         setTimeout(() => setIsMoving(false), 30);
@@ -517,7 +527,7 @@ export default function Home() {
       return () => clearTimeout(snapTimer);
     }
 
-    if (currentCatIndex >= CATEGORIES.length + 1) {
+    if (currentCatIndex >= categories.length + 1) {
       const snapTimer = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentCatIndex(1);
@@ -530,7 +540,7 @@ export default function Home() {
     setIsTransitioning(true);
     const unlockTimer = setTimeout(() => setIsMoving(false), 250);
     return () => clearTimeout(unlockTimer);
-  }, [currentCatIndex, isMounted]);
+  }, [currentCatIndex, isMounted, categories]);
 
   const isFuzzyMatch = (target: any, query: string) => {
     const t = String(target || "").toLowerCase();
@@ -585,16 +595,19 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* MOBILE HERO (ROJGAR MATCH) */}
-            <div className="flex md:hidden w-full bg-[#FAFAFA] relative py-12 px-6 items-center justify-center flex-col text-center border-b-2 border-gray-100 overflow-hidden">
-              <div className="absolute inset-0 bg-cover bg-bottom bg-[url('/mobilehero.png')] opacity-[0.25] z-0" />
-              <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-[#FAFAFA] to-transparent z-1" />
-              <div className="relative z-10 flex flex-col items-center mt-2">
-                <h1 className="text-[38px] font-serif font-black text-[#0D244D] tracking-tight leading-[1.1] mb-3">
+            <div className="flex md:hidden w-full bg-gradient-to-b from-white via-[#F8FAFC] to-[#E2E8F0] relative py-14 px-6 items-center justify-center flex-col text-center border-b border-gray-200 overflow-hidden">
+              <div className="absolute inset-0 bg-cover bg-bottom bg-[url('/mobilehero.png')] opacity-[0.28] z-0" />
+              <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-white to-transparent z-1" />
+              <div className="relative z-10 flex flex-col items-center mt-1">
+                <h1 className="text-[36px] sm:text-[40px] font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0D244D] via-[#1a3a8f] to-[#3b5fe2] tracking-tight leading-normal py-2 px-1 drop-shadow-sm mb-2">
                   Rojgar Match
                 </h1>
-                <p className="text-[10px] font-black text-navy/50 uppercase tracking-[0.25em]">
-                  Government Jobs Portal
-                </p>
+
+                <div className="inline-flex items-center justify-center bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-navy/5 shadow-[0_2px_8px_rgba(26,58,143,0.04)]">
+                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-navy/60 pl-[0.25em]">
+                    Government Jobs Portal
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -648,13 +661,13 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto pt-6 md:pt-12 pb-20 px-4 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-14 md:pt-12 pb-20 px-4 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`flex-col md:flex-row md:items-center justify-between bg-[#0D244D] md:bg-transparent px-5 md:px-0 py-4 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
+                  <header className={`flex-col md:flex-row md:items-center justify-between bg-[#166534] md:bg-transparent px-5 md:px-0 py-4 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="flex flex-col w-full md:w-auto">
                       <div className="flex items-center justify-between w-full mb-3 md:mb-0">
                         <h2 className="text-[13px] md:text-3xl font-serif font-bold text-white md:text-[#0D244D] uppercase md:normal-case tracking-[0.12em] md:tracking-tight truncate pr-2">
@@ -671,7 +684,7 @@ export default function Home() {
                           <button
                             onClick={openAIScreening}
                             disabled={isScreeningLoading}
-                            className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#0D244D] hover:bg-gray-50'}`}
+                            className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#166534] hover:bg-gray-50'}`}
                           >
                             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
@@ -901,8 +914,8 @@ export default function Home() {
 
                         {/* Mobile Dot Indicators in Heading Bar (Top Middle) */}
                         <div className="absolute top-[8px] left-1/2 -translate-x-1/2 flex gap-1.5 items-center md:hidden">
-                          {CATEGORIES.map((_, idx) => {
-                            const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+                          {categories.map((_, idx) => {
+                            const realIndex = (currentCatIndex - 1 + categories.length) % categories.length;
                             const isActive = idx === realIndex;
                             return (
                               <div
@@ -1027,8 +1040,8 @@ export default function Home() {
                       {/* SEGMENTED SLIDING INDICATOR */}
                       <div className="px-4 mt-auto hidden md:flex flex-col items-center pb-4 md:pb-10">
                         <div className="flex gap-1.5 h-1 w-full px-2 mb-2">
-                          {CATEGORIES.map((_, idx) => {
-                            const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+                          {categories.map((_, idx) => {
+                            const realIndex = (currentCatIndex - 1 + categories.length) % categories.length;
                             return (
                               <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
                                 {idx === realIndex && (

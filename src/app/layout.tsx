@@ -16,6 +16,7 @@ export const viewport = {
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MobileFloatingBackButton from "@/components/MobileFloatingBackButton";
 
 export default function RootLayout({
   children,
@@ -35,6 +36,7 @@ export default function RootLayout({
           {children}
         </div>
         <Footer />
+        <MobileFloatingBackButton />
       </body>
     </html>
   );
