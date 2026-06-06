@@ -22,6 +22,7 @@ export default function ForYouPage() {
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // 🧠 AI Screening States
   const [isAIScreening, setIsAIScreening] = useState(false);
@@ -304,6 +305,7 @@ export default function ForYouPage() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     // 🚀 CACHE-FIRST LOADING
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
     const cached = getCachedJobs();
@@ -352,48 +354,50 @@ export default function ForYouPage() {
       <main className="flex-1 max-w-[1440px] mx-auto px-0 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
 
 
-        <header className="mb-5 md:mb-8 border-b-2 border-[#166534] md:border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0">
-          <div className="flex items-center gap-2 text-left">
+        <header className="mb-4 md:mb-8 border-b-2 border-[#166534] md:border-navy pb-3 md:pb-6 flex items-center justify-between gap-2 px-4 md:px-0">
+          <div className="flex items-center gap-2 text-left min-w-0">
             <BackButton className="text-[#166534]/80 hover:text-[#166534] md:text-navy/60 md:hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
-            <div>
-              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-[#166534] md:text-navy leading-tight whitespace-nowrap">Recruitments for You</h1>
+            <div className="min-w-0 ml-2.5 md:ml-4">
+              <h1 className="text-[18px] md:text-3xl font-serif font-bold tracking-tight text-[#166534] md:text-navy leading-tight truncate">Recruitments for You</h1>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {(userProfile?.qualifications && userProfile.qualifications.length > 0) && (
-              <button
-                onClick={openAIScreening}
-                disabled={isScreeningLoading}
-                className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-green-50/50 text-green-700 border-green-200 md:bg-blue-50/50 md:text-blue-600 md:border-blue-200' : 'bg-green-50/40 text-[#166534]/70 border-[#166534]/20 hover:text-[#166534] hover:bg-green-50 md:bg-navy/[0.04] md:text-navy/50 md:border-navy/10 md:hover:bg-navy/[0.06] md:hover:text-navy/70'}`}
-              >
-                <svg className={`w-3 h-3 md:w-3.5 md:h-3.5 ${isFilterApplied ? 'text-green-700 md:text-blue-600' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                  <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-                </svg>
-                <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
-                  {isScreeningLoading ? '...' : (
-                    <>
-                      <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
-                      <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
-                    </>
+          {isMounted && (
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {(userProfile?.qualifications && userProfile.qualifications.length > 0) && (
+                <button
+                  onClick={openAIScreening}
+                  disabled={isScreeningLoading}
+                  className={`flex items-center gap-1 h-7 md:h-9 px-2.5 md:px-4 rounded-full transition-all active:scale-95 border whitespace-nowrap ${isFilterApplied ? 'bg-green-50/50 text-green-700 border-green-200 md:bg-blue-50/50 md:text-blue-600 md:border-blue-200' : 'bg-green-50/40 text-[#166534]/70 border-[#166534]/20 hover:text-[#166534] hover:bg-green-50 md:bg-navy/[0.04] md:text-navy/50 md:border-navy/10 md:hover:bg-navy/[0.06] md:hover:text-navy/70'}`}
+                >
+                  <svg className={`w-3 h-3 md:w-3.5 md:h-3.5 ${isFilterApplied ? 'text-green-700 md:text-blue-600' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                    <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                  </svg>
+                  <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
+                    {isScreeningLoading ? '...' : (
+                      <>
+                        <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
+                        <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
+                      </>
+                    )}
+                  </span>
+                  {isFilterApplied && !isScreeningLoading && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 md:bg-blue-600 ml-0.5" />
                   )}
-                </span>
-                {isFilterApplied && !isScreeningLoading && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-600 md:bg-blue-600 ml-0.5" />
-                )}
+                </button>
+              )}
+              <button
+                onClick={() => fetchJobs(true)}
+                disabled={isRefreshing || isLoading}
+                className={`p-1.5 rounded-full hover:bg-green-50 text-[#166534]/60 hover:text-[#166534] md:hover:bg-navy/5 md:text-navy/40 md:hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+                title="Refresh Jobs"
+              >
+                <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
               </button>
-            )}
-            <button
-              onClick={() => fetchJobs(true)}
-              disabled={isRefreshing || isLoading}
-              className={`p-2 rounded-full hover:bg-green-50 text-[#166534]/60 hover:text-[#166534] md:hover:bg-navy/5 md:text-navy/40 md:hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
-              title="Refresh Jobs"
-            >
-              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-            </button>
-          </div>
+            </div>
+          )}
         </header>
 
         {/* 🧠 AI SCREENING MODAL */}

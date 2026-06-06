@@ -28,7 +28,7 @@ export default function MobileFloatingBackButton() {
   const isJobPost = pathname.startsWith('/all-jobs/') && pathname !== '/all-jobs';
   const bottomClass = isJobPost ? 'bottom-20' : 'bottom-6';
   
-  const isVisible = pathname !== '/' && !isLoading;
+  const isVisible = pathname !== '/' && !isLoading && !isJobPost;
 
   return (
     <button

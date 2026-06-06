@@ -630,14 +630,14 @@ export default function Home() {
                       router.push(`/all-jobs?q=${encodeURIComponent(searchQuery.trim())}`);
                     }
                   }}
-                  className="bg-white border-2 border-gray-100 rounded-xl px-3 md:px-4 h-9 md:h-14 w-[160px] focus-within:w-[220px] md:w-[320px] md:focus-within:w-[380px] transition-all focus-within:border-navy group shadow-lg shadow-navy/5"
+                  className="bg-white border-2 border-gray-300 focus-within:border-navy/80 rounded-xl px-3 md:px-4 h-9 md:h-14 w-[160px] focus-within:w-[220px] md:w-[320px] md:focus-within:w-[380px] transition-all group"
                 >
                   <label className="flex items-center w-full h-full cursor-text gap-2">
-                    <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-75 md:scale-100"><IconSearch /></span>
+                    <span className="text-gray-500 group-focus-within:text-navy transition-colors scale-75 md:scale-100"><IconSearch /></span>
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
+                      className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-500 font-bold uppercase tracking-tight"
                       placeholder="Search Government Jobs..."
                     />
                   </label>
@@ -677,72 +677,76 @@ export default function Home() {
                         </Link>
                       </div>
 
-                      <div className="flex md:hidden items-center justify-between w-full">
-                        {/* Mobile Full AI Button */}
-                        {recommendedJobs.length > 0 ? (
+                      {isMounted && (
+                        <div className="flex md:hidden items-center justify-between w-full">
+                          {/* Mobile Full AI Button */}
+                          {(userProfile?.qualifications && userProfile.qualifications.length > 0) ? (
+                            <button
+                              onClick={openAIScreening}
+                              disabled={isScreeningLoading}
+                              className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#166534] hover:bg-gray-50'}`}
+                            >
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                                <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                              </svg>
+                              <span className="text-[10px] font-black tracking-wider uppercase">
+                                {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filter Active' : 'Filter more with AI')}
+                              </span>
+                              {isFilterApplied && !isScreeningLoading && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />
+                              )}
+                            </button>
+                          ) : <div />}
+
+                          {/* Mobile Refresh Button */}
+                          {!isNoQualifications && (
+                            <button
+                              onClick={() => fetchJobs(true)}
+                              disabled={isRefreshing}
+                              className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                              title="Refresh Jobs"
+                            >
+                              <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Desktop AI Filter & Refresh */}
+                    {isMounted && (
+                      <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+                        {(userProfile?.qualifications && userProfile.qualifications.length > 0) && (
                           <button
                             onClick={openAIScreening}
                             disabled={isScreeningLoading}
-                            className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#166534] hover:bg-gray-50'}`}
+                            className={`flex justify-center items-center gap-1.5 h-9 px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
                           >
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
                               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                               <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                             </svg>
-                            <span className="text-[10px] font-black tracking-wider uppercase">
-                              {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filter Active' : 'Filter more with AI')}
+                            <span className="text-[12px] font-bold uppercase tracking-wider">
+                              {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filters Active' : 'Filter more with AI')}
                             </span>
                             {isFilterApplied && !isScreeningLoading && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
                             )}
                           </button>
-                        ) : <div />}
+                        )}
 
-                        {/* Mobile Refresh Button */}
                         {!isNoQualifications && (
                           <button
                             onClick={() => fetchJobs(true)}
                             disabled={isRefreshing}
-                            className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-                            title="Refresh Jobs"
+                            className={`hidden md:flex p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
                           >
-                            <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
                           </button>
                         )}
                       </div>
-                    </div>
-
-                    {/* Desktop AI Filter & Refresh */}
-                    <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-                      {recommendedJobs.length > 0 && (
-                        <button
-                          onClick={openAIScreening}
-                          disabled={isScreeningLoading}
-                          className={`flex justify-center items-center gap-1.5 h-9 px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
-                        >
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
-                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                            <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-                          </svg>
-                          <span className="text-[12px] font-bold uppercase tracking-wider">
-                            {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filters Active' : 'Filter more with AI')}
-                          </span>
-                          {isFilterApplied && !isScreeningLoading && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
-                          )}
-                        </button>
-                      )}
-
-                      {!isNoQualifications && (
-                        <button
-                          onClick={() => fetchJobs(true)}
-                          disabled={isRefreshing}
-                          className={`hidden md:flex p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-                        >
-                          <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </header>
 
                   <div className="space-y-4 md:space-y-6 flex-1 flex flex-col p-4 md:p-0">
