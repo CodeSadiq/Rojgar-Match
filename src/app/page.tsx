@@ -38,6 +38,7 @@ export default function Home() {
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isNoQualifications = (isLoggedIn || userProfile) && (!userProfile?.qualifications || userProfile?.qualifications?.length === 0);
 
   // 🧠 AI Screening States
   const [isAIScreening, setIsAIScreening] = useState(false);
@@ -603,11 +604,9 @@ export default function Home() {
                   Rojgar Match
                 </h1>
 
-                <div className="inline-flex items-center justify-center bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-navy/5 shadow-[0_2px_8px_rgba(26,58,143,0.04)]">
-                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-navy/60 pl-[0.25em]">
-                    Government Jobs Portal
-                  </span>
-                </div>
+                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-navy/60 pl-[0.25em] mt-1">
+                  Government Jobs Portal
+                </span>
               </div>
             </div>
 
@@ -677,7 +676,7 @@ export default function Home() {
                           View All ›
                         </Link>
                       </div>
-                      
+
                       <div className="flex md:hidden items-center justify-between w-full">
                         {/* Mobile Full AI Button */}
                         {recommendedJobs.length > 0 ? (
@@ -700,14 +699,16 @@ export default function Home() {
                         ) : <div />}
 
                         {/* Mobile Refresh Button */}
-                        <button
-                          onClick={() => fetchJobs(true)}
-                          disabled={isRefreshing}
-                          className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-                          title="Refresh Jobs"
-                        >
-                          <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                        </button>
+                        {!isNoQualifications && (
+                          <button
+                            onClick={() => fetchJobs(true)}
+                            disabled={isRefreshing}
+                            className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                            title="Refresh Jobs"
+                          >
+                            <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -732,13 +733,15 @@ export default function Home() {
                         </button>
                       )}
 
-                      <button
-                        onClick={() => fetchJobs(true)}
-                        disabled={isRefreshing}
-                        className={`hidden md:flex p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-                      >
-                        <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-                      </button>
+                      {!isNoQualifications && (
+                        <button
+                          onClick={() => fetchJobs(true)}
+                          disabled={isRefreshing}
+                          className={`hidden md:flex p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                        >
+                          <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+                        </button>
+                      )}
                     </div>
                   </header>
 
@@ -762,7 +765,7 @@ export default function Home() {
                       </div>
                     ) : (!isLoggedIn && !userProfile) ? (
                       /* 🔗 CASE 1: LOGGED OUT / NEW VISITOR - SHOW RICH HERO (COMPACT) */
-                      <div className="flex-1 py-10 md:py-20 px-5 md:px-8 bg-transparent md:bg-white border-0 md:border md:border-gray-100/70 shadow-none md:shadow-sm rounded-none md:rounded-[32px] flex flex-col items-center justify-center text-center mx-0 overflow-hidden relative">
+                      <div className="flex-1 py-10 md:py-20 px-5 md:px-8 bg-transparent border-0 shadow-none rounded-none flex flex-col items-center justify-center text-center mx-0 overflow-hidden relative">
                         {/* Background Decor */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-navy/[0.02] rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
@@ -786,11 +789,8 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
                                   Eligible Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.
-                                </p>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
-                                  Matched directly to your course, branch, and AI-filtered requirements.
                                 </p>
                               </div>
                             </div>
@@ -804,11 +804,8 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
                                   All Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   Browse through all government jobs or see recommended ones that match your qualification.
-                                </p>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
-                                  Browse the full national registry or view custom recommendations.
                                 </p>
                               </div>
                             </div>
@@ -822,11 +819,8 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-navy uppercase tracking-wider">
                                   Email Alerts
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium hidden md:block">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   Get a direct email alert the moment a government job matching your education is posted.
-                                </p>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium md:hidden">
-                                  Get notified instantly when new matching openings are broadcasted.
                                 </p>
                               </div>
                             </div>
@@ -843,18 +837,18 @@ export default function Home() {
                       </div>
                     ) : (isLoggedIn || userProfile) && (!userProfile?.qualifications || userProfile?.qualifications?.length === 0) ? (
                       /* 👤 LOGGED IN NO EDUCATION: SHOW SIMPLE PROMPT */
-                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent md:bg-white border-0 md:border-2 md:border-gray-100 flex flex-col items-center justify-center text-center shadow-none md:shadow-sm rounded-none md:rounded-3xl mx-0">
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent border-0 flex flex-col items-center justify-center text-center shadow-none rounded-none mx-0">
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
                           Set your qualification details to see eligible gov jobs.
                         </p>
-                        <Link href="/profile" className="inline-flex items-center gap-3 px-8 py-3 bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#06142E] transition-all shadow-2xl shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]">
+                        <Link href="/profile" className="inline-flex items-center gap-3 px-8 py-3 bg-[#166534] md:bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]">
                           <span>setup qualification</span>
                           <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                         </Link>
                       </div>
                     ) : recommendedJobs.length === 0 ? (
                       /* ❌ NO MATCHES STATE */
-                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent md:bg-white border-0 md:border-2 md:border-gray-100 flex flex-col items-center justify-center text-center shadow-none md:shadow-sm rounded-none md:rounded-3xl mx-0">
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent border-0 flex flex-col items-center justify-center text-center shadow-none rounded-none mx-0">
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center">
                           No recruitments currently match your specific qualification level and branch.
                         </p>
