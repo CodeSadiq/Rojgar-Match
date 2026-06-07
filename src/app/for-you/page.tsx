@@ -22,7 +22,6 @@ export default function ForYouPage() {
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
   // 🧠 AI Screening States
   const [isAIScreening, setIsAIScreening] = useState(false);
@@ -71,16 +70,16 @@ export default function ForYouPage() {
           const questions = profile.screeningQuestions || [];
           const blockedPosts = profile.blockedPostNames || [];
 
-          finalJobs = finalJobs.filter(job => {
-            const hasEligiblePost = (job as any).matchedPosts.some((post: any) => {
+          finalJobs = finalJobs.map(job => {
+            const activePosts = (job as any).matchedPosts.filter((post: any) => {
               const isBlockedByQuestion = questions.some(q =>
                 q.impactedPostNames?.includes(post.name) && answers[q.id] === false
               );
               const isBlockedByText = blockedPosts.includes(post.name);
               return !isBlockedByQuestion && !isBlockedByText;
             });
-            return hasEligiblePost;
-          });
+            return { ...job, matchedPosts: activePosts };
+          }).filter(job => job.matchedPosts.length > 0);
         }
         setJobs(finalJobs);
       }
@@ -305,7 +304,6 @@ export default function ForYouPage() {
   };
 
   useEffect(() => {
-    setIsMounted(true);
     // 🚀 CACHE-FIRST LOADING
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
     const cached = getCachedJobs();
@@ -325,16 +323,16 @@ export default function ForYouPage() {
           const questions = profile.screeningQuestions || [];
           const blockedPosts = profile.blockedPostNames || [];
 
-          finalJobs = finalJobs.filter(job => {
-            const hasEligiblePost = (job as any).matchedPosts.some((post: any) => {
+          finalJobs = finalJobs.map(job => {
+            const activePosts = (job as any).matchedPosts.filter((post: any) => {
               const isBlockedByQuestion = questions.some((q: any) =>
                 q.impactedPostNames?.includes(post.name) && answers[q.id] === false
               );
               const isBlockedByText = blockedPosts.includes(post.name);
               return !isBlockedByQuestion && !isBlockedByText;
             });
-            return hasEligiblePost;
-          });
+            return { ...job, matchedPosts: activePosts };
+          }).filter(job => job.matchedPosts.length > 0);
         }
 
         setJobs(finalJobs);
@@ -351,53 +349,53 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-0 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-6">
+          <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
+            <IconArrowLeft /> Back to Dashboard
+          </BackButton>
+        </div>
 
-
-        <header className="mb-4 md:mb-8 border-b-2 border-[#166534] md:border-navy pb-3 md:pb-6 flex items-center justify-between gap-2 px-4 md:px-0">
-          <div className="flex items-center gap-2 text-left min-w-0">
-            <BackButton className="text-[#166534]/80 hover:text-[#166534] md:text-navy/60 md:hover:text-navy transition-colors flex-shrink-0">
+        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0">
+          <div className="flex items-center gap-2 text-left">
+            <BackButton className="md:hidden text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
-            <div className="min-w-0 ml-2.5 md:ml-4">
-              <h1 className="text-[18px] md:text-3xl font-serif font-bold tracking-tight text-[#166534] md:text-navy leading-tight truncate">Recruitments for You</h1>
+            <div>
+              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap">Recruitments for You</h1>
             </div>
           </div>
-          {isMounted && (
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              {(userProfile?.qualifications && userProfile.qualifications.length > 0) && (
-                <button
-                  onClick={openAIScreening}
-                  disabled={isScreeningLoading}
-                  className={`flex items-center gap-1 h-7 md:h-9 px-2.5 md:px-4 rounded-full transition-all active:scale-95 border whitespace-nowrap ${isFilterApplied ? 'bg-green-50/50 text-green-700 border-green-200 md:bg-blue-50/50 md:text-blue-600 md:border-blue-200' : 'bg-green-50/40 text-[#166534]/70 border-[#166534]/20 hover:text-[#166534] hover:bg-green-50 md:bg-navy/[0.04] md:text-navy/50 md:border-navy/10 md:hover:bg-navy/[0.06] md:hover:text-navy/70'}`}
-                >
-                  <svg className={`w-3 h-3 md:w-3.5 md:h-3.5 ${isFilterApplied ? 'text-green-700 md:text-blue-600' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                    <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-                  </svg>
-                  <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
-                    {isScreeningLoading ? '...' : (
-                      <>
-                        <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
-                        <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
-                      </>
-                    )}
-                  </span>
-                  {isFilterApplied && !isScreeningLoading && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 md:bg-blue-600 ml-0.5" />
-                  )}
-                </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={openAIScreening}
+              disabled={isScreeningLoading}
+              className={`flex items-center gap-1.5 h-7 md:h-9 px-3 md:px-4 rounded-full transition-all active:scale-95 border ${isFilterApplied ? 'bg-blue-50/50 text-blue-600 border-blue-200' : 'bg-navy/[0.04] text-navy/50 border-navy/10 hover:bg-navy/[0.06] hover:text-navy/70'}`}
+            >
+              <svg className="w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke={isFilterApplied ? "#2563EB" : "currentColor"} strokeWidth={isFilterApplied ? "3" : "2"} strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+              </svg>
+              <span className="text-[9px] md:text-[11px] lg:text-sm font-bold uppercase tracking-wider">
+                {isScreeningLoading ? '...' : (
+                  <>
+                    <span className="hidden lg:inline">{isFilterApplied ? 'AI Filters Active' : 'Filter more with AI'}</span>
+                    <span className="lg:hidden">{isFilterApplied ? 'Active' : 'AI Filter'}</span>
+                  </>
+                )}
+              </span>
+              {isFilterApplied && !isScreeningLoading && (
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5" />
               )}
-              <button
-                onClick={() => fetchJobs(true)}
-                disabled={isRefreshing || isLoading}
-                className={`p-1.5 rounded-full hover:bg-green-50 text-[#166534]/60 hover:text-[#166534] md:hover:bg-navy/5 md:text-navy/40 md:hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
-                title="Refresh Jobs"
-              >
-                <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-              </button>
-            </div>
-          )}
+            </button>
+            <button
+              onClick={() => fetchJobs(true)}
+              disabled={isRefreshing || isLoading}
+              className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Jobs"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
+          </div>
         </header>
 
         {/* 🧠 AI SCREENING MODAL */}
@@ -415,17 +413,17 @@ export default function ForYouPage() {
         />
 
         {isLoading ? (
-          <div className="flex flex-col gap-6 px-4 md:px-0">
+          <div className="flex flex-col gap-6">
             {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="flex flex-col gap-1 md:gap-6 px-4 md:px-0">
+          <div className="flex flex-col gap-1 md:gap-6">
             {jobs.map((job, idx) => (
               <RecruitmentCard key={idx} job={job} isMatched={true} />
             ))}
           </div>
         ) : (
-          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center mx-4 md:mx-0">
+          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
             <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
@@ -438,7 +436,7 @@ export default function ForYouPage() {
             {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
               <Link
                 href="/profile"
-                className="mt-8 px-6 py-3 bg-[#166534] md:bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline whitespace-nowrap"
+                className="mt-8 px-10 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
               >
                 setup qualification →
               </Link>

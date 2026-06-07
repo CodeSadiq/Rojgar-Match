@@ -13,8 +13,8 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
 
     try {
       const profile = JSON.parse(savedProfile);
-      const answers = savedAnswers ? JSON.parse(savedAnswers) : {};
-      const questions = savedQuestions ? JSON.parse(savedQuestions) : [];
+      const answers = profile.screeningAnswers || (savedAnswers ? JSON.parse(savedAnswers) : {});
+      const questions = profile.screeningQuestions || (savedQuestions ? JSON.parse(savedQuestions) : []);
 
       // 1. Base matches (Stage 1 - Local Degree Match)
       const matches = getEligibleJobs(profile, [job]);

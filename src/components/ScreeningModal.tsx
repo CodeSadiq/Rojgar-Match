@@ -170,18 +170,22 @@ export default function ScreeningModal({
 
           <div className="flex items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-6 h-6 md:w-10 md:h-10 rounded bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 shadow-inner text-white">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                  <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
-                </svg>
-              </div>
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+              </svg>
               <div>
-                <h2 className="text-[12px] md:text-lg font-bold text-white leading-tight">
-                  {step === 'selection' ? 'Choose AI Filter Mode' : step === 'textInput' ? 'Describe Your Qualification' : step === 'resumeUpload' ? 'Upload Your Resume' : 'AI Screening Questions'}
+                <h2 className="text-[14px] md:text-lg font-bold text-white leading-tight">
+                  Filter more with AI
                 </h2>
-                <p className="hidden md:block text-[11px] font-semibold text-white/50 uppercase tracking-widest mt-0.5">
-                  {step === 'selection' ? 'Select how you want to filter jobs' : step === 'textInput' ? 'The AI will filter jobs based on your details' : step === 'resumeUpload' ? 'Extract details automatically from PDF' : 'Answer to filter jobs more precisely'}
+                <p className="hidden md:block text-[10px] font-bold text-white/50 uppercase tracking-widest mt-0.5">
+                  {step === 'selection' 
+                    ? 'Select how you want to filter jobs matched on course and branch' 
+                    : step === 'textInput' 
+                      ? 'The AI will filter jobs based on your details' 
+                      : step === 'resumeUpload' 
+                        ? 'Extract details automatically from PDF' 
+                        : 'Answer to filter jobs more precisely'}
                 </p>
               </div>
             </div>
@@ -225,17 +229,17 @@ export default function ScreeningModal({
               </p>
             </div>
           ) : step === 'selection' ? (
-            <div className="p-3 md:p-10 flex flex-col gap-2 md:gap-4">
+            <div className="p-4 md:p-8 flex flex-col gap-3 md:gap-5">
               <button
                 onClick={() => setStep('textInput')}
-                className="group flex items-center gap-3 md:gap-5 p-3.5 md:p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white border-2 border-gray-200 hover:border-navy rounded-2xl hover:shadow-lg hover:shadow-navy/5 transition-all text-left animate-in fade-in slide-in-from-bottom-2 duration-300"
               >
-                <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
-                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
+                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-[13px] md:text-[15px] font-bold text-navy mb-0.5 md:mb-1 leading-tight">Write everything about your qualification</h4>
-                  <p className="text-[10px] md:text-[12px] text-navy/40 font-medium leading-relaxed">Explain your skills, experience and degrees in your own words.</p>
+                  <h4 className="text-[14px] md:text-[17px] font-extrabold text-navy mb-1 leading-snug">Write everything about your qualification</h4>
+                  <p className="text-[11px] md:text-[13px] text-navy/50 font-semibold leading-relaxed">Explain your skills, experience and degrees in your own words.</p>
                 </div>
               </button>
 
@@ -257,17 +261,17 @@ export default function ScreeningModal({
 
               <button
                 onClick={() => { onGenerateQuestions(); setStep('questions'); }}
-                className="group flex items-center gap-3 md:gap-5 p-3.5 md:p-6 bg-white border-2 border-gray-100 rounded-xl hover:border-navy hover:shadow-xl hover:shadow-navy/5 transition-all text-left"
+                className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white border-2 border-gray-200 hover:border-navy rounded-2xl hover:shadow-lg hover:shadow-navy/5 transition-all text-left animate-in fade-in slide-in-from-bottom-2 duration-300"
               >
-                <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
-                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-navy/5 text-navy flex items-center justify-center group-hover:bg-navy group-hover:text-white transition-all flex-shrink-0">
+                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                 </div>
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-2 mb-0.5 md:mb-1">
-                    <h4 className="text-[13px] md:text-[15px] font-bold text-navy leading-tight">Generate screening questions</h4>
-                    <span className="px-1.5 py-0.5 bg-green-50 text-green-600 text-[8px] md:text-[9px] font-bold uppercase tracking-widest rounded-md border border-green-100">Recommended</span>
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h4 className="text-[14px] md:text-[17px] font-extrabold text-navy leading-snug">Generate screening questions</h4>
+                    <span className="text-green-600 text-[12px] md:text-[13px] font-black uppercase tracking-wide ml-1.5">[Recommended]</span>
                   </div>
-                  <p className="text-[10px] md:text-[12px] text-navy/40 font-medium leading-relaxed">Answer simple Yes/No questions based on job requirements.</p>
+                  <p className="text-[11px] md:text-[13px] text-navy/50 font-semibold leading-relaxed">Answer simple Yes/No questions based on job requirements.</p>
                 </div>
               </button>
             </div>

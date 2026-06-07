@@ -82,23 +82,20 @@ function JobsPageContent() {
     return dbJobs.map(job => {
       const matchData = matchedMap.get(job._id || job.id);
       if (matchData) {
-        // 🛡️ AI Screening Filter check
-        let isEligibleByAI = true;
-        if (userProfile.screeningQuestions && userProfile.screeningAnswers && Object.keys(userProfile.screeningAnswers).length > 0) {
-          const hasEligiblePost = matchData.matchedPosts.some(post => {
-            const isBlocked = userProfile.screeningQuestions?.some(q =>
-              q.impactedPostNames?.includes(post.name) && userProfile.screeningAnswers?.[q.id] === false
-            );
-            return !isBlocked;
-          });
-          isEligibleByAI = hasEligiblePost;
-        }
+        // Filter out posts that are blocked by screening answers or text block filters
+        const activePosts = matchData.matchedPosts.filter(post => {
+          const isBlockedByQuestion = userProfile.screeningQuestions?.some(q =>
+            q.impactedPostNames?.includes(post.name) && userProfile.screeningAnswers?.[q.id] === false
+          );
+          const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
+          return !isBlockedByQuestion && !isBlockedByText;
+        });
 
-        if (isEligibleByAI) {
+        if (activePosts.length > 0) {
           return {
             ...job,
             isMatched: true,
-            matchedPosts: matchData.matchedPosts,
+            matchedPosts: activePosts,
             matchScore: matchData.matchScore,
             matchedOn: matchData.matchedOn
           };

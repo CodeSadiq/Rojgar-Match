@@ -130,7 +130,7 @@ const styles = `
   .jd-header-back { display: none; }
   .jd-title {
     font-family: var(--serif);
-    font-size: clamp(24px, 4vw, 38px);
+    font-size: clamp(28px, 4.5vw, 42px);
     font-weight: 700;
     line-height: 1.2;
     color: var(--navy);
@@ -164,38 +164,79 @@ const styles = `
   /* ── HERO STRIP ── */
   /* Row highlighting removed as per user request */
   
+  /* ── HERO STRIP ── */
   .jd-hero {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--navy);
-    margin: 24px 0;
-    background: var(--border);
-    gap: 1px;
+    margin: 28px 0;
+    gap: 16px;
   }
   .jd-hero-cell {
-    background: var(--paper);
-    padding: 18px 16px;
-    text-align: left;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease;
   }
-  .jd-hero-cell.accent { background: var(--navy); }
+  .jd-hero-cell:hover {
+    transform: translateY(-2px);
+  }
+  .jd-hero-cell.accent {
+    background: linear-gradient(135deg, var(--navy) 0%, #1e293b 100%);
+    border: none;
+    color: #ffffff;
+  }
+  .jd-hero-cell.accent:hover {
+    /* Hover scale/translation without shadows */
+  }
+  .jd-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(30, 58, 95, 0.05);
+    color: var(--navy);
+    flex-shrink: 0;
+  }
+  .jd-hero-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  .jd-hero-cell.accent .jd-hero-icon {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+  .jd-hero-cell.highlight-red .jd-hero-icon {
+    background: rgba(220, 38, 38, 0.05);
+    color: #dc2626;
+  }
+  .jd-hero-content {
+    display: flex;
+    flex-direction: column;
+  }
   .jd-hero-label {
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   .jd-hero-cell.accent .jd-hero-label { color: rgba(255,255,255,0.55); }
   .jd-hero-value {
     font-family: var(--serif);
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--navy);
-    line-height: 1;
+    line-height: 1.2;
   }
   .jd-hero-cell.accent .jd-hero-value { color: #fff; }
+  .jd-hero-cell.highlight-red .jd-hero-value { color: #dc2626; }
   .jd-hero-sub { font-size: 12px; color: var(--ink-muted); margin-top: 3px; }
   .jd-hero-cell.accent .jd-hero-sub { color: rgba(255,255,255,0.5); }
 
@@ -221,7 +262,7 @@ const styles = `
   .jd-section-icon { color: var(--crimson); display: flex; }
   .jd-section-title {
     font-family: var(--serif);
-    font-size: 19px;
+    font-size: 21px;
     font-weight: 700;
     color: var(--navy);
   }
@@ -395,7 +436,7 @@ const styles = `
 
   /* ── AGE CELL STYLES ── */
   .age-main {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 14px;
     font-weight: 500;
     color: var(--navy);
@@ -503,7 +544,7 @@ const styles = `
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    min-width: 130px;
+    min-width: 220px;
     text-align: center;
   }
   .jd-stage-num {
@@ -521,7 +562,7 @@ const styles = `
     font-size: 12px;
     font-weight: 600;
     color: var(--navy);
-    max-width: 110px;
+    max-width: 200px;
     line-height: 1.4;
   }
   .jd-stage-arrow {
@@ -581,27 +622,40 @@ const styles = `
     .jd-wrap { padding: 0 20px 120px; }
     .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
     
-    .jd-title { font-size: 20px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: left; display: flex; align-items: flex-start; justify-content: flex-start; gap: 6px; }
+    .jd-title { font-size: 23px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: left; display: flex; align-items: flex-start; justify-content: flex-start; gap: 6px; }
     .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: left; }
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: flex-start; text-align: left; }
 
     /* 2x2 Grid for Hero on Mobile */
-    /* Stacking Hero cells vertically on Mobile */
     .jd-hero { 
-      grid-template-columns: 1fr; 
-      margin: 12px 0; 
-      gap: 1px; 
-      border-bottom: 3px solid var(--navy);
+      grid-template-columns: 1fr 1fr; 
+      margin: 16px 0; 
+      gap: 10px; 
     }
-    .jd-hero-cell { padding: 8px 14px; }
+    .jd-hero-cell {
+      padding: 12px 14px;
+      gap: 10px;
+      border-radius: 8px;
+    }
+    .jd-hero-cell.accent {
+      grid-column: span 2;
+    }
+    .jd-hero-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+    .jd-hero-icon svg {
+      width: 16px;
+      height: 16px;
+    }
     .jd-hero-label { font-size: 8px; margin-bottom: 2px; }
-    .jd-hero-value { font-size: 19px !important; letter-spacing: -0.02em; line-height: 1.1; }
-    .jd-hero-sub { font-size: 10px; opacity: 0.8; margin-top: 1px; }
+    .jd-hero-value { font-size: 15px !important; line-height: 1.2; }
 
     .jd-lede { font-size: 14px; margin: 12px 0; line-height: 1.5; }
     
     .jd-section { margin: 50px 0 14px; padding-bottom: 4px; }
-    .jd-section-title { font-size: 13px; letter-spacing: 0.05em; }
+    .jd-section-title { font-size: 14.5px; letter-spacing: 0.05em; }
     
     /* Micro-Table Layout */
     .jd-table { font-size: 10px; table-layout: auto; }
@@ -845,11 +899,11 @@ function AgeCell({ post, job }: { post: any; job: any }) {
         </div>
       )}
       {relaxEntries.length > 0 && (
-        <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
+        <div style={{ marginTop: "6px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "4px" }}>
           {relaxEntries.map(([cat, val], idx) => (
-            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 500, whiteSpace: "nowrap" }}>
+            <span key={cat} style={{ fontSize: "9px", color: "var(--ink-muted)", fontWeight: 400, whiteSpace: "nowrap" }}>
               {RELAX_LABELS[cat] || cat.toUpperCase()}: {max ? Number(max) + Number(val) : `+${val}`}
-              {idx < relaxEntries.length - 1 ? <span style={{ color: "var(--border)", marginLeft: "6px", fontWeight: 400 }}>|</span> : ""}
+              {idx < relaxEntries.length - 1 ? <span style={{ color: "rgba(0,0,0,0.12)", marginLeft: "4px", fontWeight: 400 }}>|</span> : ""}
             </span>
           ))}
         </div>
@@ -983,19 +1037,28 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {/* ── HERO STRIP ── */}
           <div className="jd-hero">
             <div className="jd-hero-cell accent">
-              <div className="jd-hero-label">Total Vacancies</div>
-              <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-            </div>
-            <div className="jd-hero-cell">
-              <div className="jd-hero-label">Application Start Date</div>
-              <div className="jd-hero-value" style={{ fontSize: 22 }}>
-                {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
+              <div className="jd-hero-icon"><IconUsers /></div>
+              <div className="jd-hero-content">
+                <div className="jd-hero-label">Total Vacancies</div>
+                <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
               </div>
             </div>
             <div className="jd-hero-cell">
-              <div className="jd-hero-label">Application Last Date</div>
-              <div className="jd-hero-value" style={{ fontSize: 22, color: '#D93025', fontWeight: 'bold' }}>
-                {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+              <div className="jd-hero-icon"><IconCalendar /></div>
+              <div className="jd-hero-content">
+                <div className="jd-hero-label">Start Date</div>
+                <div className="jd-hero-value">
+                  {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
+                </div>
+              </div>
+            </div>
+            <div className="jd-hero-cell highlight-red">
+              <div className="jd-hero-icon"><IconCalendar /></div>
+              <div className="jd-hero-content">
+                <div className="jd-hero-label">Last Date</div>
+                <div className="jd-hero-value">
+                  {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+                </div>
               </div>
             </div>
           </div>
@@ -1135,8 +1198,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {p.name}
-                        <span className="match-badge" style={{ display: 'none', background: 'var(--navy)', color: '#ffffff', fontSize: '9px', fontWeight: 900, padding: '2px 8px', width: 'fit-content', borderRadius: '4px', marginTop: '4px', letterSpacing: '0.05em' }}>
-                          MATCHED
+                        <span className="match-badge" style={{ display: 'none', color: 'var(--green)', fontSize: '11px', fontWeight: 700, marginTop: '4px', letterSpacing: '0.03em' }}>
+                          ✓ Matched
                         </span>
                       </div>
                     </td>

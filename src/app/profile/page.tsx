@@ -508,11 +508,10 @@ export default function ProfilePage() {
 
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] animate-in fade-in slide-in-from-top-5 duration-300">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-sm max-w-sm ${
-            toast.type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' :
-            toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
-            'bg-amber-50/95 border-amber-200 text-amber-800'
-          }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-sm max-w-sm ${toast.type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' :
+              toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
+                'bg-amber-50/95 border-amber-200 text-amber-800'
+            }`}>
             {toast.type === 'success' && (
               <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />

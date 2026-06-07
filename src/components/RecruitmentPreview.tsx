@@ -123,35 +123,76 @@ const styles = `
   .jd-hero {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--navy);
-    margin: 24px 0;
-    background: var(--border);
-    gap: 1px;
+    margin: 28px 0;
+    gap: 16px;
   }
   .jd-hero-cell {
-    background: var(--paper);
-    padding: 18px 16px;
-    text-align: center;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease;
   }
-  .jd-hero-cell.accent { background: var(--navy); }
+  .jd-hero-cell:hover {
+    transform: translateY(-2px);
+  }
+  .jd-hero-cell.accent {
+    background: linear-gradient(135deg, var(--navy) 0%, #1e293b 100%);
+    border: none;
+    color: #ffffff;
+  }
+  .jd-hero-cell.accent:hover {
+    /* Hover scale/translation without shadows */
+  }
+  .jd-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(30, 58, 95, 0.05);
+    color: var(--navy);
+    flex-shrink: 0;
+  }
+  .jd-hero-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  .jd-hero-cell.accent .jd-hero-icon {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+  .jd-hero-cell.highlight-red .jd-hero-icon {
+    background: rgba(220, 38, 38, 0.05);
+    color: #dc2626;
+  }
+  .jd-hero-content {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
   .jd-hero-label {
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   .jd-hero-cell.accent .jd-hero-label { color: rgba(255,255,255,0.55); }
   .jd-hero-value {
     font-family: var(--serif);
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--navy);
-    line-height: 1;
+    line-height: 1.2;
   }
   .jd-hero-cell.accent .jd-hero-value { color: #fff; }
+  .jd-hero-cell.highlight-red .jd-hero-value { color: #dc2626; }
   .jd-hero-sub { font-size: 12px; color: var(--ink-muted); margin-top: 3px; }
   .jd-hero-cell.accent .jd-hero-sub { color: rgba(255,255,255,0.5); }
 
@@ -233,7 +274,7 @@ const styles = `
   .qual-prereq { display: inline-flex; align-items: center; gap: 5px; background: #fef9c3; color: #713f12; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 3px; margin-top: 8px; border: 1px solid #fde047; line-height: 1.4; }
 
   /* ── AGE CELL STYLES ── */
-  .age-main { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .age-main { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--navy); white-space: nowrap; }
   .age-ason { font-size: 10px; color: var(--ink-muted); margin-top: 2px; white-space: nowrap; }
   .age-relax-row { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--blue); margin-top: 2px; flex-wrap: wrap; }
 
@@ -254,6 +295,34 @@ const styles = `
     width: 100%;
     outline: none;
     padding: 2px;
+  }
+
+  @media (max-width: 600px) {
+    /* 2x2 Grid for Hero on Mobile */
+    .jd-hero { 
+      grid-template-columns: 1fr 1fr; 
+      margin: 16px 0; 
+      gap: 10px; 
+    }
+    .jd-hero-cell {
+      padding: 12px 14px;
+      gap: 10px;
+      border-radius: 8px;
+    }
+    .jd-hero-cell.accent {
+      grid-column: span 2;
+    }
+    .jd-hero-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+    .jd-hero-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+    .jd-hero-label { font-size: 8px; margin-bottom: 2px; }
+    .jd-hero-value { font-size: 15px !important; line-height: 1.2; }
   }
 `;
 
@@ -445,15 +514,15 @@ function AgeCell({ post, job, editable, onUpdate, postIndex, isGeneral }: any) {
           <Editable editable={true} value={max} path={isGeneral ? "ageLimit.max" : `posts.${postIndex}.ageLimit.max`} placeholder="Max" onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} />
         </div>
       ) : (
-        <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>{min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}</div>
+        <div className="age-main" style={{ fontWeight: 500, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>{min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}</div>
       )}
       {asOn && <div className="age-ason" style={{ fontSize: "10px", color: "var(--ink-muted)", marginTop: "2px", fontWeight: 500 }}>as on {fmtDate(asOn)}</div>}
       {relaxEntries.length > 0 && (
-        <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
+        <div style={{ marginTop: "6px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "4px" }}>
           {relaxEntries.map(([cat, val], idx) => (
-            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 600, whiteSpace: "nowrap" }}>
+            <span key={cat} style={{ fontSize: "9px", color: "var(--ink-muted)", fontWeight: 400, whiteSpace: "nowrap" }}>
               {RELAX_LABELS[cat] || cat.toUpperCase()}: {max ? Number(max) + Number(val) : `+${val}`}
-              {idx < relaxEntries.length - 1 ? <span style={{ color: "var(--border)", marginLeft: "6px", fontWeight: 400 }}>|</span> : ""}
+              {idx < relaxEntries.length - 1 ? <span style={{ color: "rgba(0,0,0,0.12)", marginLeft: "4px", fontWeight: 400 }}>|</span> : ""}
             </span>
           ))}
         </div>
@@ -659,19 +728,28 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         {/* HERO STRIP */}
         <div className="jd-hero">
           <div className="jd-hero-cell accent">
-            <div className="jd-hero-label">Total Vacancies</div>
-            <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-          </div>
-          <div className="jd-hero-cell">
-            <div className="jd-hero-label">Application Start Date</div>
-            <div className="jd-hero-value" style={{ fontSize: 22 }}>
-              {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
+            <div className="jd-hero-icon"><IconUsers /></div>
+            <div className="jd-hero-content">
+              <div className="jd-hero-label">Total Vacancies</div>
+              <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
             </div>
           </div>
           <div className="jd-hero-cell">
-            <div className="jd-hero-label">Application Last Date</div>
-            <div className="jd-hero-value" style={{ fontSize: 22, color: '#D93025', fontWeight: 'bold' }}>
-              {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+            <div className="jd-hero-icon"><IconCalendar /></div>
+            <div className="jd-hero-content">
+              <div className="jd-hero-label">Start Date</div>
+              <div className="jd-hero-value">
+                {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
+              </div>
+            </div>
+          </div>
+          <div className="jd-hero-cell highlight-red">
+            <div className="jd-hero-icon"><IconCalendar /></div>
+            <div className="jd-hero-content">
+              <div className="jd-hero-label">Last Date</div>
+              <div className="jd-hero-value">
+                {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+              </div>
             </div>
           </div>
         </div>
