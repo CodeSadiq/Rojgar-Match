@@ -8,6 +8,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ questions: [] });
     }
     const apiKey = process.env.OPENROUTER_API_KEY;
+    const model = process.env.SCREENING_MODEL || "openai/gpt-4o-mini";
 
     if (!apiKey) {
       return NextResponse.json({ error: 'OpenRouter API Key Missing' }, { status: 500 });
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
         "X-Title": "Rojgar Match"
       },
       body: JSON.stringify({
-        "model": "openai/gpt-4o-mini", // Fast, Cheap, and Reliable for high traffic
+        "model": model,
         "messages": [
           { "role": "user", "content": prompt }
         ]
