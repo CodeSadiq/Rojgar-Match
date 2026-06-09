@@ -298,31 +298,88 @@ const styles = `
   }
 
   @media (max-width: 600px) {
-    /* 2x2 Grid for Hero on Mobile */
+    /* Clean 3-Column Stats Bar for Hero on Mobile */
     .jd-hero { 
-      grid-template-columns: 1fr 1fr; 
+      grid-template-columns: repeat(3, 1fr); 
       margin: 16px 0; 
-      gap: 10px; 
+      gap: 0; 
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
     }
     .jd-hero-cell {
-      padding: 12px 14px;
-      gap: 10px;
-      border-radius: 8px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 4px;
+      padding: 4px 6px;
+      background: transparent !important;
+      border: none !important;
+    }
+    .jd-hero-cell:not(:last-child) {
+      border-right: 1px solid var(--border) !important;
+      border-radius: 0 !important;
     }
     .jd-hero-cell.accent {
-      grid-column: span 2;
+      grid-column: auto;
     }
     .jd-hero-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+      display: none !important;
     }
-    .jd-hero-icon svg {
-      width: 16px;
-      height: 16px;
+    .jd-hero-label { 
+      font-size: 8px; 
+      margin-bottom: 0; 
+      text-align: center;
+      color: var(--ink-muted);
     }
-    .jd-hero-label { font-size: 8px; margin-bottom: 2px; }
-    .jd-hero-value { font-size: 15px !important; line-height: 1.2; }
+    .jd-hero-cell.accent .jd-hero-label {
+      color: var(--ink-muted) !important;
+    }
+    .jd-hero-value { 
+      font-size: 12px !important; 
+      line-height: 1.2; 
+      text-align: center;
+      color: var(--navy);
+    }
+    .jd-hero-cell.accent .jd-hero-value {
+      color: var(--navy) !important;
+    }
+    .jd-hero-cell.highlight-red .jd-hero-value {
+      color: #dc2626 !important;
+    }
+
+    /* Clean, Visible Table Styling for Mobile */
+    .jd-table { 
+      font-size: 13px !important; 
+      table-layout: auto !important; 
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .jd-table th { 
+      padding: 8px 10px !important; 
+      font-size: 11.5px !important; 
+      border: 1px solid #cbd5e1 !important;
+      background: var(--navy) !important;
+      color: #ffffff !important;
+    }
+    .jd-table td { 
+      padding: 8px 12px !important; 
+      font-size: 13px !important; 
+      line-height: 1.4 !important; 
+      border: 1px solid #e2e8f0 !important;
+    }
+    .jd-table td.label, .jd-table .label { 
+      width: 120px !important; 
+      min-width: 120px !important; 
+      font-size: 12px !important; 
+      font-weight: 600 !important;
+      color: var(--navy) !important; 
+      background: #f8fafc !important; 
+    }
   }
 `;
 

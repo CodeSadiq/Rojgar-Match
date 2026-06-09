@@ -617,6 +617,24 @@ const styles = `
 
   .tbl-scroll { overflow-x: auto; }
 
+  .match-badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    background: #1e3a5f !important;
+    color: #ffffff !important;
+    border: 1px solid #1e3a5f !important;
+    padding: 3px 8px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    margin-top: 6px !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    width: fit-content !important;
+    box-shadow: 0 1px 3px rgba(30, 58, 95, 0.15) !important;
+  }
+
   @media (max-width: 600px) {
     .jd { font-size: 11px; padding-top: 16px; }
     .jd-wrap { padding: 0 20px 120px; }
@@ -626,47 +644,103 @@ const styles = `
     .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: left; }
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: flex-start; text-align: left; }
 
-    /* 2x2 Grid for Hero on Mobile */
+    /* Clean 3-Column Stats Bar for Hero on Mobile */
     .jd-hero { 
-      grid-template-columns: 1fr 1fr; 
+      grid-template-columns: repeat(3, 1fr); 
       margin: 16px 0; 
-      gap: 10px; 
+      gap: 0; 
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
     }
     .jd-hero-cell {
-      padding: 12px 14px;
-      gap: 10px;
-      border-radius: 8px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 4px;
+      padding: 4px 6px;
+      background: transparent !important;
+      border: none !important;
+    }
+    .jd-hero-cell:not(:last-child) {
+      border-right: 1px solid var(--border) !important;
+      border-radius: 0 !important;
     }
     .jd-hero-cell.accent {
-      grid-column: span 2;
+      grid-column: auto;
     }
     .jd-hero-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+      display: none !important;
     }
-    .jd-hero-icon svg {
-      width: 16px;
-      height: 16px;
+    .jd-hero-label { 
+      font-size: 8px; 
+      margin-bottom: 0; 
+      text-align: center;
+      color: var(--ink-muted);
     }
-    .jd-hero-label { font-size: 8px; margin-bottom: 2px; }
-    .jd-hero-value { font-size: 15px !important; line-height: 1.2; }
+    .jd-hero-cell.accent .jd-hero-label {
+      color: var(--ink-muted) !important;
+    }
+    .jd-hero-value { 
+      font-size: 12px !important; 
+      line-height: 1.2; 
+      text-align: center;
+      color: var(--navy);
+    }
+    .jd-hero-cell.accent .jd-hero-value {
+      color: var(--navy) !important;
+    }
+    .jd-hero-cell.highlight-red .jd-hero-value {
+      color: #dc2626 !important;
+    }
 
     .jd-lede { font-size: 14px; margin: 12px 0; line-height: 1.5; }
     
     .jd-section { margin: 50px 0 14px; padding-bottom: 4px; }
     .jd-section-title { font-size: 14.5px; letter-spacing: 0.05em; }
     
-    /* Micro-Table Layout */
-    .jd-table { font-size: 10px; table-layout: auto; }
-    .jd-table th { padding: 4px 6px; font-size: 9px; }
-    .jd-table td { padding: 5px 8px; font-size: 10.5px; line-height: 1.3; }
-    .jd-table td.label { width: 90px; min-width: 90px; font-size: 9.5px; }
+    /* Micro-Table Layout - Upgraded for visibility and size */
+    .jd-table { 
+      font-size: 13px !important; 
+      table-layout: auto !important; 
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .jd-table th { 
+      padding: 8px 10px !important; 
+      font-size: 11.5px !important; 
+      border: 1px solid #cbd5e1 !important;
+      background: var(--navy) !important;
+      color: #ffffff !important;
+    }
+    .jd-table td { 
+      padding: 8px 12px !important; 
+      font-size: 13px !important; 
+      line-height: 1.4 !important; 
+      border: 1px solid #e2e8f0 !important;
+    }
+    .jd-table td.label { 
+      width: 120px !important; 
+      min-width: 120px !important; 
+      font-size: 12px !important; 
+      font-weight: 600 !important;
+      color: var(--navy) !important; 
+      background: #f8fafc !important; 
+    }
     
     .jd-apply { font-size: 15px; padding: 14px; margin-top: 40px; border-radius: 12px; }
     .qual-course-pill { font-size: 9px; padding: 0px 4px; }
     .qual-branch-line, .qual-extra { font-size: 8px; margin-top: 1px; }
     .cat-vac-grid { min-width: 60px; gap: 2px; }
+    .match-badge {
+      font-size: 8.5px !important;
+      padding: 2px 6px !important;
+      margin-top: 4px !important;
+    }
   }
 `;
 
@@ -1198,8 +1272,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {p.name}
-                        <span className="match-badge" style={{ display: 'none', color: 'var(--green)', fontSize: '11px', fontWeight: 700, marginTop: '4px', letterSpacing: '0.03em' }}>
-                          ✓ Matched
+                        <span className="match-badge" style={{ display: 'none' }}>
+                          Matched
                         </span>
                       </div>
                     </td>

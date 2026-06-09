@@ -254,18 +254,26 @@ export default function Home() {
 
     try {
       const matchedPostsContext = recommendedJobs.flatMap(job =>
-        job.matchedPosts.map((post: any) => ({
-          name: post.name,
-          jobTitle: job.title,
-          prerequisite: post.prerequisite || [],
-          qualification: {
-            course: Array.isArray(post.qualification?.course)
-              ? post.qualification.course
-              : (post.qualification?.course ? [post.qualification.course] : []),
-            branch: post.qualification?.branch || [],
-            extraQualificationText: post.qualification?.extraQualificationText || ""
-          }
-        }))
+        job.matchedPosts
+          .filter((post: any) => {
+            const hasPrereq = post.prerequisite && post.prerequisite.length > 0;
+            const hasExtraText = post.qualification?.extraQualificationText && post.qualification.extraQualificationText.trim().length > 0;
+            return hasPrereq || hasExtraText;
+          })
+          .map((post: any) => ({
+            name: post.name,
+            jobTitle: job.title,
+            prerequisite: post.prerequisite || [],
+            "qualification.extraQualificationText": post.qualification?.extraQualificationText || "",
+            extraQualificationText: post.qualification?.extraQualificationText || "",
+            qualification: {
+              course: Array.isArray(post.qualification?.course)
+                ? post.qualification.course
+                : (post.qualification?.course ? [post.qualification.course] : []),
+              branch: post.qualification?.branch || [],
+              extraQualificationText: post.qualification?.extraQualificationText || ""
+            }
+          }))
       );
 
       const res = await fetch('/api/ai/screening', {

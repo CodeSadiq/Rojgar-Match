@@ -347,27 +347,40 @@ export default function ProfilePage() {
           </div>
 
           {/* MOBILE VIEW HEADER CARD */}
-          <div className="md:hidden bg-white border border-gray-200 rounded-xl p-4 flex flex-row items-center justify-between gap-4 text-left transition-all">
-            <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-              <h1 className="text-base font-bold text-navy tracking-tight truncate">
-                {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
-              </h1>
-
-              {/* Session Info & Status Badge */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-50">
-                <span className="text-[10px] font-semibold text-gray-400 capitalize">
-                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Guest Session' : userProfile.email}
-                </span>
-                <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
-                <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
-                  {completed ? "Education Recorded" : "Education Not Recorded"}
-                </span>
+          <div className="md:hidden bg-white border border-gray-200 rounded-2xl p-4 flex flex-col transition-all shadow-sm">
+            {/* Top Row: Initial Avatar and Profile Metadata */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-navy/5 flex items-center justify-center text-navy font-bold text-sm shrink-0 border border-navy/10">
+                {userProfile.email === 'guest@rojgarmatch.local'
+                  ? 'G'
+                  : (userProfile.fullName ? userProfile.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'C')}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base font-bold text-navy tracking-tight truncate leading-snug">
+                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
+                </h1>
+                <p className="text-xs text-gray-500 truncate leading-none mt-1">
+                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Guest Session' : userProfile.email.toLowerCase()}
+                </p>
               </div>
             </div>
 
-            <button onClick={handleLogout} className="shrink-0 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-lg text-[9px] font-black uppercase tracking-wider border border-red-100/50 active:scale-95">
-              Sign Out
-            </button>
+            {/* Subtle Divider */}
+            <div className="border-t border-gray-100 my-3" />
+
+            {/* Bottom Row: Status Badge & Logout Button */}
+            <div className="flex items-center justify-between gap-2">
+              <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${completed ? "text-green-600 bg-green-50/50 border-green-100" : "text-red-500 bg-red-50/50 border-red-100"}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${completed ? 'bg-green-500' : 'bg-red-500'} shrink-0`} />
+                {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="px-3.5 py-1.5 bg-red-50/70 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-lg text-[10px] font-bold uppercase tracking-wider border border-red-100/50 active:scale-95"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
 
           <div className="max-w-[1100px] mt-4 space-y-4 md:space-y-8">
@@ -509,8 +522,8 @@ export default function ProfilePage() {
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] animate-in fade-in slide-in-from-top-5 duration-300">
           <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-sm max-w-sm ${toast.type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' :
-              toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
-                'bg-amber-50/95 border-amber-200 text-amber-800'
+            toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
+              'bg-amber-50/95 border-amber-200 text-amber-800'
             }`}>
             {toast.type === 'success' && (
               <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
