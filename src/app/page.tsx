@@ -1108,13 +1108,13 @@ export default function Home() {
                             <Link
                               href={isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
                               key={`${n.id}-${i}`}
-                              className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
+                              className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy transition-all no-underline"
                             >
-                              <div className="text-[14px] font-serif font-bold text-[#0D244D] leading-snug line-clamp-2">
+                              <div className="text-[12px] font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors line-clamp-2">
                                 {n.text}
                               </div>
-                              <div className="flex items-center justify-between mt-2 border-t border-gray-100 pt-1.5">
-                                <div className="text-[10px] font-black uppercase tracking-[0.1em] text-navy/40">
+                              <div className="flex items-center justify-between mt-1.5 border-t border-gray-50 pt-1.5">
+                                <div className="text-[9px] font-medium uppercase tracking-[0.1em] text-navy/40">
                                   {n.time}
                                 </div>
                                 {isJob && displayLastDate && (
