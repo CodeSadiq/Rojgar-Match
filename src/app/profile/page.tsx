@@ -350,11 +350,6 @@ export default function ProfilePage() {
           <div className="md:hidden bg-white border border-gray-200 rounded-lg p-4 flex flex-col transition-all shadow-sm">
             {/* Top Row: Initial Avatar and Profile Metadata */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-navy/5 flex items-center justify-center text-navy font-bold text-sm shrink-0 border border-navy/10">
-                {userProfile.email === 'guest@rojgarmatch.local'
-                  ? 'G'
-                  : (userProfile.fullName ? userProfile.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'C')}
-              </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-base font-bold text-navy tracking-tight truncate leading-snug">
                   {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
@@ -400,7 +395,7 @@ export default function ProfilePage() {
               <div className="space-y-1 pt-3 border-t border-gray-50">
                 <h2 className="text-base md:text-xl font-bold text-navy">Set Qualification</h2>
                 <p className="text-[11px] md:text-[13.5px] text-navy/70 font-medium leading-relaxed">
-                  Update your qualifications level-wise to discover eligible jobs.
+                  Update your qualifications level-wise to discover eligible jobs. If you don't have a qualification in any level, set it to "No Record".
                 </p>
               </div>
 
@@ -530,7 +525,7 @@ export default function ProfilePage() {
       </main>
 
       {toast && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white border border-gray-100 rounded-lg md:rounded-2xl max-w-xs w-full p-6 shadow-2xl space-y-4 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
               toast.type === 'error' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
@@ -574,7 +569,7 @@ export default function ProfilePage() {
       )}
 
       {confirmDialog && confirmDialog.isOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white border border-gray-100 rounded-lg md:rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
               <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center shrink-0">

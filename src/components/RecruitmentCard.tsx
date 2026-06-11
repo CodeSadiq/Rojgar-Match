@@ -33,9 +33,9 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
         <div className="flex items-center justify-between mt-1.5 md:mt-2 border-t border-gray-50 pt-1.5 md:border-0 md:pt-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             {isMatched ? (
-              <div className="flex items-center gap-1 bg-transparent md:bg-navy text-green-700 md:text-white px-0 md:px-2 py-0 md:py-0.5 rounded-none md:rounded-full border-none md:border md:border-white/10">
-                <span className="w-1 h-1 rounded-full bg-green-600 md:bg-blue-300 animate-pulse hidden md:inline-block"></span>
-                <span className="text-[9px] font-bold md:font-black md:uppercase tracking-normal md:tracking-wider">
+              <div className="flex items-center gap-1.5 bg-transparent md:bg-navy text-green-700 md:text-white px-0 md:px-2.5 py-0 md:py-0.5 rounded-none md:rounded-full border-none md:border md:border-white/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-600 md:bg-blue-300 animate-pulse hidden md:inline-block"></span>
+                <span className="text-[9px] md:text-[9.5px] font-bold md:font-black md:uppercase tracking-normal md:tracking-wider">
                   <span className="text-gray-500 font-medium md:hidden mr-1">Matched on:</span>
                   <span className="hidden md:inline">Matched on </span>
                   {job.matchedOn || 'Profile'}

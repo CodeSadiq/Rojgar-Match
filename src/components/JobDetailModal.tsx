@@ -76,7 +76,7 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
   const postGroups = groupPostsByQual(rawPosts);
 
   return (
-    <div className="fixed inset-0 bg-navy-dark/45 backdrop-blur-sm z-[200] flex items-center justify-center p-5 transition-opacity duration-250 animate-in fade-in">
+    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[200] flex items-center justify-center p-5 transition-opacity duration-250 animate-in fade-in">
       <div
         className="bg-white rounded-xl max-w-[600px] w-full max-h-[88vh] overflow-y-auto transform transition-transform duration-250 animate-in slide-in-from-bottom-6 shadow-lg relative"
         onClick={(e) => e.stopPropagation()}

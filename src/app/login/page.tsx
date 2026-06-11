@@ -350,7 +350,7 @@ export default function LoginPage() {
       {/* 🔐 FORGOT PASSWORD MODAL */}
       {showForgotModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12 animate-in fade-in duration-300">
-          <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" onClick={() => setShowForgotModal(false)} />
+          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-md" onClick={() => setShowForgotModal(false)} />
           <div className="relative w-full max-w-[400px] bg-white rounded-[32px] overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-500">
             <div className="p-8 md:p-10">
               <div className="flex items-center gap-4 mb-8">

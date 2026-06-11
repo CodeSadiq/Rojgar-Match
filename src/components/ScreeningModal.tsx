@@ -156,7 +156,7 @@ export default function ScreeningModal({
     <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true" aria-label="AI Screening">
       {/* Backdrop: Full Screen Fade */}
       <div
-        className="fixed inset-0 bg-navy/40 backdrop-blur-sm animate-in fade-in duration-300"
+        className="fixed inset-0 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       />
 
@@ -165,7 +165,7 @@ export default function ScreeningModal({
         <div className="relative w-full md:max-w-2xl lg:max-w-3xl mx-auto max-h-[85vh] md:max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl shadow-navy/30 animate-in zoom-in-95 fade-in slide-in-from-bottom-10 duration-500 overflow-hidden pointer-events-auto">
 
           {/* Header */}
-          <div className="flex-shrink-0 bg-[#0D244D] px-4 md:px-8 py-1.5 md:py-6 relative overflow-hidden">
+          <div className="flex-shrink-0 bg-[#0D244D] px-4 md:px-8 py-4 md:py-6 relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex items-center justify-between gap-4 relative z-10">
