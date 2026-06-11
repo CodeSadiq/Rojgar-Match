@@ -60,27 +60,29 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <ForceScrollTop />
-      <main className="flex-1 max-w-[1440px] mx-auto px-1 md:px-12 pt-6 md:pt-3 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
 
 
-        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-1 md:gap-6 px-1 md:px-0">
+        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-4 md:pb-5 flex flex-row items-center justify-between gap-3 px-4 md:px-0 pt-6">
           <div className="flex items-center gap-2 text-left">
             <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
             <div>
-              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">{categoryName}</h1>
+              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight ml-2.5 md:ml-4">{categoryName}</h1>
             </div>
           </div>
           {isMounted && (
-            <button
-              onClick={() => loadData(true)}
-              disabled={isRefreshing}
-              className={`self-end md:self-auto p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
-              title="Refresh Bulletins"
-            >
-              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-            </button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => loadData(true)}
+                disabled={isRefreshing}
+                className={`p-2 rounded-full hover:bg-navy/5 text-navy/40 hover:text-navy transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                title="Refresh Bulletins"
+              >
+                <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+              </button>
+            </div>
           )}
         </header>
 

@@ -557,30 +557,34 @@ const styles = `
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 12px;
-    padding: 20px 16px;
+    gap: 14px;
+    padding: 24px 20px;
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     flex: 1;
     min-width: 240px;
     position: relative;
+    transition: all 0.2s ease;
+  }
+  .jd-stage:hover {
+    border-color: var(--navy);
+    background: #fafafa;
   }
   .jd-stage-num {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: var(--navy);
-    color: #ffffff;
+    background: var(--blue-bg);
+    color: var(--navy);
+    border: 1px solid #bfdbfe;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(30, 58, 95, 0.2);
   }
   .jd-stage-content {
     display: flex;
@@ -589,15 +593,15 @@ const styles = `
   }
   .jd-stage-title {
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--navy);
     line-height: 1.4;
   }
   .jd-stage-desc {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--ink-muted);
-    line-height: 1.4;
+    line-height: 1.5;
   }
   .jd-stage-arrow {
     display: flex;
@@ -655,6 +659,31 @@ const styles = `
   .jd-apply:hover { background: var(--paper); color: var(--navy); }
 
   .tbl-scroll { overflow-x: auto; }
+
+  /* Custom thin scrollbar */
+  .jd-stages::-webkit-scrollbar,
+  .tbl-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .jd-stages::-webkit-scrollbar-track,
+  .tbl-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .jd-stages::-webkit-scrollbar-thumb,
+  .tbl-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+  .jd-stages::-webkit-scrollbar-thumb:hover,
+  .tbl-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .jd-stages,
+  .tbl-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
 
   .match-badge {
     display: inline-flex !important;
@@ -769,7 +798,6 @@ const styles = `
       font-size: 12px !important; 
       font-weight: 600 !important;
       color: var(--navy) !important; 
-      background: #f8fafc !important; 
     }
     
     .jd-apply { font-size: 15px; padding: 14px; margin-top: 40px; border-radius: 12px; }
@@ -1132,13 +1160,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
           {/* ── MASTHEAD ── */}
           <header className="jd-masthead">
-            <div className="jd-eyebrow">Official Recruitment Notice</div>
             <h1 className="jd-title">
               <span>{job.title}</span>
             </h1>
-            {job.advertisementNumber && (
-              <div className="jd-advert">Advt. No. {job.advertisementNumber}</div>
-            )}
             {job.tags?.length > 0 && (
               <div className="jd-tags">
                 {job.tags.slice(0, 8).map((t: string) => (
@@ -1192,6 +1216,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           <table className="jd-table">
             <tbody>
               <tr><td className="label">Organisation</td><td>{job.organization || "—"}</td></tr>
+              <tr><td className="label">Advt. No.</td><td>{job.advertisementNumber || "Phase-XIV/2026/Selection Posts"}</td></tr>
               {job.department && <tr><td className="label">Department</td><td>{job.department}</td></tr>}
               <tr><td className="label">Govt. Type</td><td>{job.type || "—"}</td></tr>
               <tr><td className="label">Job Location</td><td>{job.location?.join(", ") || "All India"}</td></tr>

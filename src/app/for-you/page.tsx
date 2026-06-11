@@ -357,20 +357,14 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-2 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
-        <div className="hidden md:block mb-6 pt-6">
-          <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
-            <IconArrowLeft /> Back to Dashboard
-          </BackButton>
-        </div>
-
-        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
+        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0 pt-6">
           <div className="flex items-center gap-2 text-left">
-            <BackButton className="md:hidden text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+            <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
             <div>
-              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap">Recruitments for You</h1>
+              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap ml-2.5 md:ml-4">Recruitments for You</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -420,37 +414,39 @@ export default function ForYouPage() {
           hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
         />
 
-        {isLoading ? (
-          <div className="flex flex-col gap-6">
-            {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
-          </div>
-        ) : jobs.length > 0 ? (
-          <div className="flex flex-col gap-1 md:gap-6">
-            {jobs.map((job, idx) => (
-              <RecruitmentCard key={idx} job={job} isMatched={true} />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
-            <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <div className="px-4 md:px-0">
+          {isLoading ? (
+            <div className="flex flex-col gap-6">
+              {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
             </div>
-            <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-              {(!userProfile?.qualifications || userProfile.qualifications.length === 0)
-                ? "Set your qualification details to see eligible gov jobs."
-                : "No recruitments currently match your specific qualification level and branch."
-              }
-            </p>
-            {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
-              <Link
-                href="/profile"
-                className="mt-8 px-10 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
-              >
-                setup qualification →
-              </Link>
-            )}
-          </div>
-        )}
+          ) : jobs.length > 0 ? (
+            <div className="flex flex-col gap-1 md:gap-6">
+              {jobs.map((job, idx) => (
+                <RecruitmentCard key={idx} job={job} isMatched={true} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
+              <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </div>
+              <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
+                {(!userProfile?.qualifications || userProfile.qualifications.length === 0)
+                  ? "Set your qualification details to see eligible gov jobs."
+                  : "No recruitments currently match your specific qualification level and branch."
+                }
+              </p>
+              {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
+                <Link
+                  href="/profile"
+                  className="mt-8 px-10 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
+                >
+                  setup qualification →
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

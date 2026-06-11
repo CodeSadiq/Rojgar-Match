@@ -179,11 +179,6 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
       <div className="flex-1 flex flex-col items-center pt-4 md:pt-12 md:justify-center p-6 md:p-12 relative overflow-hidden">
 
-        {/* BACKGROUND DECOR */}
-        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
-          <h1 className="text-[25vw] font-serif font-bold text-navy rotate-[-10deg]">Portal</h1>
-        </div>
-
         <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
 
           {/* 🔙 BACK NAVIGATION (Repositioned) */}

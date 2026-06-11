@@ -18,7 +18,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
   return (
     <Link
       href={`/all-jobs/${job.id || job._id}`}
-      className={`group mx-0 mb-3 md:mb-0 p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-2 md:gap-4 transition-all rounded-xl no-underline relative overflow-hidden ${highlighted
+      className={`group mx-0 mb-2 md:mb-0 py-2.5 px-3.5 md:p-5 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-4 transition-all rounded-xl no-underline relative overflow-hidden ${highlighted
         ? 'bg-navy/[0.02] border-2 border-navy shadow-lg ring-1 ring-navy/10'
         : 'bg-white border-2 border-gray-100 md:border-gray-200 shadow-sm md:shadow-sm'
         } hover:border-navy`}
@@ -30,7 +30,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
           </h3>
         </div>
 
-        <div className="flex items-center justify-between mt-2 md:mt-2 border-t border-gray-50 pt-2 md:border-0 md:pt-0">
+        <div className="flex items-center justify-between mt-1.5 md:mt-2 border-t border-gray-50 pt-1.5 md:border-0 md:pt-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             {isMatched ? (
               <div className="flex items-center gap-1 bg-transparent md:bg-navy text-green-700 md:text-white px-0 md:px-2 py-0 md:py-0.5 rounded-none md:rounded-full border-none md:border md:border-white/10">

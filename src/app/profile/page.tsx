@@ -413,10 +413,10 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={group.id}
-                      className="p-3.5 md:p-6 rounded-lg border border-gray-200/70 space-y-3 md:space-y-4"
+                      className={`p-3.5 md:p-6 rounded-lg border transition-all duration-300 space-y-3 md:space-y-4 ${levelState.qual ? "bg-green-50/60 border-green-300 shadow-sm" : "bg-white border-gray-200/70"}`}
                     >
                       <div className="flex items-center gap-2">
-                        <h3 className="text-[10px] md:text-sm font-black uppercase text-navy tracking-wider">
+                        <h3 className={`text-[10px] md:text-sm font-black uppercase tracking-wider transition-colors ${levelState.qual ? "text-[#166534]" : "text-navy"}`}>
                           {group.label}
                         </h3>
                       </div>
@@ -426,7 +426,7 @@ export default function ProfilePage() {
                           <select
                             value={levelState.qual}
                             onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
-                            className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                            className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
                           >
                             <option value="">-- No Record --</option>
                             {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
@@ -435,13 +435,13 @@ export default function ProfilePage() {
 
                         {currentQual && currentQual.branches.length > 0 ? (
                           <div className="space-y-1">
-                            <label className="text-[9px] md:text-[10px] font-black uppercase text-navy/40 tracking-widest block px-1">
+                            <label className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block px-1 transition-colors ${levelState.qual ? "text-[#166534]/55" : "text-navy/40"}`}>
                               {group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}
                             </label>
                             <select
                               value={levelState.branch}
                               onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
-                              className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-blue-50/40 border-blue-200 text-blue-700" : "bg-white border-gray-200 text-navy/80 focus:border-navy"}`}
+                              className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
                             >
                               <option value="">-- No Record --</option>
                               {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
@@ -520,35 +520,44 @@ export default function ProfilePage() {
       </main>
 
       {toast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] animate-in fade-in slide-in-from-top-5 duration-300">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-sm max-w-sm ${toast.type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' :
-            toast.type === 'error' ? 'bg-rose-50/95 border-rose-200 text-rose-800' :
-              'bg-amber-50/95 border-amber-200 text-amber-800'
-            }`}>
-            {toast.type === 'success' && (
-              <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
-              </svg>
-            )}
-            {toast.type === 'error' && (
-              <svg className="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-            )}
-            {toast.type === 'warning' && (
-              <svg className="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-              </svg>
-            )}
-            <p className="text-sm font-bold tracking-tight">{toast.message}</p>
-            <button onClick={() => setToast(null)} className="ml-2 hover:opacity-70 shrink-0">
-              <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-100 rounded-2xl max-w-xs w-full p-6 shadow-2xl space-y-4 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
+                toast.type === 'error' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+              }`}>
+              {toast.type === 'success' && (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+              {toast.type === 'error' && (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              )}
+              {toast.type === 'warning' && (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-md font-bold text-navy">
+                {toast.type === 'success' ? 'Success' : toast.type === 'error' ? 'Error' : 'Warning'}
+              </h3>
+              <p className="text-xs font-semibold text-navy/70 leading-relaxed">
+                {toast.message}
+              </p>
+            </div>
+
+            <button
+              onClick={() => setToast(null)}
+              className="w-full py-2 bg-navy hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 text-center"
+            >
+              OK
             </button>
           </div>
         </div>

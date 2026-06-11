@@ -20,7 +20,7 @@ const IconRefresh = ({ className }: { className?: string }) => <svg className={c
 
 export default function Home() {
   const router = useRouter();
-  const [categories, setCategories] = useState<string[]>(['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card']);
+  const [categories, setCategories] = useState<string[]>(['All Jobs']);
   const [activeTab, setActiveTab] = useState<'for-you' | 'all' | 'notifications'>('for-you');
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,13 +51,23 @@ export default function Home() {
     setIsMounted(true);
     setWindowWidth(window.innerWidth);
 
+    // Load dynamic categories from cache first to prevent flickering/flash on load
+    const cachedCats = localStorage.getItem('rojgarmatch_categories');
+    if (cachedCats) {
+      try {
+        setCategories(JSON.parse(cachedCats));
+      } catch (e) { }
+    }
+
     // Fetch dynamic categories
     fetch('/api/bulletin-categories')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
           const activeNames = data.map((c: any) => c.name);
-          setCategories(['All Jobs', ...activeNames]);
+          const newCats = ['All Jobs', ...activeNames];
+          setCategories(newCats);
+          localStorage.setItem('rojgarmatch_categories', JSON.stringify(newCats));
         }
       })
       .catch(e => console.error('Failed to load categories:', e));
@@ -665,15 +675,15 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto pt-14 md:pt-12 pb-20 px-4 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-14 md:pt-12 pb-20 px-4 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-3.5 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`flex-col md:flex-row md:items-center justify-between bg-[#166534] md:bg-transparent px-5 md:px-0 py-4 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
+                  <header className={`flex-col md:flex-row md:items-center justify-between bg-[#166534] md:bg-transparent px-4 md:px-0 py-2.5 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="flex flex-col w-full md:w-auto">
-                      <div className="flex items-center justify-between w-full mb-3 md:mb-0">
+                      <div className="flex items-center justify-between w-full mb-2 md:mb-0">
                         <h2 className="text-[13px] md:text-3xl font-serif font-bold text-white md:text-[#0D244D] uppercase md:normal-case tracking-[0.12em] md:tracking-tight truncate pr-2">
                           <span>Recruitments for You</span>
                         </h2>
@@ -689,17 +699,17 @@ export default function Home() {
                             <button
                               onClick={openAIScreening}
                               disabled={isScreeningLoading}
-                              className={`flex items-center justify-center gap-2 h-8 px-4 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#166534] hover:bg-gray-50'}`}
+                              className={`flex items-center justify-center gap-1.5 h-7 px-3.5 rounded-full transition-all active:scale-95 shadow-md ${isFilterApplied ? 'bg-blue-500 text-white' : 'bg-white text-[#166534] hover:bg-gray-50'}`}
                             >
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                                 <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                               </svg>
-                              <span className="text-[10px] font-black tracking-wider uppercase">
+                              <span className="text-[9.5px] font-black tracking-wider uppercase">
                                 {isScreeningLoading ? '...' : (isFilterApplied ? 'AI Filter Active' : 'Filter more with AI')}
                               </span>
                               {isFilterApplied && !isScreeningLoading && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />
+                                <span className="w-1 h-1 rounded-full bg-white ml-0.5" />
                               )}
                             </button>
                           ) : <div />}
@@ -709,10 +719,10 @@ export default function Home() {
                             <button
                               onClick={() => fetchJobs(true)}
                               disabled={isRefreshing}
-                              className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
+                              className={`flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-90 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
                               title="Refresh Jobs"
                             >
-                              <IconRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                              <IconRefresh className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
                             </button>
                           )}
                         </div>
@@ -780,7 +790,7 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
 
                         <div className="relative z-10 max-w-[800px] w-full">
-                          <p className="text-[20px] md:text-[18px] font-extrabold text-navy md:text-navy/40 mb-2 md:mb-3">
+                          <p className="text-[20px] md:text-[18px] font-serif font-bold text-[#0D244D]/90 mb-2 md:mb-3">
                             Welcome to Rojgar Match
                           </p>
 
@@ -846,7 +856,7 @@ export default function Home() {
                       </div>
                     ) : (isLoggedIn || userProfile) && (!userProfile?.qualifications || userProfile?.qualifications?.length === 0) ? (
                       /* 👤 LOGGED IN NO EDUCATION: SHOW SIMPLE PROMPT */
-                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent border-0 flex flex-col items-center justify-center text-center shadow-none rounded-none mx-0">
+                      <div className="flex-1 py-14 md:py-24 px-6 bg-transparent border-0 flex flex-col items-center justify-center md:justify-start md:pt-20 text-center shadow-none rounded-none mx-0">
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
                           Set your qualification details to see eligible gov jobs.
                         </p>
@@ -976,7 +986,7 @@ export default function Home() {
 
 
                       <div
-                        className="p-0 relative overflow-hidden marquee-viewer touch-pan-y bg-[#F8FAFC] md:bg-transparent pt-4 md:pt-0"
+                        className="p-0 relative overflow-hidden marquee-viewer touch-pan-y bg-[#F8FAFC] md:bg-transparent pt-4 md:pt-2.5"
                         onTouchStart={(e) => { (window as any)._swipeX = e.touches[0].clientX; }}
                         onTouchEnd={(e) => {
                           const startX = (window as any)._swipeX;
@@ -1006,7 +1016,7 @@ export default function Home() {
                             const itemKey = `${cat}-${catIdx}`;
 
                             return (
-                              <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-5">
+                              <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-5 py-2.5">
                                 <div
                                   className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
                                   style={{
@@ -1019,14 +1029,13 @@ export default function Home() {
                                     <Link
                                       href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
                                       key={`${n.id}-${i}`}
-                                      className="group block p-4 md:p-0 md:py-4 mb-3 md:mb-0 bg-white md:bg-transparent border-2 md:border-0 border-gray-100 md:border-b md:border-gray-100 rounded-xl md:rounded-none shadow-sm md:shadow-none md:last:border-b-0 transition-all hover:border-navy/20 md:hover:border-gray-100 hover:bg-navy/[0.02] md:px-1 no-underline"
+                                      className="group block p-4 mb-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-[#0D244D]/25 hover:bg-[#0D244D]/[0.01] hover:shadow-md transition-all no-underline mx-0.5"
                                     >
-                                      <div className="text-[14px] md:text-[14px] font-serif md:font-sans font-bold text-[#0D244D] md:text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                      <div className="text-[13.5px] font-sans font-bold text-navy/80 leading-snug group-hover:text-[#0D244D] transition-colors line-clamp-2 mb-2">
                                         {n.text}
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className={`w-1.5 md:w-1 h-1.5 md:h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
-                                        <div className="text-[10px] md:text-[8px] font-bold md:font-black uppercase tracking-[0.1em] text-navy/40 group-hover:text-navy/50">{n.time}</div>
+                                        <div className="text-[9px] font-bold uppercase tracking-wider text-navy/40 group-hover:text-navy/55">{n.time}</div>
                                       </div>
                                     </Link>
                                   ))}
@@ -1070,10 +1079,10 @@ export default function Home() {
                 </div>
 
                 {/* MOBILE ONLY MULTIPLE PANELS */}
-                <div className="flex md:hidden flex-col gap-6">
+                <div className="flex md:hidden flex-col gap-3.5">
                   {categorizedItems.map(category => (
                     <div key={category.cat} className="bg-[#F8FAFC] border-2 border-gray-100 rounded-[28px] overflow-hidden shadow-sm flex flex-col">
-                      <div className="flex items-center justify-between px-5 py-4 bg-[#0D244D] text-white">
+                      <div className="flex items-center justify-between px-4 py-2.5 bg-[#0D244D] text-white">
                         <div className="flex items-center min-w-0">
                           <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] text-white truncate">
                             {category.cat}
@@ -1086,12 +1095,12 @@ export default function Home() {
                           View All ›
                         </Link>
                       </div>
-                      <div className="p-4 pt-5 pb-5">
+                      <div className="p-3">
                         {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => (
                           <Link
                             href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
                             key={`${n.id}-${i}`}
-                            className="group block p-4 mb-3 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
+                            className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
                           >
                             <div className="text-[14px] font-serif font-bold text-[#0D244D] leading-snug mb-2 line-clamp-2">
                               {n.text}

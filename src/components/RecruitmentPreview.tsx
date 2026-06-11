@@ -248,30 +248,34 @@ const styles = `
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 12px;
-    padding: 20px 16px;
+    gap: 14px;
+    padding: 24px 20px;
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     flex: 1;
     min-width: 240px;
     position: relative;
+    transition: all 0.2s ease;
+  }
+  .jd-stage:hover {
+    border-color: var(--navy);
+    background: #fafafa;
   }
   .jd-stage-num {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: var(--navy);
-    color: #ffffff;
+    background: var(--blue-bg);
+    color: var(--navy);
+    border: 1px solid #bfdbfe;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(30, 58, 95, 0.2);
   }
   .jd-stage-content {
     display: flex;
@@ -280,15 +284,15 @@ const styles = `
   }
   .jd-stage-title {
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--navy);
     line-height: 1.4;
   }
   .jd-stage-desc {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--ink-muted);
-    line-height: 1.4;
+    line-height: 1.5;
   }
   .jd-stage-arrow {
     display: flex;
@@ -340,6 +344,31 @@ const styles = `
   .jd-table tr.tr-highlight td { background: var(--gold-bg) !important; }
 
   .tbl-scroll { overflow-x: auto; margin-bottom: 24px; }
+
+  /* Custom thin scrollbar */
+  .jd-stages::-webkit-scrollbar,
+  .tbl-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .jd-stages::-webkit-scrollbar-track,
+  .tbl-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .jd-stages::-webkit-scrollbar-thumb,
+  .tbl-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+  .jd-stages::-webkit-scrollbar-thumb:hover,
+  .tbl-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .jd-stages,
+  .tbl-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
 
   /* ── QUAL CELL STYLES ── */
   .qual-cell { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; background: #fff; min-width: 280px; }
@@ -458,7 +487,6 @@ const styles = `
       font-size: 12px !important; 
       font-weight: 600 !important;
       color: var(--navy) !important; 
-      background: #f8fafc !important; 
     }
     .jd-section { margin: 54px 0 8px; padding: 10px 16px; border-radius: 6px; }
     .jd-section-title { font-size: 15px; color: #ffffff !important; }
@@ -853,13 +881,9 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
 
         {/* MASTHEAD */}
         <header className="jd-masthead">
-          <div className="jd-eyebrow">Official Recruitment Notice</div>
           <h1 className="jd-title">
             <Editable editable={editable} path="title" value={job.title} onUpdate={onUpdate} />
           </h1>
-          <div className="jd-advert">
-            Advt. No. <Editable editable={editable} path="advertisementNumber" value={job.advertisementNumber} onUpdate={onUpdate} />
-          </div>
           <div className="jd-tags">
             {job.tags?.slice(0, 8).map((t: string) => <span key={t} className="jd-tag">{t}</span>)}
           </div>
@@ -914,6 +938,12 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         <table className="jd-table">
           <tbody>
             <tr><td className="label">Organisation</td><td><Editable editable={editable} path="organization" value={job.organization} onUpdate={onUpdate} /></td></tr>
+            <tr>
+              <td className="label">Advt. No.</td>
+              <td>
+                <Editable editable={editable} path="advertisementNumber" value={job.advertisementNumber || "Phase-XIV/2026/Selection Posts"} onUpdate={onUpdate} />
+              </td>
+            </tr>
             {(job.department || editable) && (
               <tr><td className="label">Department</td><td><Editable editable={editable} path="department" value={job.department} onUpdate={onUpdate} /></td></tr>
             )}

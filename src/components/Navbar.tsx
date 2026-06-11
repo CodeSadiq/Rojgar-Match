@@ -130,7 +130,7 @@ export default function Navbar() {
           {!isLoggedIn ? (
             <Link
               href="/login"
-              className="bg-white/10 hover:bg-white text-white hover:text-[#0D244D] border border-white/20 p-2.5 md:px-6 md:py-2.5 rounded-xl transition-all text-[15px] font-serif font-bold no-underline active:scale-95 flex items-center justify-center gap-2"
+              className="bg-white/10 hover:bg-white text-white hover:text-[#0D244D] border border-white/20 px-5 py-1.5 rounded-lg transition-all text-[15px] font-serif font-bold no-underline active:scale-95 flex items-center justify-center gap-2"
             >
               <IconUser />
               <span className="hidden md:inline text-nowrap">Candidate Login</span>
