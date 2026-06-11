@@ -207,22 +207,39 @@ export default function Navbar() {
                 {!isLoggedIn ? (
                   <Link
                     href="/login"
-                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 no-underline hover:bg-white/10 transition-all font-serif font-bold text-white text-lg"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all no-underline text-white group"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="whitespace-nowrap">Candidate Login</span>
-                    <span className="ml-auto opacity-20 group-hover:opacity-100 transition-all font-sans">➜</span>
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 shrink-0 border border-white/10">
+                      <IconUser />
+                    </div>
+                    <div className="min-w-0 flex-1 text-left">
+                      <div className="text-base font-serif font-bold tracking-tight leading-tight group-hover:text-blue-300 transition-colors">
+                        Candidate Login
+                      </div>
+                      <div className="text-xs text-white/40 mt-1 leading-none">
+                        Sign in to save progress
+                      </div>
+                    </div>
+                    <span className="ml-auto opacity-40 group-hover:opacity-100 transition-all font-sans text-sm">➜</span>
                   </Link>
                 ) : (
                   <Link
                     href="/profile"
-                    className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10 no-underline hover:bg-white/10 transition-all font-serif font-bold text-white text-base group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all no-underline text-white group"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="group-hover:text-blue-400 transition-colors">
-                      {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest Access' : (userProfile?.fullName || 'Candidate')}
-                    </span>
-                    <span className="ml-auto opacity-20 group-hover:opacity-100 transition-all font-sans">➜</span>
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm shrink-0 border border-white/10">
+                      {userProfile?.email === 'guest@rojgarmatch.local'
+                        ? 'G'
+                        : (userProfile?.fullName ? userProfile.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'C')}
+                    </div>
+                    <div className="min-w-0 flex-1 text-left">
+                      <div className="text-base font-serif font-bold tracking-tight truncate leading-tight group-hover:text-blue-300 transition-colors">
+                        {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest Access' : (userProfile?.fullName || 'Candidate')}
+                      </div>
+                    </div>
+                    <span className="ml-auto opacity-40 group-hover:opacity-100 transition-all font-sans text-sm">➜</span>
                   </Link>
                 )}
               </div>
