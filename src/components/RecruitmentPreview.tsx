@@ -210,17 +210,97 @@ const styles = `
   .jd-section {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin: 60px 0 12px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--navy);
+    gap: 12px;
+    margin: 72px 0 10px;
+    padding: 12px 20px;
+    background: var(--navy);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
-  .jd-section-icon { color: var(--crimson); display: flex; }
+  .jd-section-icon {
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+  }
+  .jd-section-icon svg {
+    width: 18px;
+    height: 18px;
+  }
   .jd-section-title {
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 16px;
+    font-weight: 600;
+    color: #ffffff !important;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── SELECTION STAGES ── */
+  .jd-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 4px 20px;
+    margin: 16px 0;
+  }
+  .jd-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 20px 16px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+  }
+  .jd-stage-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(30, 58, 95, 0.2);
+  }
+  .jd-stage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .jd-stage-title {
+    font-family: var(--sans);
+    font-size: 14px;
     font-weight: 700;
     color: var(--navy);
+    line-height: 1.4;
+  }
+  .jd-stage-desc {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+  .jd-stage-arrow {
+    display: flex;
+    align-items: center;
+    color: #cbd5e1;
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .jd-stage-arrow svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 3;
   }
 
   /* ── TABLES ── */
@@ -231,14 +311,14 @@ const styles = `
     border: 1px solid var(--border);
   }
   .jd-table th {
-    background: var(--navy);
-    color: #fff;
+    background: #f1f5f9;
+    color: var(--navy);
     font-family: var(--sans);
     font-size: 12.5px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: left;
-    padding: 9px 12px;
-    border: 1px solid #2d5986;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
     white-space: nowrap;
   }
   .jd-table td {
@@ -363,8 +443,8 @@ const styles = `
       padding: 8px 10px !important; 
       font-size: 11.5px !important; 
       border: 1px solid #cbd5e1 !important;
-      background: var(--navy) !important;
-      color: #ffffff !important;
+      background: #f1f5f9 !important;
+      color: var(--navy) !important;
     }
     .jd-table td { 
       padding: 8px 12px !important; 
@@ -380,6 +460,9 @@ const styles = `
       color: var(--navy) !important; 
       background: #f8fafc !important; 
     }
+    .jd-section { margin: 54px 0 8px; padding: 10px 16px; border-radius: 6px; }
+    .jd-section-title { font-size: 15px; color: #ffffff !important; }
+    .jd-section-icon svg { width: 15px; height: 15px; }
   }
 `;
 
@@ -1117,13 +1200,26 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                     <span className="jd-section-icon"><IconBriefcase /></span>
                     <span className="jd-section-title">Selection Process</span>
                   </div>
-                  <div style={{ padding: "0 4px", fontSize: 14 }}>
-                    {selSteps.map((stage: string, idx: number) => (
-                      <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "8px", alignItems: "flex-start" }}>
-                        <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "var(--navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0, fontWeight: 700 }}>{idx + 1}</div>
-                        <div style={{ color: "var(--ink-light)", lineHeight: "1.4" }}>{stage}</div>
-                      </div>
-                    ))}
+                  <div className="jd-stages">
+                    {selSteps.map((stage: string, idx: number) => {
+                      const match = stage.match(/^([^(]+)(?:\(([^)]+)\))?/);
+                      const title = match ? match[1].trim() : stage;
+                      const desc = match && match[2] ? match[2].trim() : null;
+                      return (
+                        <React.Fragment key={idx}>
+                          <div className="jd-stage">
+                            <div className="jd-stage-num">{idx + 1}</div>
+                            <div className="jd-stage-content">
+                              <div className="jd-stage-title">{title}</div>
+                              {desc && <div className="jd-stage-desc">{desc}</div>}
+                            </div>
+                          </div>
+                          {idx < selSteps.length - 1 && (
+                            <div className="jd-stage-arrow"><IconArrow /></div>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
                   </div>
                 </>
               )}
