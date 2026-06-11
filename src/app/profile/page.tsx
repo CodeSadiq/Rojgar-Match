@@ -423,29 +423,39 @@ export default function ProfilePage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4 items-end">
                         <div className="space-y-1">
-                          <select
-                            value={levelState.qual}
-                            onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
-                            className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.qual ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
-                          >
-                            <option value="">-- No Record --</option>
-                            {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
-                          </select>
+                          <div className="relative w-full">
+                            <select
+                              value={levelState.qual}
+                              onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
+                              className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-bold outline-none transition-all rounded-lg appearance-none ${levelState.qual ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
+                            >
+                              <option value="">-- No Record --</option>
+                              {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-navy/40">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                            </div>
+                          </div>
                         </div>
-
+ 
                         {currentQual && currentQual.branches.length > 0 ? (
                           <div className="space-y-1">
                             <label className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block px-1 transition-colors ${levelState.qual ? "text-[#166534]/55" : "text-navy/40"}`}>
                               {group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}
                             </label>
-                            <select
-                              value={levelState.branch}
-                              onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
-                              className={`w-full h-10 md:h-12 border px-3 text-xs md:text-sm font-bold outline-none transition-all rounded-lg ${levelState.branch ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
-                            >
-                              <option value="">-- No Record --</option>
-                              {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
-                            </select>
+                            <div className="relative w-full">
+                              <select
+                                value={levelState.branch}
+                                onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
+                                className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-bold outline-none transition-all rounded-lg appearance-none ${levelState.branch ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
+                              >
+                                <option value="">-- No Record --</option>
+                                {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                              </select>
+                              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-navy/40">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <div className="hidden md:block"></div>
@@ -523,7 +533,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white border border-gray-100 rounded-lg md:rounded-2xl max-w-xs w-full p-6 shadow-2xl space-y-4 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
-                toast.type === 'error' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+              toast.type === 'error' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
               }`}>
               {toast.type === 'success' && (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
