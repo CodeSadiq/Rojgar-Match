@@ -8,7 +8,7 @@ import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
-import { getTimeAgo } from '@/lib/helpers';
+import { getTimeAgo, fmtDate } from '@/lib/helpers';
 import { CardSkeleton } from '@/components/LoadingState';
 import { getCachedJobs, setCachedJobs, getCachedRegistry, setCachedRegistry } from '@/lib/store';
 import ScreeningModal from '@/components/ScreeningModal';
@@ -496,7 +496,8 @@ export default function Home() {
           id: job.id || job._id,
           text: job.title,
           time: getTimeAgo(job.createdAt || job.updatedAt),
-          isJob: true
+          isJob: true,
+          lastDate: job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED"
         }));
       } else {
         items = (cat === 'Important'
@@ -1096,20 +1097,36 @@ export default function Home() {
                         </Link>
                       </div>
                       <div className="p-4">
-                        {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => (
-                          <Link
-                            href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
-                            key={`${n.id}-${i}`}
-                            className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
-                          >
-                            <div className="text-[14px] font-serif font-bold text-[#0D244D] leading-snug mb-2 line-clamp-2">
-                              {n.text}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="text-[10px] font-black uppercase tracking-[0.1em] text-navy/40">{n.time}</div>
-                            </div>
-                          </Link>
-                        )) : (
+                        {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => {
+                          const isJob = n.isJob;
+                          const rawLastDate = n.lastDate;
+                          const lastDateVal = rawLastDate ? fmtDate(rawLastDate) : '';
+                          const isFallback = rawLastDate && !rawLastDate.toString().includes('202');
+                          const displayLastDate = isFallback && lastDateVal === "DETAILS AWAITED" ? "Pending" : lastDateVal;
+
+                          return (
+                            <Link
+                              href={isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                              key={`${n.id}-${i}`}
+                              className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy/20 transition-all no-underline"
+                            >
+                              <div className="text-[14px] font-serif font-bold text-[#0D244D] leading-snug line-clamp-2">
+                                {n.text}
+                              </div>
+                              <div className="flex items-center justify-between mt-2 border-t border-gray-100 pt-1.5">
+                                <div className="text-[10px] font-black uppercase tracking-[0.1em] text-navy/40">
+                                  {n.time}
+                                </div>
+                                {isJob && displayLastDate && (
+                                  <div className="flex items-center whitespace-nowrap text-[9px]">
+                                    <span className="font-medium text-gray-500 mr-1">Last Date:</span>
+                                    <span className="font-bold text-[#FF3B30]">{displayLastDate}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </Link>
+                          );
+                        }) : (
                           <div className="py-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
                         )}
                       </div>
