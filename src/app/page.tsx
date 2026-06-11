@@ -861,7 +861,7 @@ export default function Home() {
                         <p className="text-[15px] md:text-[18px] font-medium text-navy/40 leading-relaxed max-w-[400px] text-center mb-10">
                           Set your qualification details to see eligible gov jobs.
                         </p>
-                        <Link href="/profile" className="inline-flex items-center gap-3 px-6 py-3 bg-[#166534] md:bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline group active:scale-[0.98] whitespace-nowrap">
+                        <Link href="/profile" className="inline-flex items-center gap-3 px-6 py-3 bg-[#166534] md:bg-navy text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-lg md:rounded-xl no-underline group active:scale-[0.98] whitespace-nowrap">
                           <span>setup qualification</span>
                           <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
                         </Link>

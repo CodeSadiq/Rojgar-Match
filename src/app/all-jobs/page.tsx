@@ -156,15 +156,6 @@ function JobsPageContent() {
               </BackButton>
               <h1 className="text-[16px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight ml-2.5 md:ml-4">All Jobs</h1>
             </div>
-            {/* Mobile Refresh Button */}
-            <button
-              onClick={() => fetchJobs(true)}
-              disabled={isRefreshing || isLoading}
-              className={`md:hidden h-9 aspect-square flex items-center justify-center rounded-xl bg-white border-2 border-gray-100 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
-              title="Refresh Registry"
-            >
-              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
-            </button>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
             <label className="flex flex-1 bg-navy/[0.03] border border-navy/10 focus-within:bg-white focus-within:border-navy/30 rounded-xl px-4 h-9 md:h-12 items-center gap-3 md:w-[320px] group transition-all cursor-text">
@@ -176,6 +167,15 @@ function JobsPageContent() {
                 placeholder="Search Jobs..."
               />
             </label>
+            {/* Mobile Refresh Button */}
+            <button
+              onClick={() => fetchJobs(true)}
+              disabled={isRefreshing || isLoading}
+              className={`md:hidden h-9 aspect-square flex items-center justify-center rounded-xl bg-white border border-gray-100 text-navy/40 hover:text-navy hover:border-gray-200 transition-all active:scale-90 shadow-sm ${(isRefreshing || isLoading) ? 'opacity-50' : 'opacity-100'}`}
+              title="Refresh Registry"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+            </button>
             {/* Desktop Refresh Button */}
             <button
               onClick={() => fetchJobs(true)}

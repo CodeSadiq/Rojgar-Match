@@ -439,7 +439,7 @@ export default function ForYouPage() {
               {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
                 <Link
                   href="/profile"
-                  className="mt-8 px-10 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
+                  className="mt-8 px-6 md:px-10 py-2.5 md:py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-lg md:rounded-xl no-underline whitespace-nowrap"
                 >
                   setup qualification →
                 </Link>
