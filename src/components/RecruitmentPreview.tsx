@@ -440,6 +440,7 @@ const styles = `
     }
     .jd-hero-label { 
       font-size: 8px; 
+      font-weight: 600; 
       margin-bottom: 0; 
       text-align: center;
       color: var(--ink-muted);
@@ -447,6 +448,7 @@ const styles = `
     .jd-hero-cell.accent .jd-hero-label {
       color: var(--ink-muted) !important;
     }
+
     .jd-hero-value { 
       font-size: 12px !important; 
       line-height: 1.2; 

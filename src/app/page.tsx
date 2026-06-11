@@ -483,6 +483,16 @@ export default function Home() {
     return filtered;
   }, [userProfile, dbJobs, screeningAnswers, screeningQuestions]);
 
+  const hasMoreToScreen = React.useMemo(() => {
+    return recommendedJobs.some(job =>
+      job.matchedPosts.some((post: any) => {
+        const hasPrereq = post.prerequisite && post.prerequisite.length > 0;
+        const hasExtraText = post.qualification?.extraQualificationText && post.qualification.extraQualificationText.trim().length > 0;
+        return hasPrereq || hasExtraText;
+      })
+    );
+  }, [recommendedJobs]);
+
   // ── STABILIZED CATEGORY ITEMS ──
   // Pre-mapping all categories helps ensure that the DOM nodes are stable 
   // and prevents "jumps" during re-renders like hovering.
@@ -778,6 +788,7 @@ export default function Home() {
                       onGenerateQuestions={runAIScreening}
                       onFilterByText={handleFilterByText}
                       hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
+                      hasMoreToScreen={hasMoreToScreen}
                     />
                     {isLoading ? (
                       <div className="space-y-6">

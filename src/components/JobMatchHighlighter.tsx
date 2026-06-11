@@ -13,8 +13,15 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
 
     try {
       const profile = JSON.parse(savedProfile);
-      const answers = profile.screeningAnswers || (savedAnswers ? JSON.parse(savedAnswers) : {});
-      const questions = profile.screeningQuestions || (savedQuestions ? JSON.parse(savedQuestions) : []);
+      
+      // Parse questions and answers safely, merging profile and independent storage
+      const localAnswers = savedAnswers ? JSON.parse(savedAnswers) : {};
+      const profileAnswers = profile.screeningAnswers || {};
+      const answers = { ...localAnswers, ...profileAnswers };
+
+      const localQuestions = savedQuestions ? JSON.parse(savedQuestions) : [];
+      const profileQuestions = profile.screeningQuestions || [];
+      const questions = [...profileQuestions, ...localQuestions.filter((lq: any) => !profileQuestions.some((pq: any) => pq.id === lq.id))];
 
       // 1. Base matches (Stage 1 - Local Degree Match)
       const matches = getEligibleJobs(profile, [job]);
@@ -22,8 +29,7 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
         ? matches[0].matchedPosts.map((p: any) => p.name.toLowerCase().trim())
         : [];
 
-      // 2. Identify posts invalidated by AI screening (Stage 2)
-      // If a user answered "No" to a question, find which posts it impacts
+      // 2. Identify posts invalidated by AI screening or text filter (Stage 2)
       const ineligiblePostNames = new Set<string>();
 
       questions.forEach((q: any) => {
@@ -37,8 +43,15 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
         }
       });
 
+      // Add blocked post names from text filtering
+      const blockedPostNames = profile.blockedPostNames || [];
+      blockedPostNames.forEach((name: string) => {
+        ineligiblePostNames.add(name.toLowerCase().trim());
+      });
+
       // 3. Update UI
       const rows = document.querySelectorAll('tr[data-post-name]');
+      const jobTitleLower = job.title?.toLowerCase().trim();
 
       rows.forEach(row => {
         const rawName = row.getAttribute('data-post-name');
@@ -47,11 +60,15 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
 
         if (badge && postName) {
           // A post is truly matched ONLY if it passed Stage 1 AND is not invalidated by Stage 2
-          const isBaseMatch = baseMatchedNames.includes(postName);
-          const isInvalidatedByAI = ineligiblePostNames.has(postName);
+          // If the post is "general cadre" and base matched names contains the job title (virtual post fallback), it matches.
+          const isBaseMatch = baseMatchedNames.includes(postName) || 
+            (postName === 'general cadre' && baseMatchedNames.includes(jobTitleLower));
+            
+          const isInvalidatedByAI = ineligiblePostNames.has(postName) || 
+            (postName === 'general cadre' && ineligiblePostNames.has(jobTitleLower));
 
           if (isBaseMatch && !isInvalidatedByAI) {
-            badge.style.display = 'inline-block';
+            badge.style.display = 'inline-flex';
           } else {
             badge.style.display = 'none';
           }

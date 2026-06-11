@@ -686,21 +686,21 @@ const styles = `
   }
 
   .match-badge {
-    display: inline-flex !important;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #1e3a5f !important;
-    color: #ffffff !important;
-    border: 1px solid #1e3a5f !important;
-    padding: 3px 8px !important;
-    border-radius: 6px !important;
-    font-size: 10px !important;
-    font-weight: 800 !important;
-    margin-top: 6px !important;
-    letter-spacing: 0.05em !important;
-    text-transform: uppercase !important;
-    width: fit-content !important;
-    box-shadow: 0 1px 3px rgba(30, 58, 95, 0.15) !important;
+    background: #16a34a;
+    color: #ffffff;
+    border: 1px solid #16a34a;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-size: 8.5px;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: fit-content;
+    box-shadow: 0 1px 2px rgba(30, 58, 95, 0.1);
   }
 
   @media (max-width: 600px) {
@@ -744,6 +744,7 @@ const styles = `
     }
     .jd-hero-label { 
       font-size: 8px; 
+      font-weight: 600; 
       margin-bottom: 0; 
       text-align: center;
       color: var(--ink-muted);

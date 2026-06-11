@@ -352,6 +352,16 @@ export default function ForYouPage() {
     fetchJobs(false);
   }, [fetchJobs]);
 
+  const hasMoreToScreen = React.useMemo(() => {
+    return jobs.some(job =>
+      job.matchedPosts.some((post: any) => {
+        const hasPrereq = post.prerequisite && post.prerequisite.length > 0;
+        const hasExtraText = post.qualification?.extraQualificationText && post.qualification.extraQualificationText.trim().length > 0;
+        return hasPrereq || hasExtraText;
+      })
+    );
+  }, [jobs]);
+
   const isFilterApplied = Object.keys(screeningAnswers).length > 0 || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
 
 
@@ -412,6 +422,7 @@ export default function ForYouPage() {
           onGenerateQuestions={runAIScreening}
           onFilterByText={handleFilterByText}
           hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
+          hasMoreToScreen={hasMoreToScreen}
         />
 
         <div className="px-4 md:px-0">

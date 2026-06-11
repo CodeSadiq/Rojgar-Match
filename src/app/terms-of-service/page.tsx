@@ -9,11 +9,6 @@ export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-white font-sans text-navy selection:bg-navy/5">
       <main className="max-w-[800px] mx-auto px-6 py-20 pb-40">
-        
-        <Link href="/" className="inline-flex items-center gap-2 text-navy/40 hover:text-navy transition-all no-underline mb-12 group">
-          <IconArrowLeft />
-          <span className="text-[11px] font-black uppercase tracking-[0.2em]">Return Home</span>
-        </Link>
 
         {/* ── TERMS OF SERVICE ── */}
         <section className="animate-in fade-in slide-in-from-bottom-8 duration-700">
