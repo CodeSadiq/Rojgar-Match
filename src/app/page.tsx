@@ -681,7 +681,7 @@ export default function Home() {
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
+                <div className="bg-white border-2 border-gray-200 md:border-gray-200 p-0 md:p-6 shadow-sm md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-lg md:rounded-xl">
                   <header className={`flex-col md:flex-row md:items-center justify-between bg-[#166534] md:bg-transparent px-4 md:px-0 py-2.5 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="flex flex-col w-full md:w-auto">
                       <div className="flex items-center justify-between w-full mb-2 md:mb-0">
@@ -1082,7 +1082,7 @@ export default function Home() {
                 {/* MOBILE ONLY MULTIPLE PANELS */}
                 <div className="flex md:hidden flex-col gap-3.5">
                   {categorizedItems.map(category => (
-                    <div key={category.cat} className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                    <div key={category.cat} className="bg-white border-2 border-gray-200 rounded-lg md:rounded-xl overflow-hidden shadow-sm flex flex-col">
                       <div className="flex items-center justify-between px-4 py-2.5 bg-[#0D244D] text-white">
                         <div className="flex items-center min-w-0">
                           <h3 className="text-[11.5px] font-bold uppercase tracking-[0.2em] text-white truncate">
@@ -1108,7 +1108,7 @@ export default function Home() {
                             <Link
                               href={isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
                               key={`${n.id}-${i}`}
-                              className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-navy transition-all no-underline"
+                              className="group block py-2.5 px-3.5 mb-2 last:mb-0 bg-white border-2 border-gray-100 rounded-lg md:rounded-xl shadow-sm hover:border-navy transition-all no-underline"
                             >
                               <div className="text-[12px] font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors line-clamp-2">
                                 {n.text}

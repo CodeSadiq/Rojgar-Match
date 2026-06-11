@@ -92,7 +92,7 @@ export default function CategoryPage() {
               <Link
                 key={idx}
                 href={`/bulletin/${item.id}`}
-                className="group bg-white border-2 border-gray-200 rounded-xl p-4 md:p-6 flex items-center justify-between gap-4 no-underline hover:bg-gray-50 hover:border-navy hover:shadow-lg hover:shadow-navy/5 transition-all mb-3"
+                className="group bg-white border-2 border-gray-200 rounded-lg md:rounded-xl p-4 md:p-6 flex items-center justify-between gap-4 no-underline hover:bg-gray-50 hover:border-navy hover:shadow-lg hover:shadow-navy/5 transition-all mb-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

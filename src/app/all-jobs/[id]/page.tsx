@@ -825,6 +825,7 @@ const styles = `
       align-items: center !important;
       padding: 16px !important;
       gap: 16px !important;
+      border-radius: 8px !important;
     }
     .jd-stage-arrow {
       transform: rotate(90deg) !important;
