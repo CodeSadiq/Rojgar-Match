@@ -25,7 +25,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
     >
       <div className="w-full flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="text-[13px] md:text-xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">
+          <h3 className="text-[12px] md:text-xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">
             {job.title}
           </h3>
         </div>
@@ -35,7 +35,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
             {isMatched ? (
               <div className="flex items-center gap-1 bg-transparent md:bg-navy text-green-700 md:text-white px-0 md:px-2 py-0 md:py-0.5 rounded-none md:rounded-full border-none md:border md:border-white/10">
                 <span className="w-1 h-1 rounded-full bg-green-600 md:bg-blue-300 animate-pulse hidden md:inline-block"></span>
-                <span className="text-[10px] font-bold md:font-black md:uppercase tracking-normal md:tracking-wider">
+                <span className="text-[9px] font-bold md:font-black md:uppercase tracking-normal md:tracking-wider">
                   <span className="text-gray-500 font-medium md:hidden mr-1">Matched on:</span>
                   <span className="hidden md:inline">Matched on </span>
                   {job.matchedOn || 'Profile'}
@@ -43,14 +43,14 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
               </div>
             ) : (
               <div className="flex items-center gap-1 bg-transparent md:bg-navy text-gray-500 md:text-white px-0 md:px-2 py-0 md:py-0.5 rounded-none md:rounded-full border-none md:border md:border-white/10">
-                <span className="text-[10px] font-medium md:font-black md:uppercase tracking-normal md:tracking-wider">Public</span>
+                <span className="text-[9px] font-medium md:font-black md:uppercase tracking-normal md:tracking-wider">Public</span>
               </div>
             )}
           </div>
 
           <div className="flex items-center md:hidden whitespace-nowrap">
-            <span className="text-[10px] font-medium text-gray-500 mr-1">Last Date:</span>
-            <span className="text-[10px] font-bold text-[#FF3B30]">
+            <span className="text-[9px] font-medium text-gray-500 mr-1">Last Date:</span>
+            <span className="text-[9px] font-bold text-[#FF3B30]">
               {isFallback && lastDateVal === "DETAILS AWAITED" ? "Pending" : lastDateVal}
             </span>
           </div>

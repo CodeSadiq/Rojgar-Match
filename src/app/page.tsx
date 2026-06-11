@@ -684,10 +684,10 @@ export default function Home() {
                   <header className={`flex-col md:flex-row md:items-center justify-between bg-[#166534] md:bg-transparent px-4 md:px-0 py-2.5 md:py-0 md:pb-8 mb-0 md:mb-10 shadow-lg md:shadow-none border-b-0 md:border-b-2 border-gray-100 ${(isMounted && (isLoggedIn || userProfile)) ? 'flex' : 'hidden'}`}>
                     <div className="flex flex-col w-full md:w-auto">
                       <div className="flex items-center justify-between w-full mb-2 md:mb-0">
-                        <h2 className="text-[13px] md:text-3xl font-serif font-bold text-white md:text-[#0D244D] uppercase md:normal-case tracking-[0.12em] md:tracking-tight truncate pr-2">
+                        <h2 className="text-[11.5px] md:text-3xl font-serif font-bold text-white md:text-[#0D244D] uppercase md:normal-case tracking-[0.12em] md:tracking-tight truncate pr-2">
                           <span>Recruitments for You</span>
                         </h2>
-                        <Link href="/for-you" className="md:hidden text-[10px] font-black text-white/70 uppercase tracking-widest hover:text-white no-underline whitespace-nowrap pl-1">
+                        <Link href="/for-you" className="md:hidden text-[9px] font-black text-white/70 uppercase tracking-widest hover:text-white no-underline whitespace-nowrap pl-1">
                           View All ›
                         </Link>
                       </div>
@@ -1081,21 +1081,21 @@ export default function Home() {
                 {/* MOBILE ONLY MULTIPLE PANELS */}
                 <div className="flex md:hidden flex-col gap-3.5">
                   {categorizedItems.map(category => (
-                    <div key={category.cat} className="bg-[#F8FAFC] border-2 border-gray-100 rounded-[28px] overflow-hidden shadow-sm flex flex-col">
+                    <div key={category.cat} className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col">
                       <div className="flex items-center justify-between px-4 py-2.5 bg-[#0D244D] text-white">
                         <div className="flex items-center min-w-0">
-                          <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] text-white truncate">
+                          <h3 className="text-[11.5px] font-bold uppercase tracking-[0.2em] text-white truncate">
                             {category.cat}
                           </h3>
                         </div>
                         <Link
                           href={`/${category.cat.toLowerCase().replace(' ', '-')}`}
-                          className="text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline flex-shrink-0 ml-3"
+                          className="text-[9px] font-black text-white/80 uppercase tracking-widest hover:text-white no-underline flex-shrink-0 ml-3"
                         >
                           View All ›
                         </Link>
                       </div>
-                      <div className="p-3">
+                      <div className="p-4">
                         {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => (
                           <Link
                             href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
@@ -1106,7 +1106,6 @@ export default function Home() {
                               {n.text}
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className={`w-1.5 h-1.5 rounded-full ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
                               <div className="text-[10px] font-black uppercase tracking-[0.1em] text-navy/40">{n.time}</div>
                             </div>
                           </Link>

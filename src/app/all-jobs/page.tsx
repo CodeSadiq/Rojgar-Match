@@ -148,13 +148,13 @@ function JobsPageContent() {
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
 
 
-        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-4 md:pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 px-4 md:px-0 pt-6">
+        <header className="mb-4 md:mb-8 border-b-2 border-navy pb-2.5 md:pb-5 flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-6 px-4 md:px-0 pt-3.5 md:pt-6">
           <div className="flex items-center justify-between w-full md:w-auto">
             <div className="flex items-center gap-2 text-left">
               <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
                 <IconArrowLeft />
               </BackButton>
-              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight ml-2.5 md:ml-4">All Jobs</h1>
+              <h1 className="text-[16px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight ml-2.5 md:ml-4">All Jobs</h1>
             </div>
             {/* Mobile Refresh Button */}
             <button
@@ -167,12 +167,12 @@ function JobsPageContent() {
             </button>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <label className="flex flex-1 bg-white border-2 border-gray-300 rounded-xl px-4 h-11 md:h-12 items-center gap-3 md:w-[320px] group focus-within:border-navy transition-all cursor-text">
-              <span className="text-gray-500 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
+            <label className="flex flex-1 bg-navy/[0.03] border border-navy/10 focus-within:bg-white focus-within:border-navy/30 rounded-xl px-4 h-9 md:h-12 items-center gap-3 md:w-[320px] group transition-all cursor-text">
+              <span className="text-navy/40 group-focus-within:text-navy/70 transition-colors font-black scale-75"><IconSearch /></span>
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-[12px] md:text-xs font-black text-navy uppercase flex-1 placeholder:text-gray-500"
+                className="bg-transparent border-none outline-none text-[12px] md:text-xs font-black text-navy/70 uppercase flex-1 placeholder:text-navy/30"
                 placeholder="Search Jobs..."
               />
             </label>

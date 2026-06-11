@@ -358,13 +358,13 @@ export default function ForYouPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
-        <header className="mb-5 md:mb-8 border-b-2 border-navy pb-3 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0 pt-6">
+        <header className="mb-4 md:mb-8 border-b-2 border-navy pb-2.5 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0 pt-3.5 md:pt-6">
           <div className="flex items-center gap-2 text-left">
             <BackButton className="text-navy/60 hover:text-navy transition-colors flex-shrink-0">
               <IconArrowLeft />
             </BackButton>
             <div>
-              <h1 className="text-[15px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap ml-2.5 md:ml-4">Recruitments for You</h1>
+              <h1 className="text-[16px] md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight whitespace-nowrap ml-2.5 md:ml-4">Recruitments for You</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
