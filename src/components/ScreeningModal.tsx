@@ -20,7 +20,7 @@ interface ScreeningModalProps {
   onGenerateQuestions: () => void;
   onFilterByText: (text: string) => Promise<void>;
   hasTextFilter?: boolean;
-  hasMoreToScreen?: boolean;
+  hasMoreToScreen?: boolean; // Checks if there are more jobs requiring screening
 }
 
 export default function ScreeningModal({
