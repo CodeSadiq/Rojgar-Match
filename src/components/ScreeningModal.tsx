@@ -20,6 +20,7 @@ interface ScreeningModalProps {
   onGenerateQuestions: () => void;
   onFilterByText: (text: string) => Promise<void>;
   hasTextFilter?: boolean;
+  hasMoreToScreen?: boolean;
 }
 
 export default function ScreeningModal({
@@ -33,6 +34,7 @@ export default function ScreeningModal({
   onGenerateQuestions,
   onFilterByText,
   hasTextFilter = false,
+  hasMoreToScreen = false,
 }: ScreeningModalProps) {
   const [step, setStep] = useState<'selection' | 'textInput' | 'questions' | 'resumeUpload'>('selection');
   const [qualificationText, setQualificationText] = useState('');
