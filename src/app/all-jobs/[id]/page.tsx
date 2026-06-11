@@ -809,6 +809,30 @@ const styles = `
       padding: 2px 6px !important;
       margin-top: 4px !important;
     }
+
+    /* Unify mobile stages layout (stack vertically) */
+    .jd-stages {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 8px !important;
+      overflow-x: visible !important;
+      padding: 4px 0 !important;
+    }
+    .jd-stage {
+      min-width: 0 !important;
+      flex-direction: row !important;
+      text-align: left !important;
+      align-items: center !important;
+      padding: 16px !important;
+      gap: 16px !important;
+    }
+    .jd-stage-arrow {
+      transform: rotate(90deg) !important;
+      margin: 4px auto !important;
+    }
+    .jd-stage-content {
+      text-align: left !important;
+    }
   }
 `;
 
