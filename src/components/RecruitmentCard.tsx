@@ -15,6 +15,29 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
   const lastDateVal = fmtDate(rawLastDate);
   const isFallback = !rawLastDate?.toString().includes('202');
 
+  const end = rawLastDate ? new Date(rawLastDate) : null;
+  const isValidDate = end && !isNaN(end.getTime()) && rawLastDate.toString().includes('202');
+  
+  let dateColor = '#64748B'; // Default slate gray for unknown or details awaited
+  
+  if (isValidDate && end) {
+    const endDateTime = new Date(end);
+    if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
+      endDateTime.setHours(23, 59, 59, 999);
+    }
+    const now = new Date();
+    const timeDiff = endDateTime.getTime() - now.getTime();
+    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    
+    if (daysLeft < 0) {
+      dateColor = '#EF4444'; // Red for expired
+    } else if (daysLeft <= 7) {
+      dateColor = '#3B82F6'; // Blue for closing soon
+    } else {
+      dateColor = '#10B981'; // Green for safe / active
+    }
+  }
+
   return (
     <Link
       href={`/all-jobs/${job.id || job._id}`}
@@ -50,7 +73,11 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
 
           <div className="flex items-center md:hidden whitespace-nowrap">
             <span className="text-[9px] font-medium text-gray-500 mr-1">Last Date:</span>
-            <span className="text-[9px] font-bold text-[#FF3B30]">
+            <span style={{ 
+              color: dateColor,
+              fontWeight: 'bold',
+              fontSize: '9px'
+            }}>
               {isFallback && lastDateVal === "DETAILS AWAITED" ? "Pending" : lastDateVal}
             </span>
           </div>
@@ -60,8 +87,12 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
       <div className="hidden md:flex items-center justify-end border-l border-gray-100 pl-6 flex-shrink-0 gap-6">
         <div className="flex flex-col items-end">
           <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Last Date</div>
-          <div className="text-xl font-serif font-black text-[#FF3B30] leading-none italic">
-            {isFallback && lastDateVal === "DETAILS AWAITED" ? "PENDING" : lastDateVal}
+          <div className="text-xl font-serif font-black leading-none italic text-right">
+            <span style={{ 
+              color: dateColor
+            }}>
+              {isFallback && lastDateVal === "DETAILS AWAITED" ? "PENDING" : lastDateVal}
+            </span>
           </div>
         </div>
 

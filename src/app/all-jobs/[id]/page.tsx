@@ -1261,17 +1261,49 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     </div>
                   </div>
                 )}
-                {showLastDate && (
-                  <div className="jd-hero-cell highlight-red">
-                    <div className="jd-hero-icon"><IconCalendar /></div>
-                    <div className="jd-hero-content">
-                      <div className="jd-hero-label">Last Date</div>
-                      <div className="jd-hero-value">
-                        {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+                {showLastDate && (() => {
+                  const lastDateStr = dates.applicationLastDate;
+                  
+                  let dateColor = '#64748B'; // Default slate gray
+                  
+                  if (lastDateStr) {
+                    const lastDate = new Date(lastDateStr);
+                    if (!isNaN(lastDate.getTime())) {
+                      const endDateTime = new Date(lastDate);
+                      if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
+                        endDateTime.setHours(23, 59, 59, 999);
+                      }
+                      const now = new Date();
+                      const timeDiff = endDateTime.getTime() - now.getTime();
+                      const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                      
+                      if (daysLeft < 0) {
+                        dateColor = '#EF4444'; // Red for expired
+                      } else if (daysLeft <= 7) {
+                        dateColor = '#3B82F6'; // Blue for closing soon
+                      } else {
+                        dateColor = '#10B981'; // Green for active / safe
+                      }
+                    }
+                  }
+                  
+                  return (
+                    <div className="jd-hero-cell highlight-red">
+                      <div className="jd-hero-icon"><IconCalendar /></div>
+                      <div className="jd-hero-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                        <div className="jd-hero-label">Last Date</div>
+                        <div>
+                          <div className="jd-hero-value" style={{ 
+                            color: dateColor, 
+                            whiteSpace: 'nowrap' 
+                          }}>
+                            {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             );
           })()}

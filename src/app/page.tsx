@@ -492,7 +492,6 @@ export default function Home() {
       })
     );
   }, [recommendedJobs]);
-
   // ── STABILIZED CATEGORY ITEMS ──
   // Pre-mapping all categories helps ensure that the DOM nodes are stable 
   // and prevents "jumps" during re-renders like hovering.
@@ -507,7 +506,8 @@ export default function Home() {
           text: job.title,
           time: getTimeAgo(job.createdAt || job.updatedAt),
           isJob: true,
-          lastDate: job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED"
+          lastDate: job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED",
+          startDate: job.importantDates?.applicationStartDate
         }));
       } else {
         items = (cat === 'Important'
@@ -1115,6 +1115,28 @@ export default function Home() {
                           const isFallback = rawLastDate && !rawLastDate.toString().includes('202');
                           const displayLastDate = isFallback && lastDateVal === "DETAILS AWAITED" ? "Pending" : lastDateVal;
 
+                          const end = rawLastDate ? new Date(rawLastDate) : null;
+                          const isValidDate = end && !isNaN(end.getTime()) && rawLastDate.toString().includes('202');
+                          let dateColor = '#64748B'; // Default slate gray
+
+                          if (isValidDate && end) {
+                            const endDateTime = new Date(end);
+                            if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
+                              endDateTime.setHours(23, 59, 59, 999);
+                            }
+                            const now = new Date();
+                            const timeDiff = endDateTime.getTime() - now.getTime();
+                            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                            
+                            if (daysLeft < 0) {
+                              dateColor = '#EF4444'; // Red for expired
+                            } else if (daysLeft <= 7) {
+                              dateColor = '#3B82F6'; // Blue for closing soon
+                            } else {
+                              dateColor = '#10B981'; // Green for active / safe
+                            }
+                          }
+
                           return (
                             <Link
                               href={isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
@@ -1131,7 +1153,12 @@ export default function Home() {
                                 {isJob && displayLastDate && (
                                   <div className="flex items-center whitespace-nowrap text-[9px]">
                                     <span className="font-medium text-gray-500 mr-1">Last Date:</span>
-                                    <span className="font-bold text-[#FF3B30]">{displayLastDate}</span>
+                                    <span style={{ 
+                                       color: dateColor,
+                                       fontWeight: 'bold'
+                                     }}>
+                                       {displayLastDate}
+                                     </span>
                                   </div>
                                 )}
                               </div>
