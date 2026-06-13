@@ -351,33 +351,59 @@ export default function ScreeningModal({
                         <div
                           key={q.id}
                           id={`q-container-${q.id}`}
-                          className={`flex flex-col gap-2.5 md:gap-4 p-3.5 md:p-7 rounded-xl border-2 transition-all duration-300 ${isInfo ? 'bg-green-50/20 border-green-100 shadow-sm' : isAnswered ? 'bg-gray-50/50 border-gray-100 opacity-70' : 'bg-white border-gray-100 shadow-sm hover:border-navy/10 hover:shadow-xl hover:shadow-navy/5'} ${idx > 0 ? 'mt-2 md:mt-3' : ''}`}
+                          className={`flex flex-col gap-4 p-5 md:p-6 rounded-2xl border transition-all duration-300 ${
+                            isInfo 
+                              ? 'bg-green-50/20 border-green-100 shadow-sm' 
+                              : isAnswered 
+                                ? 'bg-slate-50/50 border-slate-100 opacity-80' 
+                                : 'bg-white border-slate-200/80 shadow-sm hover:border-slate-300 hover:shadow-md'
+                          } ${idx > 0 ? 'mt-3' : ''}`}
                         >
-                          <div className="flex items-start gap-4">
+                          <div className="flex flex-col">
                             {isInfo ? (
-                              <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-green-600 text-white text-[12px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-green-600/20">✓</span>
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-green-600 uppercase tracking-widest mb-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                Requirement Verified
+                              </span>
                             ) : (
-                              <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-navy text-white text-[10px] font-black flex items-center justify-center mt-0.5 shadow-md shadow-navy/10">{idx + 1}</span>
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-navy/40 uppercase tracking-widest mb-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-navy/35" />
+                                Question {idx + 1}
+                              </span>
                             )}
-                            <p className="text-[12px] md:text-[15px] font-bold text-navy leading-relaxed flex-1">{q.text}</p>
+                            <p className="text-[14px] md:text-[16px] font-semibold text-[#1e293b] leading-relaxed">
+                              {q.text}
+                            </p>
                           </div>
                           {!isInfo && (
-                            <div className="flex flex-row items-center gap-2 pl-0 md:pl-12">
+                            <div className="flex flex-row items-center gap-3 mt-1">
                               <button
                                 onClick={() => onAnswer(q.id, true)}
-                                className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === true ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-100' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
+                                  currentAnswer === true 
+                                    ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-100' 
+                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                }`}
                               >
                                 Yes
                               </button>
                               <button
                                 onClick={() => onAnswer(q.id, false)}
-                                className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === false ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-100' : 'bg-white border-gray-200 text-red-600 hover:bg-red-50'}`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
+                                  currentAnswer === false 
+                                    ? 'bg-red-500 text-white border-red-500 shadow-sm shadow-red-100' 
+                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                }`}
                               >
                                 No
                               </button>
                               <button
                                 onClick={() => onAnswer(q.id, null)}
-                                className={`flex-1 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${currentAnswer === null ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-orange-600 hover:bg-orange-50'}`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
+                                  currentAnswer === null 
+                                    ? 'bg-slate-500 text-white border-slate-500 shadow-sm shadow-slate-100' 
+                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                }`}
                               >
                                 Not Sure
                               </button>

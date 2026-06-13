@@ -311,6 +311,8 @@ export const QUAL_TREE: QualNode[] = [
     name: "Diploma",
     label: "Diploma / Polytechnic",
     branches: [
+      { value: "Special Education", label: "Special Education" },
+      { value: "Elementary Education", label: "Elementary Education" },
       {
         value: "Electronics",
         label: "Electronics"
@@ -617,6 +619,7 @@ export const QUAL_TREE: QualNode[] = [
     name: "B.Ed",
     label: "B.Ed (Education)",
     branches: [
+      { value: "Elementary Education", label: "Elementary Education" },
       {
         value: "Education",
         label: "Education (General)"

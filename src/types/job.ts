@@ -142,4 +142,9 @@ export interface JobPost {
   displayStatus?: DisplayStatus;
   notificationType?: string;
   active?: boolean;
+  hiddenColumns?: string[];
+  hideVacancyTable?: boolean;
+  customVacancyTable?: { headers: string[]; rows: string[][] };
+  hiddenSections?: string[];
+  hiddenHeroCards?: string[];
 }

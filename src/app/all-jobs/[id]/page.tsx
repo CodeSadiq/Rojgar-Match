@@ -90,6 +90,21 @@ const styles = `
     zoom: var(--app-zoom, 1);
   }
 
+  @keyframes floatInMobile {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-float-in {
+    animation: floatInMobile 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
   @media (max-width: 768px) {
     .jd { padding-top: 5px; }
     .jd-wrap { padding: 0 16px 60px; }
@@ -800,6 +815,14 @@ const styles = `
       font-weight: 600 !important;
       color: var(--navy) !important; 
     }
+    .jd-timeline-table td.label {
+      white-space: normal !important;
+      width: auto !important;
+      min-width: 0 !important;
+    }
+    .jd-timeline-table td:not(.label) {
+      white-space: nowrap !important;
+    }
     
     .jd-apply { font-size: 15px; padding: 14px; margin-top: 40px; border-radius: 12px; }
     .qual-course-pill { font-size: 9px; padding: 0px 4px; }
@@ -1140,6 +1163,15 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const job = await getJob(id);
   if (!job) notFound();
 
+  const hiddenCols = job.hiddenColumns || [];
+  const isColVisible = (colId: string) => !hiddenCols.includes(colId);
+
+  const hiddenSections = job.hiddenSections || [];
+  const isSecVisible = (secId: string) => !hiddenSections.includes(secId);
+
+  const hiddenHeroCards = job.hiddenHeroCards || [];
+  const isCardVisible = (cardId: string) => !hiddenHeroCards.includes(cardId);
+
   const af = job.applicationFee || { paymentMode: [] };
   const dates = job.importantDates || {};
 
@@ -1199,33 +1231,50 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </header>
 
           {/* ── HERO STRIP ── */}
-          <div className="jd-hero">
-            <div className="jd-hero-cell accent">
-              <div className="jd-hero-icon"><IconUsers /></div>
-              <div className="jd-hero-content">
-                <div className="jd-hero-label">Total Vacancies</div>
-                <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
+          {(() => {
+            const showVacancies = isCardVisible('vacancies');
+            const showStartDate = isCardVisible('startDate');
+            const showLastDate = isCardVisible('lastDate');
+            const visibleCount = [showVacancies, showStartDate, showLastDate].filter(Boolean).length;
+
+            if (visibleCount === 0) return null;
+
+            return (
+              <div className="jd-hero" style={{ gridTemplateColumns: `repeat(${visibleCount}, 1fr)` }}>
+                {showVacancies && (
+                  <div className="jd-hero-cell accent">
+                    <div className="jd-hero-icon"><IconUsers /></div>
+                    <div className="jd-hero-content">
+                      <div className="jd-hero-label">Total Vacancies</div>
+                      <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
+                    </div>
+                  </div>
+                )}
+                {showStartDate && (
+                  <div className="jd-hero-cell">
+                    <div className="jd-hero-icon"><IconCalendar /></div>
+                    <div className="jd-hero-content">
+                      <div className="jd-hero-label">Start Date</div>
+                      <div className="jd-hero-value">
+                        {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {showLastDate && (
+                  <div className="jd-hero-cell highlight-red">
+                    <div className="jd-hero-icon"><IconCalendar /></div>
+                    <div className="jd-hero-content">
+                      <div className="jd-hero-label">Last Date</div>
+                      <div className="jd-hero-value">
+                        {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="jd-hero-cell">
-              <div className="jd-hero-icon"><IconCalendar /></div>
-              <div className="jd-hero-content">
-                <div className="jd-hero-label">Start Date</div>
-                <div className="jd-hero-value">
-                  {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
-                </div>
-              </div>
-            </div>
-            <div className="jd-hero-cell highlight-red">
-              <div className="jd-hero-icon"><IconCalendar /></div>
-              <div className="jd-hero-content">
-                <div className="jd-hero-label">Last Date</div>
-                <div className="jd-hero-value">
-                  {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
-                </div>
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* ── LEDE ── */}
           {(job.description || job.shortInfo) && (
@@ -1235,74 +1284,78 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {/* ══════════════════════════════════════════════════════════════════
               RECRUITMENT OVERVIEW
           ══════════════════════════════════════════════════════════════════ */}
-          <div className="jd-section">
-            <span className="jd-section-icon"><IconBriefcase /></span>
-            <span className="jd-section-title">Recruitment Overview</span>
-          </div>
-          <table className="jd-table">
-            <tbody>
-              <tr><td className="label">Organisation</td><td>{job.organization || "—"}</td></tr>
-              <tr><td className="label">Advt. No.</td><td>{job.advertisementNumber || "Phase-XIV/2026/Selection Posts"}</td></tr>
-              {job.department && <tr><td className="label">Department</td><td>{job.department}</td></tr>}
-              <tr><td className="label">Govt. Type</td><td>{job.type || "—"}</td></tr>
-              <tr><td className="label">Job Location</td><td>{job.location?.join(", ") || "All India"}</td></tr>
-              {dates.notificationType && (
-                <tr><td className="label">Notification Type</td><td>{dates.notificationType}</td></tr>
-              )}
-              {/* Salary shown in overview only if all posts share the same salary */}
-              {allSameSalary && heroSal.payLevel && (
-                <tr><td className="label">Pay Level</td><td>Level {heroSal.payLevel}</td></tr>
-              )}
-              {allSameSalary && (heroSal.min || heroSal.max) && (
-                <tr>
-                  <td className="label">Salary</td>
-                  <td style={{ fontWeight: 500 }}>
-                    {heroSal.min ? fmtMoney(heroSal.min) : ""}
-                    {heroSal.min && heroSal.max ? " – " : ""}
-                    {heroSal.max ? fmtMoney(heroSal.max) : ""}
-                    {" INR"}
-                  </td>
-                </tr>
-              )}
-              {/* Eligibility flags */}
-              {job.categoryEligibility?.length > 0 && (
-                <tr>
-                  <td className="label">Category Eligibility</td>
-                  <td>{job.categoryEligibility.join(", ")}</td>
-                </tr>
-              )}
-              {job.pwdEligible && <tr><td className="label">PwBD Eligible</td><td style={{ color: "var(--green)", fontWeight: 600 }}>Yes</td></tr>}
-              {job.exServicemanQuota && <tr><td className="label">Ex-Serviceman Quota</td><td style={{ fontWeight: 600 }}>Yes</td></tr>}
-              {((job.eligibleGender && job.eligibleGender.length > 0) || job.femaleOnly) && (
-                <tr>
-                  <td className="label">Eligible Gender</td>
-                  <td style={{
-                    textTransform: 'capitalize',
-                    fontWeight: 600,
-                    color: ((job.eligibleGender?.includes('female') && job.eligibleGender?.length === 1) || job.femaleOnly) ? 'var(--crimson)' : 'inherit'
-                  }}>
-                    {job.eligibleGender && job.eligibleGender.length > 0 ? job.eligibleGender.join(", ") : "Female Only"}
-                  </td>
-                </tr>
-              )}
-              {dates.officialWebsite && (
-                <tr>
-                  <td className="label">Official Website</td>
-                  <td>
-                    <a href={dates.officialWebsite} target="_blank" rel="noreferrer"
-                      style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                      {dates.officialWebsite} <IconExternalLink />
-                    </a>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {isSecVisible('overview') && (
+            <>
+              <div className="jd-section">
+                <span className="jd-section-icon"><IconBriefcase /></span>
+                <span className="jd-section-title">Recruitment Overview</span>
+              </div>
+              <table className="jd-table">
+                <tbody>
+                  <tr><td className="label">Organisation</td><td>{job.organization || "—"}</td></tr>
+                  <tr><td className="label">Advt. No.</td><td>{job.advertisementNumber || "Phase-XIV/2026/Selection Posts"}</td></tr>
+                  {job.department && <tr><td className="label">Department</td><td>{job.department}</td></tr>}
+                  <tr><td className="label">Govt. Type</td><td>{job.type || "—"}</td></tr>
+                  <tr><td className="label">Job Location</td><td>{job.location?.join(", ") || "All India"}</td></tr>
+                  {dates.notificationType && (
+                    <tr><td className="label">Notification Type</td><td>{dates.notificationType}</td></tr>
+                  )}
+                  {/* Salary shown in overview only if all posts share the same salary */}
+                  {allSameSalary && heroSal.payLevel && (
+                    <tr><td className="label">Pay Level</td><td>Level {heroSal.payLevel}</td></tr>
+                  )}
+                  {allSameSalary && (heroSal.min || heroSal.max) && (
+                    <tr>
+                      <td className="label">Salary</td>
+                      <td style={{ fontWeight: 500 }}>
+                        {heroSal.min ? fmtMoney(heroSal.min) : ""}
+                        {heroSal.min && heroSal.max ? " – " : ""}
+                        {heroSal.max ? fmtMoney(heroSal.max) : ""}
+                        {" INR"}
+                      </td>
+                    </tr>
+                  )}
+                  {/* Eligibility flags */}
+                  {job.categoryEligibility?.length > 0 && (
+                    <tr>
+                      <td className="label">Category Eligibility</td>
+                      <td>{job.categoryEligibility.join(", ")}</td>
+                    </tr>
+                  )}
+                  {job.pwdEligible && <tr><td className="label">PwBD Eligible</td><td style={{ color: "var(--green)", fontWeight: 600 }}>Yes</td></tr>}
+                  {job.exServicemanQuota && <tr><td className="label">Ex-Serviceman Quota</td><td style={{ fontWeight: 600 }}>Yes</td></tr>}
+                  {((job.eligibleGender && job.eligibleGender.length > 0) || job.femaleOnly) && (
+                    <tr>
+                      <td className="label">Eligible Gender</td>
+                      <td style={{
+                        textTransform: 'capitalize',
+                        fontWeight: 600,
+                        color: ((job.eligibleGender?.includes('female') && job.eligibleGender?.length === 1) || job.femaleOnly) ? 'var(--crimson)' : 'inherit'
+                      }}>
+                        {job.eligibleGender && job.eligibleGender.length > 0 ? job.eligibleGender.join(", ") : "Female Only"}
+                      </td>
+                    </tr>
+                  )}
+                  {dates.officialWebsite && (
+                    <tr>
+                      <td className="label">Official Website</td>
+                      <td>
+                        <a href={dates.officialWebsite} target="_blank" rel="noreferrer"
+                          style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          {dates.officialWebsite} <IconExternalLink />
+                        </a>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
+          )}
 
           {/* ══════════════════════════════════════════════════════════════════
               APPLICATION FEE
           ══════════════════════════════════════════════════════════════════ */}
-          {Object.keys(feeMap).length > 0 && (
+          {isSecVisible('fee') && Object.keys(feeMap).length > 0 && (
             <>
               <div className="jd-section">
                 <span className="jd-section-icon"><IconCreditCard /></span>
@@ -1339,75 +1392,106 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               POST-WISE VACANCY TABLE
               Columns: Post | Vacancies | Category-wise | Age | Salary | Qualification
           ══════════════════════════════════════════════════════════════════ */}
-          <div className="jd-section">
-            <span className="jd-section-icon"><IconUsers /></span>
-            <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
-          </div>
+          {isSecVisible('vacancy') && (!job.hideVacancyTable || job.customVacancyTable) && (
+            <>
+              <div className="jd-section">
+                <span className="jd-section-icon"><IconUsers /></span>
+                <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
+              </div>
 
-          <div className="tbl-scroll">
-            <table className="jd-table">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: 180 }}>Post / Designation</th>
-                  <th className="center" style={{ width: 80 }}>Total</th>
-                  <th className="center" style={{ minWidth: 170 }}>Category Vacancy</th>
-                  <th className="center" style={{ minWidth: 130 }}>Age Limit (incl. Relaxation)</th>
-                  <th className="center" style={{ minWidth: 120 }}>Salary / Pay Level</th>
-                  <th style={{ minWidth: 280 }}>Qualification & Requirements</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rawPosts.map((p: any, idx: number) => (
-                  <tr key={idx} data-post-name={p.name}>
-                    {/* Post name */}
-                    <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {p.name}
-                        <span className="match-badge" style={{ display: 'none' }}>
-                          Matched
-                        </span>
-                      </div>
-                    </td>
+              {job.hideVacancyTable && job.customVacancyTable ? (
+                <div className="tbl-scroll">
+                  <table className="jd-table">
+                    <thead>
+                      <tr>
+                        {job.customVacancyTable.headers.map((h: string, hIdx: number) => (
+                          <th key={hIdx}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {job.customVacancyTable.rows.map((row: string[], rIdx: number) => (
+                        <tr key={rIdx}>
+                          {row.map((cell: string, cIdx: number) => (
+                            <td key={cIdx}>{cell || "—"}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="tbl-scroll">
+                  <table className="jd-table">
+                    <thead>
+                      <tr>
+                        <th style={{ minWidth: 180 }}>Post / Designation</th>
+                        {isColVisible('total') && <th className="center" style={{ width: 80 }}>Total</th>}
+                        {isColVisible('category') && <th className="center" style={{ minWidth: 170 }}>Category Vacancy</th>}
+                        {isColVisible('age') && <th className="center" style={{ minWidth: 130 }}>Age Limit (incl. Relaxation)</th>}
+                        {isColVisible('salary') && <th className="center" style={{ minWidth: 120 }}>Salary / Pay Level</th>}
+                        {isColVisible('qualification') && <th style={{ minWidth: 280 }}>Qualification & Requirements</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rawPosts.map((p: any, idx: number) => (
+                        <tr key={idx} data-post-name={p.name}>
+                          {/* Post name */}
+                          <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              {p.name}
+                              <span className="match-badge" style={{ display: 'none' }}>
+                                Matched
+                              </span>
+                            </div>
+                          </td>
 
-                    {/* Total vacancy */}
-                    <td className="center bold mono"
-                      style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
-                      {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
-                    </td>
+                          {/* Total vacancy */}
+                          {isColVisible('total') && (
+                            <td className="center bold mono"
+                              style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
+                              {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
+                            </td>
+                          )}
 
-                    {/* Category-wise vacancies — compact chip grid */}
-                    <CatVacCell post={p} job={job} />
+                          {/* Category-wise vacancies — compact chip grid */}
+                          {isColVisible('category') && <CatVacCell post={p} job={job} />}
 
-                    {/* Age limit + relaxation chips */}
-                    <AgeCell post={p} job={job} />
+                          {/* Age limit + relaxation chips */}
+                          {isColVisible('age') && <AgeCell post={p} job={job} />}
 
-                    {/* Salary (always shown) */}
-                    <SalaryCell post={p} job={job} />
+                          {/* Salary (always shown) */}
+                          {isColVisible('salary') && <SalaryCell post={p} job={job} />}
 
-                    {/* Qualification — rich display */}
-                    <QualCell post={p} />
-                  </tr>
-                ))}
+                          {/* Qualification — rich display */}
+                          {isColVisible('qualification') && <QualCell post={p} />}
+                        </tr>
+                      ))}
 
-                {/* Totals row */}
-                <tr className="tr-total">
-                  <td>Total (All Posts)</td>
-                  <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                    {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
-                  </td>
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                      {/* Totals row */}
+                      <tr className="tr-total">
+                        <td>Total (All Posts)</td>
+                        {isColVisible('total') && (
+                          <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
+                            {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
+                          </td>
+                        )}
+                        {isColVisible('category') && <td />}
+                        {isColVisible('age') && <td />}
+                        {isColVisible('salary') && <td />}
+                        {isColVisible('qualification') && <td />}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
 
           {/* ══════════════════════════════════════════════════════════════════
               RECRUITMENT PROCEDURES (Selection & Application)
           ══════════════════════════════════════════════════════════════════ */}
-          {(() => {
+          {isSecVisible('procedure') && (() => {
             const getSteps = (primary: any, secondary?: any, tertiary?: any) => {
               const val = primary || secondary || tertiary;
               if (!val) return [];
@@ -1474,11 +1558,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {/* ══════════════════════════════════════════════════════════════════
               IMPORTANT DATES
           ══════════════════════════════════════════════════════════════════ */}
-          <div className="jd-section">
-            <span className="jd-section-icon"><IconCalendar /></span>
-            <span className="jd-section-title">Important Dates</span>
-          </div>
-          <table className="jd-table">
+          {isSecVisible('timeline') && (
+            <>
+              <div className="jd-section">
+                <span className="jd-section-icon"><IconCalendar /></span>
+                <span className="jd-section-title">Important Dates</span>
+              </div>
+              <table className="jd-table jd-timeline-table">
             <thead>
               <tr>
                 <th>Event</th>
@@ -1545,8 +1631,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                               const href = val.startsWith('www.') ? `https://${val}` : val;
                               return (
                                 <a href={href} target="_blank" rel="noreferrer"
-                                  style={{ color: "#2563eb", textDecoration: "underline", fontSize: "13.5px", wordBreak: "break-all", fontWeight: 500 }}>
-                                  {val}
+                                  style={{ color: "#2563eb", textDecoration: "underline", wordBreak: "break-all", fontWeight: 600 }}>
+                                  Link
                                 </a>
                               );
                             }
@@ -1555,23 +1641,38 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                             if (val && !isNaN(d.getTime())) {
                               return <span style={{ fontWeight: 600 }}>{fmtDate(val)}</span>;
                             }
-                            return val || "—";
+                            return val ? <span style={{ fontWeight: 600 }}>{val}</span> : "—";
                           })()}
                         </td>
                       </tr>
                     ))}
                     {/* 3. Custom Milestones */}
-                    {((dates as any).customDates || []).map((cd: any, idx: number) => (
-                      <tr key={`custom-${idx}`}>
-                        <td className="label">{cd.label}</td>
-                        <td style={{ fontWeight: 600 }}>{cd.date ? fmtDate(cd.date) : "—"}</td>
-                      </tr>
-                    ))}
+                    {((dates as any).customDates || []).map((cd: any, idx: number) => {
+                      const val = cd.date;
+                      const isUrl = typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'));
+                      return (
+                        <tr key={`custom-${idx}`}>
+                          <td className="label">{cd.label}</td>
+                          <td>
+                            {isUrl ? (
+                              <a href={val.startsWith('www.') ? `https://${val}` : val} target="_blank" rel="noreferrer"
+                                style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
+                                Link
+                              </a>
+                            ) : (
+                              <span style={{ fontWeight: 600 }}>{val ? fmtDate(val) : "—"}</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </>
                 );
               })()}
             </tbody>
           </table>
+          </>
+          )}
 
           {/* ── APPLY CTA ── */}
           {dates.applyLink && (

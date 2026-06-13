@@ -164,6 +164,166 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
   );
 }
 
+function escapeRegex(string: string) {
+  return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+function findClosingBrace(json: string, start: number): number {
+  let pos = start;
+  let braceChar = '';
+  let closeChar = '';
+  while (pos < json.length) {
+    if (json[pos] === '{') {
+      braceChar = '{';
+      closeChar = '}';
+      break;
+    }
+    if (json[pos] === '[') {
+      braceChar = '[';
+      closeChar = ']';
+      break;
+    }
+    pos++;
+  }
+  if (pos === json.length) return json.length;
+  
+  let depth = 1;
+  let inString = false;
+  let escape = false;
+  pos++;
+  
+  while (pos < json.length) {
+    const char = json[pos];
+    if (escape) {
+      escape = false;
+      pos++;
+      continue;
+    }
+    if (char === '\\') {
+      escape = true;
+      pos++;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      pos++;
+      continue;
+    }
+    if (!inString) {
+      if (char === braceChar) depth++;
+      else if (char === closeChar) {
+        depth--;
+        if (depth === 0) return pos + 1;
+      }
+    }
+    pos++;
+  }
+  return json.length;
+}
+
+function skipJsonValue(json: string, start: number): number {
+  let pos = start;
+  while (pos < json.length && /\s/.test(json[pos])) pos++;
+  if (pos === json.length) return pos;
+  
+  const char = json[pos];
+  if (char === '"') {
+    let inString = true;
+    let escape = false;
+    pos++;
+    while (pos < json.length) {
+      const c = json[pos];
+      if (escape) {
+        escape = false;
+        pos++;
+        continue;
+      }
+      if (c === '\\') {
+        escape = true;
+        pos++;
+        continue;
+      }
+      if (c === '"') {
+        pos++;
+        break;
+      }
+      pos++;
+    }
+    return pos;
+  } else if (char === '{' || char === '[') {
+    return findClosingBrace(json, pos);
+  } else {
+    while (pos < json.length) {
+      const c = json[pos];
+      if (c === ',' || c === '}' || c === ']' || /\s/.test(c)) {
+        break;
+      }
+      pos++;
+    }
+    return pos;
+  }
+}
+
+function findPathIndex(json: string, path: string): number {
+  if (!json || !path) return -1;
+  try {
+    const parts = path.split('.');
+    let currentIndex = 0;
+    
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const isIndex = /^\d+$/.test(part);
+      
+      if (isIndex) {
+        const targetIdx = parseInt(part, 10);
+        const arrayStart = json.indexOf('[', currentIndex);
+        if (arrayStart === -1) return currentIndex;
+        
+        let pos = arrayStart + 1;
+        let itemCount = 0;
+        
+        while (pos < json.length && itemCount < targetIdx) {
+          while (pos < json.length && /\s/.test(json[pos])) pos++;
+          if (json[pos] === ']') break;
+          
+          pos = skipJsonValue(json, pos);
+          itemCount++;
+          
+          while (pos < json.length && /\s/.test(json[pos])) pos++;
+          if (json[pos] === ',') {
+            pos++;
+          }
+        }
+        while (pos < json.length && /\s/.test(json[pos])) pos++;
+        currentIndex = pos;
+      } else {
+        const closingBraceIndex = findClosingBrace(json, currentIndex);
+        const keyPattern = new RegExp(`"${escapeRegex(part)}"` + '\\s*:');
+        const subStr = json.substring(currentIndex, closingBraceIndex);
+        const match = subStr.match(keyPattern);
+        if (match && match.index !== undefined) {
+          currentIndex = currentIndex + match.index;
+        } else {
+          const globalMatch = json.indexOf(`"${part}"`, currentIndex);
+          if (globalMatch !== -1) {
+            currentIndex = globalMatch;
+          } else {
+            return currentIndex;
+          }
+        }
+      }
+    }
+    return currentIndex;
+  } catch (e) {
+    const lastPart = path.split('.').pop();
+    if (lastPart) {
+      const idx = json.indexOf(`"${lastPart}"`);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  }
+}
+
 function EditorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -179,6 +339,25 @@ function EditorContent() {
 
   const [existingJobs, setExistingJobs] = useState<any[]>([]);
   const isInternalUpdate = React.useRef(false);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const handleFocusPath = (path: string) => {
+    if (!textareaRef.current || !jsonInput) return;
+    const index = findPathIndex(jsonInput, path);
+    if (index !== -1) {
+      const textarea = textareaRef.current;
+      const lastPart = path.split('.').pop() || '';
+      textarea.setSelectionRange(index, index + lastPart.length + 2); // highlight the key, e.g. "title"
+
+      const textBefore = jsonInput.substring(0, index);
+      const lineNumber = textBefore.split('\n').length - 1;
+
+      const computedStyle = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(computedStyle.lineHeight) || 16;
+      const targetScrollTop = Math.max(0, (lineNumber - 5) * lineHeight);
+      textarea.scrollTop = targetScrollTop;
+    }
+  };
 
   // Fetch all jobs for duplicate checking
   useEffect(() => {
@@ -422,11 +601,12 @@ function EditorContent() {
       <div className="flex-1 overflow-hidden flex flex-col lg:flex-row relative">
         {/* JSON Source Panel */}
         <div
-          className="relative bg-gray-50 border-gray-100 flex flex-col transition-all duration-500 ease-in-out border-b lg:border-b-0 lg:border-r-[6px] overflow-hidden w-full lg:w-[40%] opacity-100"
+          className="relative bg-gray-50 border-gray-100 flex flex-col transition-all duration-500 ease-in-out border-b lg:border-b-0 lg:border-r-[6px] overflow-hidden w-full lg:w-[30%] opacity-100"
         >
           <div className="absolute top-2 left-4 text-[8px] font-black text-navy/20 uppercase tracking-widest z-10 pointer-events-none whitespace-nowrap">JSON Source</div>
-          <div className="flex-1 w-full min-w-[400px]">
+          <div className="flex-1 w-full min-w-[300px]">
             <textarea
+              ref={textareaRef}
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
               className="w-full h-full p-6 md:p-12 pt-10 md:pt-16 font-mono text-[11px] md:text-[13px] text-navy leading-relaxed bg-transparent focus:outline-none resize-none custom-scrollbar"
@@ -462,6 +642,7 @@ function EditorContent() {
                     job={jobData}
                     editable={isEditing}
                     onUpdate={handleUpdate}
+                    onFocusPath={handleFocusPath}
                   />
                 </div>
               )}

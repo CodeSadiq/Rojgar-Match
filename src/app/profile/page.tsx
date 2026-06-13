@@ -317,61 +317,53 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
       <main className="flex-1 overflow-y-auto px-3 md:px-12 pt-3 md:pt-3 pb-6">
         <div className="max-w-[1100px] mx-auto animate-in fade-in duration-700">
-          <div className="mb-3 md:mb-8 mt-1 md:mt-0 flex items-center justify-start">
-            <BackButton />
+          <div className="mb-3 md:mb-8 mt-4 md:mt-6 flex items-center justify-start">
+            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              <span>Back</span>
+            </BackButton>
           </div>
 
           {/* DESKTOP VIEW HEADER CARD */}
-          <div className="hidden md:flex bg-white border border-gray-200 rounded-[32px] p-10 flex-row items-center justify-between gap-8 text-left transition-all">
-            <div className="flex flex-col items-start gap-5">
-              <div className="space-y-1">
-                {userProfile.email === 'guest@rojgarmatch.local' ? (
-                  <>
-                    <h1 className="text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
-                    <p className="text-base font-medium text-gray-400 capitalize">Guest Session</p>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
-                    <p className="text-gray-500 text-base font-medium">{userProfile.email}</p>
-                  </>
-                )}
-              </div>
-              <div className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-full border ${completed ? "text-green-600 bg-green-50 border-green-100" : "text-red-500 bg-red-50 border-red-100"}`}>
-                {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
-              </div>
+          <div className="hidden md:flex bg-white border-2 border-gray-200/80 rounded-[32px] p-8 md:p-10 flex-row items-center justify-between gap-8 text-left transition-all shadow-md hover:shadow-lg">
+            <div className="space-y-1">
+              {userProfile.email === 'guest@rojgarmatch.local' ? (
+                <>
+                  <h1 className="text-3xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
+                  <p className="text-sm font-medium text-gray-400 capitalize">Guest Session</p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
+                  <p className="text-gray-500 text-sm font-medium">{userProfile.email}</p>
+                </>
+              )}
             </div>
-            <button onClick={handleLogout} className="px-8 py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-full text-[11px] font-black uppercase tracking-widest border border-red-100/50 active:scale-95">
+            <button onClick={handleLogout} className="px-8 py-3 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-all rounded-full text-[11px] font-black uppercase tracking-widest active:scale-95 shadow-sm shrink-0">
               Sign Out
             </button>
           </div>
-
+ 
           {/* MOBILE VIEW HEADER CARD */}
-          <div className="md:hidden bg-white border border-gray-200 rounded-lg p-4 flex flex-col transition-all shadow-sm">
-            {/* Top Row: Initial Avatar and Profile Metadata */}
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-base font-bold text-navy tracking-tight truncate leading-snug">
-                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
-                </h1>
-                <p className="text-xs text-gray-500 truncate leading-none mt-1">
-                  {userProfile.email === 'guest@rojgarmatch.local' ? 'Guest Session' : userProfile.email.toLowerCase()}
-                </p>
-              </div>
+          <div className="md:hidden bg-white border-2 border-gray-200/80 rounded-2xl p-5 flex flex-col transition-all shadow-md hover:shadow-lg">
+            {/* Top Row: Profile Metadata */}
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base font-bold text-navy tracking-tight truncate leading-snug">
+                {userProfile.email === 'guest@rojgarmatch.local' ? 'Anonymous Guest' : (userProfile.fullName || 'Citizen Profile')}
+              </h1>
+              <p className="text-xs text-gray-500 truncate leading-none mt-1.5 font-medium">
+                {userProfile.email === 'guest@rojgarmatch.local' ? 'Guest Session' : userProfile.email.toLowerCase()}
+              </p>
             </div>
 
             {/* Subtle Divider */}
-            <div className="border-t border-gray-100 my-3" />
+            <div className="border-t border-gray-100 my-4" />
 
-            {/* Bottom Row: Status Badge & Logout Button */}
-            <div className="flex items-center justify-between gap-2">
-              <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${completed ? "text-green-600 bg-green-50/50 border-green-100" : "text-red-500 bg-red-50/50 border-red-100"}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${completed ? 'bg-green-500' : 'bg-red-500'} shrink-0`} />
-                {completed ? "Qualification Recorded" : "Qualification Not Recorded"}
-              </span>
+            {/* Bottom Row: Logout Button */}
+            <div className="flex items-center justify-end">
               <button
                 onClick={handleLogout}
-                className="px-3.5 py-1.5 bg-red-50/70 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-lg text-[10px] font-bold uppercase tracking-wider border border-red-100/50 active:scale-95"
+                className="w-full px-3.5 py-2.5 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-all rounded-lg text-[10px] font-bold uppercase tracking-wider active:scale-95 shadow-sm text-center"
               >
                 Sign Out
               </button>
@@ -408,7 +400,7 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={group.id}
-                      className={`p-3.5 md:p-6 rounded-lg border transition-all duration-300 space-y-3 md:space-y-4 ${levelState.qual ? "bg-green-50/60 border-green-300 shadow-sm" : "bg-white border-gray-200/70"}`}
+                      className={`p-3.5 md:p-6 rounded-lg border transition-all duration-300 space-y-3 md:space-y-4 shadow-sm hover:shadow-md ${levelState.qual ? "bg-green-50/80 border-green-400" : "bg-slate-50/50 border-gray-300"}`}
                     >
                       <div className="flex items-center gap-2">
                         <h3 className={`text-[10px] md:text-sm font-black uppercase tracking-wider transition-colors ${levelState.qual ? "text-[#166534]" : "text-navy"}`}>
@@ -422,7 +414,7 @@ export default function ProfilePage() {
                             <select
                               value={levelState.qual}
                               onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
-                              className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-bold outline-none transition-all rounded-lg appearance-none ${levelState.qual ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
+                              className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-semibold outline-none transition-all rounded-lg appearance-none ${levelState.qual ? "bg-white border-green-300 text-navy/60" : "bg-white border-gray-200 text-navy/80 focus:border-green-400"}`}
                             >
                               <option value="">-- No Record --</option>
                               {qualsForLevel.map(q => <option key={q.name} value={q.name}>{q.label}</option>)}
@@ -432,17 +424,17 @@ export default function ProfilePage() {
                             </div>
                           </div>
                         </div>
- 
+
                         {currentQual && currentQual.branches.length > 0 ? (
                           <div className="space-y-1">
-                            <label className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block px-1 transition-colors ${levelState.qual ? "text-[#166534]/55" : "text-navy/40"}`}>
+                            <label className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block px-1 transition-colors ${levelState.qual ? "text-navy/50" : "text-navy/40"}`}>
                               {group.id <= 2 ? "Academic Stream" : group.id === 3 ? "Trade Branch" : "Professional Branch"}
                             </label>
                             <div className="relative w-full">
                               <select
                                 value={levelState.branch}
                                 onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
-                                className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-bold outline-none transition-all rounded-lg appearance-none ${levelState.branch ? "bg-white border-green-300 text-[#166534]" : "bg-white border-gray-200 text-navy/80 focus:border-[#166534]"}`}
+                                className={`w-full h-10 md:h-12 border pl-3 pr-10 text-xs md:text-sm font-semibold outline-none transition-all rounded-lg appearance-none ${levelState.branch ? "bg-white border-green-300 text-navy/60" : "bg-white border-gray-200 text-navy/80 focus:border-green-400"}`}
                               >
                                 <option value="">-- No Record --</option>
                                 {currentQual.branches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
@@ -459,6 +451,27 @@ export default function ProfilePage() {
                     </div>
                   );
                 })}
+              </div>
+
+              <div className="flex flex-row gap-2 md:gap-3 pt-6 border-t border-gray-100 mt-6">
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex-1 h-10 md:h-14 bg-green-50 text-green-600 font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2 shadow-sm active:scale-[0.98]"
+                >
+                  <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
+                  <span className="xs:hidden">{isSaving ? 'Saving...' : 'Save'}</span>
+                </button>
+                <button
+                  onClick={handleReset}
+                  disabled={isSaving}
+                  className="flex-1 h-10 md:h-14 bg-red-50 text-red-600 font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl border border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2 shadow-sm active:scale-[0.98]"
+                >
+                  <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                  <span className="hidden xs:inline">Reset Qualification</span>
+                  <span className="xs:hidden">Reset</span>
+                </button>
               </div>
             </section>
 
@@ -500,25 +513,17 @@ export default function ProfilePage() {
             )}
 
             {/* ACTION AREA */}
-            <div className="flex flex-row gap-2 md:gap-3">
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="flex-1 h-10 md:h-14 bg-navy text-white font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
+            <div className="w-full">
+              <Link
+                href="/"
+                className="w-full h-10 md:h-14 bg-navy text-white font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl hover:bg-navy-dark transition-all flex items-center justify-center gap-1.5 md:gap-2 no-underline shadow-md active:scale-[0.98]"
               >
-                <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                <span className="hidden xs:inline">{isSaving ? 'Saving...' : 'Save Qualification'}</span>
-                <span className="xs:hidden">{isSaving ? 'Saving...' : 'Save'}</span>
-              </button>
-              <button
-                onClick={handleReset}
-                disabled={isSaving}
-                className="flex-1 h-10 md:h-14 bg-red-50 text-red-600 font-bold text-[9px] md:text-[11px] uppercase tracking-widest rounded-lg md:rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-all disabled:opacity-30 flex items-center justify-center gap-1.5 md:gap-2"
-              >
-                <svg className="w-3.5 h-3.5 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                <span className="hidden xs:inline">Reset Qualification</span>
-                <span className="xs:hidden">Reset</span>
-              </button>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Go to Home Page</span>
+              </Link>
             </div>
           </div>
         </div>

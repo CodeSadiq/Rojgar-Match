@@ -84,7 +84,7 @@ export default function ZoomControl() {
 
       {/* Mobile View: Bottom-6 with Back Button above Zoom controls */}
       {isVisible && (
-        <div className="md:hidden fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end">
+        <div className="md:hidden fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end animate-float-in">
           <button 
             onClick={() => router.back()} 
             className="bg-white/95 backdrop-blur shadow-xl border border-gray-200 rounded-full p-2 flex items-center justify-center text-navy hover:bg-navy hover:text-white transition-all w-12 h-12 active:scale-95"
