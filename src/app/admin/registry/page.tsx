@@ -48,7 +48,7 @@ function RegistryManager() {
 
   const handleSyncToSource = async () => {
     if (!confirm("This will overwrite 'src/lib/constants.ts' with current Database state. Only use this if you want to commit these changes to the codebase. Continue?")) return;
-    
+
     setStatus({ msg: 'Syncing to Source Code...', type: 'info' });
     try {
       const res = await fetch('/api/admin/qual-tree/sync', { method: 'POST' });
@@ -100,7 +100,7 @@ function RegistryManager() {
     if (!newLabel) return;
     const newLevelStr = prompt("Edit Level (1-5):", currentLevel.toString());
     const newLevel = parseInt(newLevelStr || currentLevel.toString());
-    
+
     const course = registry.find(c => c.name === name);
     if (!course) return;
     handleUpdate(name, { label: newLabel, level: newLevel, branches: course.branches });
@@ -189,15 +189,30 @@ function RegistryManager() {
             {filteredRegistry.map((course) => (
               <div key={course.name} className="bg-white border border-gray-200 rounded-[32px] p-8 space-y-6 hover:shadow-2xl hover:shadow-navy/5 transition-all group flex flex-col relative text-left">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 bg-navy/5 text-navy/40 text-[9px] font-black uppercase tracking-widest rounded-lg border border-navy/5">Level {course.level}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-3 py-1 bg-navy/5 text-navy/40 text-[9px] font-black uppercase tracking-widest rounded-lg border border-navy/5">Level {course.level}</span>
+                      {(course.jobCount || 0) > 0 ? (
+                        <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg ${
+                          course.jobCount <= 20
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-emerald-600 text-white'
+                        }`}>
+                          {course.jobCount} {course.jobCount === 1 ? 'Post' : 'Posts'}
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 bg-red-600 text-white text-[9px] font-bold uppercase tracking-widest rounded-lg">
+                          Unused
+                        </span>
+                      )}
+                    </div>
                     <div className="flex gap-2">
-                      <button 
+                      <button
                         onClick={() => editCourseLabel(course.name, course.label, course.level)}
                         className="w-8 h-8 flex items-center justify-center text-navy/20 hover:text-navy transition-colors opacity-0 group-hover:opacity-100"
                         title="Edit Course Name/Level"
                       >
-                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                       </button>
                       <button
                         onClick={() => deleteCourse(course.name)}
@@ -223,7 +238,18 @@ function RegistryManager() {
                     ) : (
                       course.branches.map((b: any) => (
                         <div key={b.value} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg group/branch">
-                          <span className="text-[10px] font-bold text-navy/60">{b.label}</span>
+                          <span className="text-[10px] font-bold text-navy/60 flex items-center gap-1.5">
+                            {b.label}
+                            <span className={`px-1.5 py-0.5 rounded text-[8.5px] font-black ${
+                              !b.jobCount || b.jobCount === 0
+                                ? 'bg-red-600 text-white'
+                                : b.jobCount <= 20
+                                  ? 'bg-orange-500 text-white'
+                                  : 'bg-emerald-600 text-white'
+                            }`}>
+                              {b.jobCount || 0}
+                            </span>
+                          </span>
                           <button onClick={() => removeBranch(course.name, b.value)} className="w-4 h-4 flex items-center justify-center text-navy/20 hover:text-red-500 leading-none text-xs transition-colors bg-transparent border-none cursor-pointer">✕</button>
                         </div>
                       ))

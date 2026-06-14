@@ -1286,7 +1286,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       } else {
                         suffix = ` (${daysLeft} days left)`;
                         if (daysLeft <= 7) {
-                          dateColor = '#3B82F6'; // Blue for closing soon
+                          dateColor = '#F97316'; // Orange for closing soon
                         } else {
                           dateColor = '#10B981'; // Green for active / safe
                         }
