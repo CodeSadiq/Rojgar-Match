@@ -249,6 +249,7 @@ const styles = `
     font-weight: 700;
     color: var(--navy);
     line-height: 1.2;
+    white-space: nowrap;
   }
   .jd-hero-cell.accent .jd-hero-value { color: #fff; }
   .jd-hero-cell.highlight-red .jd-hero-value { color: #dc2626; }
@@ -772,6 +773,7 @@ const styles = `
       line-height: 1.2; 
       text-align: center;
       color: var(--navy);
+      white-space: normal !important;
     }
     .jd-hero-cell.accent .jd-hero-value {
       color: var(--navy) !important;
@@ -1265,6 +1267,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   const lastDateStr = dates.applicationLastDate;
                   
                   let dateColor = '#64748B'; // Default slate gray
+                  let suffix = '';
                   
                   if (lastDateStr) {
                     const lastDate = new Date(lastDateStr);
@@ -1277,12 +1280,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       const timeDiff = endDateTime.getTime() - now.getTime();
                       const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
                       
-                      if (daysLeft < 0) {
+                      if (timeDiff < 0) {
                         dateColor = '#EF4444'; // Red for expired
-                      } else if (daysLeft <= 7) {
-                        dateColor = '#3B82F6'; // Blue for closing soon
+                        suffix = ' (Expired)';
                       } else {
-                        dateColor = '#10B981'; // Green for active / safe
+                        suffix = ` (${daysLeft} days left)`;
+                        if (daysLeft <= 7) {
+                          dateColor = '#3B82F6'; // Blue for closing soon
+                        } else {
+                          dateColor = '#10B981'; // Green for active / safe
+                        }
                       }
                     }
                   }
@@ -1290,15 +1297,26 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   return (
                     <div className="jd-hero-cell highlight-red">
                       <div className="jd-hero-icon"><IconCalendar /></div>
-                      <div className="jd-hero-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                      <div className="jd-hero-content">
                         <div className="jd-hero-label">Last Date</div>
-                        <div>
-                          <div className="jd-hero-value" style={{ 
-                            color: dateColor, 
-                            whiteSpace: 'nowrap' 
-                          }}>
-                            {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
-                          </div>
+                        <div className="jd-hero-value" style={{ color: dateColor }}>
+                          {dates.applicationLastDate ? (
+                            <>
+                              <span>{fmtDate(dates.applicationLastDate)}</span>
+                              {suffix && (
+                                <span style={{ 
+                                  display: 'inline-block',
+                                  whiteSpace: 'nowrap',
+                                  fontSize: '11px',
+                                  fontWeight: 500,
+                                  opacity: 0.9,
+                                  marginLeft: '4px'
+                                }}>
+                                  {suffix}
+                                </span>
+                              )}
+                            </>
+                          ) : "—"}
                         </div>
                       </div>
                     </div>
