@@ -796,61 +796,61 @@ export default function Home() {
                       </div>
                     ) : (!isLoggedIn && !userProfile) ? (
                       /* 🔗 CASE 1: LOGGED OUT / NEW VISITOR - SHOW RICH HERO (COMPACT) */
-                      <div className="flex-1 py-8 md:py-20 px-4 md:px-8 bg-gradient-to-br from-emerald-50/40 via-white to-green-50/40 border border-emerald-100/60 p-6 rounded-3xl shadow-[0_15px_40px_rgba(16,185,129,0.05)] md:bg-transparent md:border-0 md:shadow-none md:rounded-none flex flex-col items-center justify-center text-center mx-0 overflow-hidden relative">
+                      <div className="flex-1 py-10 md:py-20 px-5 md:px-8 bg-transparent border-0 shadow-none rounded-none flex flex-col items-center justify-center text-center mx-0 overflow-hidden relative">
                         {/* Background Decor */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/[0.03] md:bg-navy/[0.02] rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/[0.03] md:bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-navy/[0.02] rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy/[0.02] rounded-full -ml-32 -mb-32 blur-3xl"></div>
 
                         <div className="relative z-10 max-w-[800px] w-full">
-                          <p className="text-[22px] md:text-[18px] font-black text-emerald-800 md:text-[#0D244D]/90 md:font-bold mb-2 md:mb-3 uppercase md:normal-case tracking-tight md:tracking-normal">
+                          <p className="text-[20px] md:text-[18px] font-serif font-bold text-[#166534] md:text-[#0D244D]/90 mb-2 md:mb-3">
                             Welcome to Rojgar Match
                           </p>
 
-                          <p className="text-[13px] md:text-[19px] text-navy/70 font-medium mb-8 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
+                          <p className="text-[15px] md:text-[19px] text-navy/70 font-medium mb-12 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
                             Find government jobs and updates that match your qualifications.
                           </p>
 
-                          <div className="flex flex-col md:grid md:grid-cols-3 gap-4 md:gap-5 mb-8 md:mb-12 text-left w-full max-w-[480px] md:max-w-none mx-auto">
+                          <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:gap-5 mb-8 md:mb-12 text-left w-full max-w-[480px] md:max-w-none mx-auto">
                             {/* ITEM 1 */}
-                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-white/90 border border-emerald-100/70 p-4 rounded-2xl shadow-[0_4px_16px_rgba(16,185,129,0.03)] md:bg-gray-50/80 md:border-gray-100 md:p-5 md:rounded-xl md:shadow-none">
-                              <div className="w-10 h-10 md:w-10 md:h-10 bg-emerald-50 text-emerald-600 border border-emerald-100 md:bg-navy/5 md:text-navy md:border-none md:shadow-none rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-[#166534]/10 text-[#166534] md:bg-navy/5 md:text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
                               </div>
                               <div className="space-y-0.5">
-                                <h4 className="text-[12px] md:text-[13px] font-bold text-emerald-800 md:text-navy uppercase tracking-wider">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   Eligible Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/60 md:text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.
                                 </p>
                               </div>
                             </div>
 
                             {/* ITEM 2 */}
-                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-white/90 border border-emerald-100/70 p-4 rounded-2xl shadow-[0_4px_16px_rgba(16,185,129,0.03)] md:bg-gray-50/80 md:border-gray-100 md:p-5 md:rounded-xl md:shadow-none">
-                              <div className="w-10 h-10 md:w-10 md:h-10 bg-emerald-50 text-emerald-600 border border-emerald-100 md:bg-navy/5 md:text-navy md:border-none md:shadow-none rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-[#166534]/10 text-[#166534] md:bg-navy/5 md:text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                               </div>
                               <div className="space-y-0.5">
-                                <h4 className="text-[12px] md:text-[13px] font-bold text-emerald-800 md:text-navy uppercase tracking-wider">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   All Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/60 md:text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   Browse through all government jobs or see recommended ones that match your qualification.
                                 </p>
                               </div>
                             </div>
 
                             {/* ITEM 3 */}
-                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-white/90 border border-emerald-100/70 p-4 rounded-2xl shadow-[0_4px_16px_rgba(16,185,129,0.03)] md:bg-gray-50/80 md:border-gray-100 md:p-5 md:rounded-xl md:shadow-none">
-                              <div className="w-10 h-10 md:w-10 md:h-10 bg-emerald-50 text-emerald-600 border border-emerald-100 md:bg-navy/5 md:text-navy md:border-none md:shadow-none rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <div className="flex flex-row md:flex-col items-start gap-4 md:gap-3 bg-transparent md:bg-gray-50/80 p-0 md:p-5 rounded-none md:rounded-xl border-0 md:border border-gray-100">
+                              <div className="w-10 h-10 md:w-10 md:h-10 bg-[#166534]/10 text-[#166534] md:bg-navy/5 md:text-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm md:shadow-none">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                               </div>
                               <div className="space-y-0.5">
-                                <h4 className="text-[12px] md:text-[13px] font-bold text-emerald-800 md:text-navy uppercase tracking-wider">
+                                <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   Email Alerts
                                 </h4>
-                                <p className="text-[11px] text-navy/60 md:text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
                                   Get a direct email alert the moment a government job matching your education is posted.
                                 </p>
                               </div>
@@ -859,7 +859,7 @@ export default function Home() {
 
                           <Link
                             href="/login"
-                            className="inline-flex items-center justify-center gap-3 w-full md:w-auto px-8 md:px-12 py-3.5 md:py-4 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 md:from-navy md:to-navy md:bg-navy md:hover:bg-[#06142E] text-white text-[11px] md:text-[13px] font-black uppercase tracking-widest transition-all shadow-xl shadow-emerald-600/25 md:shadow-navy/20 rounded-2xl md:rounded-xl no-underline group active:scale-[0.98]"
+                            className="inline-flex items-center gap-3 px-8 md:px-12 py-3 md:py-4 bg-[#166534] md:bg-navy text-white text-[11px] md:text-[13px] font-bold uppercase tracking-widest hover:bg-[#0f4a24] md:hover:bg-[#06142E] transition-all shadow-2xl shadow-green-900/10 md:shadow-navy/20 rounded-xl no-underline group active:scale-[0.98]"
                           >
                             <span>Setup profile to see eligible jobs</span>
                             <span className="group-hover:translate-x-1 transition-transform opacity-60">➜</span>
