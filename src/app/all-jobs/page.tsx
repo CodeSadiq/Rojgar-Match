@@ -143,7 +143,7 @@ function JobsPageContent() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
+    <div className="min-h-screen bg-[#F0F4F2] md:bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
 

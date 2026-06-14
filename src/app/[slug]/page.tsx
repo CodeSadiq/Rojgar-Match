@@ -58,7 +58,7 @@ export default function CategoryPage() {
   }, [registry, categoryName]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F0F4F2] md:bg-[#F8FAFC] flex flex-col font-sans">
       <ForceScrollTop />
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
 

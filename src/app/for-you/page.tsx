@@ -366,7 +366,7 @@ export default function ForYouPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F0F4F2] md:bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-0 md:px-12 pt-3 md:pt-3 pb-24 md:pb-32 animate-in fade-in duration-500">
         <header className="mb-4 md:mb-8 border-b-2 border-[#166534] md:border-navy pb-2.5 md:pb-6 flex items-center justify-between gap-3 px-4 md:px-0 pt-3.5 md:pt-6">
           <div className="flex items-center gap-2 text-left">
