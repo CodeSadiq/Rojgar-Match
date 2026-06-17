@@ -214,9 +214,6 @@ export default function Navbar() {
                       <div className="text-base font-serif font-bold tracking-tight leading-tight group-hover:text-blue-300 transition-colors">
                         Candidate Login
                       </div>
-                      <div className="text-xs text-white/40 mt-1 leading-none">
-                        Sign in to save qualification
-                      </div>
                     </div>
                     <span className="ml-auto opacity-40 group-hover:opacity-100 transition-all font-sans text-sm">➜</span>
                   </Link>

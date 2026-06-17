@@ -274,7 +274,6 @@ const styles = `
     margin: 72px 0 10px;
     padding: 12px 20px;
     background: var(--navy);
-    border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   .jd-section-icon {
@@ -784,7 +783,7 @@ const styles = `
 
     .jd-lede { font-size: 14px; margin: 12px 0; line-height: 1.5; }
     
-    .jd-section { margin: 54px 0 8px; padding: 10px 16px; border-radius: 6px; }
+    .jd-section { margin: 54px 0 8px; padding: 10px 16px; }
     .jd-section-title { font-size: 15px; color: #ffffff !important; }
     .jd-section-icon svg { width: 15px; height: 15px; }
     
@@ -819,11 +818,16 @@ const styles = `
     }
     .jd-timeline-table td.label {
       white-space: normal !important;
-      width: auto !important;
-      min-width: 0 !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      min-width: 12em !important;
+      width: 40% !important;
     }
     .jd-timeline-table td:not(.label) {
-      white-space: nowrap !important;
+      white-space: normal !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      min-width: 10em !important;
     }
     
     .jd-apply { font-size: 15px; padding: 14px; margin-top: 40px; border-radius: 12px; }
@@ -1614,7 +1618,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 <span className="jd-section-icon"><IconCalendar /></span>
                 <span className="jd-section-title">Important Dates</span>
               </div>
-              <table className="jd-table jd-timeline-table">
+              <div className="tbl-scroll">
+                <table className="jd-table jd-timeline-table">
             <thead>
               <tr>
                 <th>Event</th>
@@ -1721,6 +1726,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               })()}
             </tbody>
           </table>
+          </div>
           </>
           )}
 

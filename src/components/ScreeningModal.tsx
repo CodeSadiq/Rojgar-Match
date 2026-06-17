@@ -351,13 +351,12 @@ export default function ScreeningModal({
                         <div
                           key={q.id}
                           id={`q-container-${q.id}`}
-                          className={`flex flex-col gap-4 p-5 md:p-6 rounded-2xl border transition-all duration-300 ${
-                            isInfo 
-                              ? 'bg-green-50/20 border-green-100 shadow-sm' 
-                              : isAnswered 
-                                ? 'bg-slate-50/50 border-slate-100 opacity-80' 
-                                : 'bg-white border-slate-200/80 shadow-sm hover:border-slate-300 hover:shadow-md'
-                          } ${idx > 0 ? 'mt-3' : ''}`}
+                          className={`flex flex-col gap-4 p-5 md:p-6 rounded-2xl border transition-all duration-300 ${isInfo
+                            ? 'bg-green-50/20 border-green-100 shadow-sm'
+                            : isAnswered
+                              ? 'bg-slate-50/50 border-slate-100 opacity-80'
+                              : 'bg-white border-slate-200/80 shadow-sm hover:border-slate-300 hover:shadow-md'
+                            } ${idx > 0 ? 'mt-3' : ''}`}
                         >
                           <div className="flex flex-col">
                             {isInfo ? (
@@ -379,31 +378,28 @@ export default function ScreeningModal({
                             <div className="flex flex-row items-center gap-3 mt-1">
                               <button
                                 onClick={() => onAnswer(q.id, true)}
-                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
-                                  currentAnswer === true 
-                                    ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-100' 
-                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
-                                }`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${currentAnswer === true
+                                  ? 'bg-green-600 text-white border-green-600 shadow-sm shadow-green-100'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                  }`}
                               >
                                 Yes
                               </button>
                               <button
                                 onClick={() => onAnswer(q.id, false)}
-                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
-                                  currentAnswer === false 
-                                    ? 'bg-red-500 text-white border-red-500 shadow-sm shadow-red-100' 
-                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
-                                }`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${currentAnswer === false
+                                  ? 'bg-red-500 text-white border-red-500 shadow-sm shadow-red-100'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                  }`}
                               >
                                 No
                               </button>
                               <button
                                 onClick={() => onAnswer(q.id, null)}
-                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${
-                                  currentAnswer === null 
-                                    ? 'bg-slate-500 text-white border-slate-500 shadow-sm shadow-slate-100' 
-                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
-                                }`}
+                                className={`flex-1 py-2 md:py-2.5 rounded-lg text-[12px] font-bold transition-all border cursor-pointer ${currentAnswer === null
+                                  ? 'bg-slate-500 text-white border-slate-500 shadow-sm shadow-slate-100'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900'
+                                  }`}
                               >
                                 Not Sure
                               </button>

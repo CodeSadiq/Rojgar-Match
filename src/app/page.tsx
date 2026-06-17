@@ -806,7 +806,7 @@ export default function Home() {
                             Welcome to Rojgar Match
                           </p>
 
-                          <p className="text-[15px] md:text-[19px] text-navy/70 font-medium mb-12 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
+                          <p className="text-[15px] md:text-[19px] text-[#16a34a] md:text-navy/70 font-medium mb-12 md:mb-12 leading-relaxed max-w-[680px] mx-auto">
                             Find government jobs and updates that match your qualifications.
                           </p>
 
@@ -820,7 +820,7 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   Eligible Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
                                   See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.
                                 </p>
                               </div>
@@ -835,7 +835,7 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   All Jobs
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
                                   Browse through all government jobs or see recommended ones that match your qualification.
                                 </p>
                               </div>
@@ -850,7 +850,7 @@ export default function Home() {
                                 <h4 className="text-[12px] md:text-[13px] font-bold text-[#166534] md:text-navy uppercase tracking-wider">
                                   Email Alerts
                                 </h4>
-                                <p className="text-[11px] text-navy/50 leading-relaxed font-medium">
+                                <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
                                   Get a direct email alert the moment a government job matching your education is posted.
                                 </p>
                               </div>
