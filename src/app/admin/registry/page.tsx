@@ -9,6 +9,7 @@ function RegistryManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const fetchRegistry = async () => {
     setIsLoading(true);
@@ -26,6 +27,7 @@ function RegistryManager() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchRegistry();
   }, []);
 
@@ -80,6 +82,7 @@ function RegistryManager() {
   };
 
   const removeBranch = async (courseName: string, branchValue: string) => {
+    if (!confirm(`Are you sure you want to remove the branch "${branchValue}" from "${courseName}"?`)) return;
     const course = registry.find(c => c.name === courseName);
     if (!course) return;
     const updatedBranches = course.branches.filter((b: any) => b.value !== branchValue);
@@ -123,7 +126,7 @@ function RegistryManager() {
     c.branches.some((b: any) => b.label.toLowerCase().includes(search.toLowerCase()))
   ).sort((a, b) => a.level - b.level);
 
-  const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const isLocalHost = mounted && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
   return (
     <div className="min-h-screen bg-[#fafafa] p-6 md:p-12 font-sans selection:bg-navy selection:text-white">

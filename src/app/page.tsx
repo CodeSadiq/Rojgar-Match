@@ -276,13 +276,8 @@ export default function Home() {
             prerequisite: post.prerequisite || [],
             "qualification.extraQualificationText": post.qualification?.extraQualificationText || "",
             extraQualificationText: post.qualification?.extraQualificationText || "",
-            qualification: {
-              course: Array.isArray(post.qualification?.course)
-                ? post.qualification.course
-                : (post.qualification?.course ? [post.qualification.course] : []),
-              branch: post.qualification?.branch || [],
-              extraQualificationText: post.qualification?.extraQualificationText || ""
-            }
+            qualification: post.qualification || {},
+            educationRequirementForMatch: post.educationRequirementForMatch || []
           }))
       );
 
@@ -313,23 +308,29 @@ export default function Home() {
       const data = await res.json();
       const newQuestionsRaw = data.questions || [];
 
+      // Deduplicate new questions by text and base ID against already generated questions
+      const filteredNewQuestions = newQuestionsRaw.filter((newQ: any) => {
+        const normalizedText = newQ.text?.trim().toLowerCase();
+        const existsText = screeningQuestions.some(q => q.text?.trim().toLowerCase() === normalizedText);
+        const existsId = screeningQuestions.some(q => q.id === newQ.id || q.id?.endsWith(`_${newQ.id}`));
+        return !existsText && !existsId;
+      });
+
       // Ensure IDs are globally unique to avoid React key collisions
-      const newQuestions = newQuestionsRaw.map((q: any, idx: number) => ({
+      const newQuestions = filteredNewQuestions.map((q: any, idx: number) => ({
         ...q,
         id: q.id ? `q_${Date.now()}_${idx}_${q.id}` : `q_${Date.now()}_${idx}`
       }));
 
       setScreeningQuestions(prev => {
-        const existingIds = new Set(prev.map(q => q.id));
-        const filteredNew = newQuestions.filter((q: any) => !existingIds.has(q.id));
-        return [...prev, ...filteredNew];
+        return [...prev, ...newQuestions];
       });
 
       // Update Profile Record
       const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
       const updatedProfile = {
         ...existingProfile,
-        screeningQuestions: [...(existingProfile.screeningQuestions || []), ...newQuestions.filter((q: any) => !(existingProfile.screeningQuestions || []).some((ex: any) => ex.id === q.id))],
+        screeningQuestions: [...(existingProfile.screeningQuestions || []), ...newQuestions],
         // PRESERVE ANSWERS for phased screening
         screeningAnswers: screeningAnswers
       };

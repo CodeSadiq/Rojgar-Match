@@ -312,14 +312,14 @@ const styles = `
   .jd-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 16px;
+    font-size: 22px;
     border: 1px solid var(--border);
   }
   .jd-table th {
     background: #f1f5f9;
     color: var(--navy);
     font-family: var(--sans);
-    font-size: 12.5px;
+    font-size: 18px;
     font-weight: 700;
     text-align: left;
     padding: 10px 12px;
@@ -329,7 +329,7 @@ const styles = `
   .jd-table td {
     padding: 10px 14px;
     border: 1px solid var(--border);
-    font-size: 16px;
+    font-size: 22px;
   }
   .jd-table .label {
     font-weight: 600;
@@ -584,7 +584,7 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
             );
           })}
         </div>
-        
+
         {editable && (
           <div style={{ marginTop: courses.length > 0 ? '8px' : '0' }}>
             <button
@@ -597,6 +597,14 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
             >
               + Add Course
             </button>
+          </div>
+        )}
+
+        {(extra || editable) && courses.length > 0 && (
+          <div className="qual-or-sep" style={{ margin: '12px 0 8px 0' }}>
+            <div className="qual-or-sep-line" style={{ height: '0.5px' }}></div>
+            <div className="qual-or-sep-badge" style={{ fontSize: '8px', padding: '1px 5px', color: '#b45309', background: '#fef3c7', borderColor: '#f59e0b' }}>AND</div>
+            <div className="qual-or-sep-line" style={{ height: '0.5px' }}></div>
           </div>
         )}
 
@@ -797,11 +805,11 @@ function CatVacCell({ post, job, editable, onUpdate, postIndex, isGeneral }: any
             <span className="cat-vac-chip-label">{CAT_LABELS[c]}</span>
             <span className="cat-vac-chip-val">
               {editable ? (
-                <Editable 
-                  editable={true} 
+                <Editable
+                  editable={true}
                   path={isGeneral ? `categoryWiseVacancy.${c}` : `posts.${postIndex}.categoryWiseVacancy.${c}`}
-                  value={catVac[c] != null ? String(catVac[c]) : ""} 
-                  onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
+                  value={catVac[c] != null ? String(catVac[c]) : ""}
+                  onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)}
                 />
               ) : (
                 catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"
@@ -947,154 +955,41 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
         <style dangerouslySetInnerHTML={{ __html: styles }} />
         <div className="jd-wrap">
 
-        {/* MASTHEAD */}
-        <header className="jd-masthead">
-          <h1 className="jd-title">
-            <Editable editable={editable} path="title" value={job.title} onUpdate={onUpdate} />
-          </h1>
-          <div className="jd-tags">
-            {job.tags?.slice(0, 8).map((t: string) => <span key={t} className="jd-tag">{t}</span>)}
-          </div>
-        </header>
+          {/* MASTHEAD */}
+          <header className="jd-masthead">
+            <h1 className="jd-title">
+              <Editable editable={editable} path="title" value={job.title} onUpdate={onUpdate} />
+            </h1>
+            <div className="jd-tags">
+              {job.tags?.slice(0, 8).map((t: string) => <span key={t} className="jd-tag">{t}</span>)}
+            </div>
+          </header>
 
-        {/* HERO STRIP */}
-        {(() => {
-          const showVacancies = isCardVisible('vacancies') || editable;
-          const showStartDate = isCardVisible('startDate') || editable;
-          const showLastDate = isCardVisible('lastDate') || editable;
-          const visibleCount = [isCardVisible('vacancies'), isCardVisible('startDate'), isCardVisible('lastDate')].filter(Boolean).length;
-          const gridCount = editable ? 3 : visibleCount;
+          {/* HERO STRIP */}
+          {(() => {
+            const showVacancies = isCardVisible('vacancies') || editable;
+            const showStartDate = isCardVisible('startDate') || editable;
+            const showLastDate = isCardVisible('lastDate') || editable;
+            const visibleCount = [isCardVisible('vacancies'), isCardVisible('startDate'), isCardVisible('lastDate')].filter(Boolean).length;
+            const gridCount = editable ? 3 : visibleCount;
 
-          if (gridCount === 0) return null;
+            if (gridCount === 0) return null;
 
-          return (
-            <div className="jd-hero" style={{ gridTemplateColumns: `repeat(${gridCount}, 1fr)` }}>
-              {showVacancies && (
-                <div 
-                  className={`jd-hero-cell accent relative ${!isCardVisible('vacancies') ? 'opacity-30 border-dashed border-red-300' : ''}`}
-                  style={{ position: 'relative' }}
-                >
-                  {editable && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const isHidden = !isCardVisible('vacancies');
-                        const updated = isHidden
-                          ? hiddenHeroCards.filter((c: string) => c !== 'vacancies')
-                          : [...hiddenHeroCards, 'vacancies'];
-                        onUpdate("hiddenHeroCards", updated);
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: '6px',
-                        right: '6px',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontSize: '9px',
-                        fontWeight: 'bold',
-                        padding: '2px 6px',
-                        cursor: 'pointer',
-                        zIndex: 10,
-                      }}
-                      className={!isCardVisible('vacancies') ? 'bg-rose-600 text-white' : 'bg-white/20 text-white hover:bg-white/30'}
-                    >
-                      {!isCardVisible('vacancies') ? '✕ Hidden' : '✓ Visible'}
-                    </button>
-                  )}
-                  <div className="jd-hero-icon"><IconUsers /></div>
-                  <div className="jd-hero-content">
-                    <div className="jd-hero-label">Total Vacancies</div>
-                    <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-                  </div>
-                </div>
-              )}
-
-              {showStartDate && (
-                <div 
-                  className={`jd-hero-cell relative ${!isCardVisible('startDate') ? 'opacity-30 border-dashed border-red-300' : ''}`}
-                  style={{ position: 'relative' }}
-                >
-                  {editable && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const isHidden = !isCardVisible('startDate');
-                        const updated = isHidden
-                          ? hiddenHeroCards.filter((c: string) => c !== 'startDate')
-                          : [...hiddenHeroCards, 'startDate'];
-                        onUpdate("hiddenHeroCards", updated);
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: '6px',
-                        right: '6px',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontSize: '9px',
-                        fontWeight: 'bold',
-                        padding: '2px 6px',
-                        cursor: 'pointer',
-                        zIndex: 10,
-                      }}
-                      className={!isCardVisible('startDate') ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}
-                    >
-                      {!isCardVisible('startDate') ? '✕ Hidden' : '✓ Visible'}
-                    </button>
-                  )}
-                  <div className="jd-hero-icon"><IconCalendar /></div>
-                  <div className="jd-hero-content">
-                    <div className="jd-hero-label">Start Date</div>
-                    <div className="jd-hero-value">
-                      {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {showLastDate && (() => {
-                const lastDateStr = dates.applicationLastDate;
-                
-                let dateColor = '#64748B'; // Default slate gray
-                let suffix = '';
-                
-                if (lastDateStr) {
-                  const lastDate = new Date(lastDateStr);
-                  if (!isNaN(lastDate.getTime())) {
-                    const endDateTime = new Date(lastDate);
-                    if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
-                      endDateTime.setHours(23, 59, 59, 999);
-                    }
-                    const now = new Date();
-                    const timeDiff = endDateTime.getTime() - now.getTime();
-                    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                    
-                    if (timeDiff < 0) {
-                      dateColor = '#EF4444'; // Red for expired
-                      suffix = ' (Expired)';
-                    } else {
-                      suffix = ` (${daysLeft} days left)`;
-                      if (daysLeft <= 7) {
-                        dateColor = '#F97316'; // Orange for closing soon
-                      } else {
-                        dateColor = '#10B981'; // Green for active / safe
-                      }
-                    }
-                  }
-                }
-                
-                return (
-                  <div 
-                    className={`jd-hero-cell highlight-red relative ${!isCardVisible('lastDate') ? 'opacity-30 border-dashed border-red-300' : ''}`}
+            return (
+              <div className="jd-hero" style={{ gridTemplateColumns: `repeat(${gridCount}, 1fr)` }}>
+                {showVacancies && (
+                  <div
+                    className={`jd-hero-cell accent relative ${!isCardVisible('vacancies') ? 'opacity-30 border-dashed border-red-300' : ''}`}
                     style={{ position: 'relative' }}
                   >
                     {editable && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const isHidden = !isCardVisible('lastDate');
+                          const isHidden = !isCardVisible('vacancies');
                           const updated = isHidden
-                            ? hiddenHeroCards.filter((c: string) => c !== 'lastDate')
-                            : [...hiddenHeroCards, 'lastDate'];
+                            ? hiddenHeroCards.filter((c: string) => c !== 'vacancies')
+                            : [...hiddenHeroCards, 'vacancies'];
                           onUpdate("hiddenHeroCards", updated);
                         }}
                         style={{
@@ -1109,479 +1004,778 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
                           cursor: 'pointer',
                           zIndex: 10,
                         }}
-                        className={!isCardVisible('lastDate') ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}
+                        className={!isCardVisible('vacancies') ? 'bg-rose-600 text-white' : 'bg-white/20 text-white hover:bg-white/30'}
                       >
-                        {!isCardVisible('lastDate') ? '✕ Hidden' : '✓ Visible'}
+                        {!isCardVisible('vacancies') ? '✕ Hidden' : '✓ Visible'}
+                      </button>
+                    )}
+                    <div className="jd-hero-icon"><IconUsers /></div>
+                    <div className="jd-hero-content">
+                      <div className="jd-hero-label">Total Vacancies</div>
+                      <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
+                    </div>
+                  </div>
+                )}
+
+                {showStartDate && (
+                  <div
+                    className={`jd-hero-cell relative ${!isCardVisible('startDate') ? 'opacity-30 border-dashed border-red-300' : ''}`}
+                    style={{ position: 'relative' }}
+                  >
+                    {editable && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const isHidden = !isCardVisible('startDate');
+                          const updated = isHidden
+                            ? hiddenHeroCards.filter((c: string) => c !== 'startDate')
+                            : [...hiddenHeroCards, 'startDate'];
+                          onUpdate("hiddenHeroCards", updated);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '6px',
+                          right: '6px',
+                          border: 'none',
+                          borderRadius: '4px',
+                          fontSize: '9px',
+                          fontWeight: 'bold',
+                          padding: '2px 6px',
+                          cursor: 'pointer',
+                          zIndex: 10,
+                        }}
+                        className={!isCardVisible('startDate') ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}
+                      >
+                        {!isCardVisible('startDate') ? '✕ Hidden' : '✓ Visible'}
                       </button>
                     )}
                     <div className="jd-hero-icon"><IconCalendar /></div>
                     <div className="jd-hero-content">
-                      <div className="jd-hero-label">Last Date</div>
-                      <div className="jd-hero-value" style={{ color: dateColor }}>
-                        {dates.applicationLastDate ? (
-                          <>
-                            <span>{fmtDate(dates.applicationLastDate)}</span>
-                            {suffix && (
-                              <span style={{ 
-                                display: 'inline-block',
-                                whiteSpace: 'nowrap',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                opacity: 0.9,
-                                marginLeft: '4px'
-                              }}>
-                                {suffix}
-                              </span>
-                            )}
-                          </>
-                        ) : "—"}
+                      <div className="jd-hero-label">Start Date</div>
+                      <div className="jd-hero-value">
+                        {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
                       </div>
                     </div>
                   </div>
-                );
-              })()}
-            </div>
-          );
-        })()}
+                )}
 
-        {/* LEDE */}
-        {(job.description || job.shortInfo || editable) && (
-          <div className="jd-lede">
-            <Editable
-              editable={editable}
-              path="description"
-              value={job.description || job.shortInfo}
-              onUpdate={onUpdate}
-              type="textarea"
-            />
-          </div>
-        )}
+                {showLastDate && (() => {
+                  const lastDateStr = dates.applicationLastDate;
 
-        {(isSecVisible('overview') || editable) && (
-          <>
-            <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span className="jd-section-icon"><IconBriefcase /></span>
-                <span className="jd-section-title">Recruitment Overview</span>
+                  let dateColor = '#64748B'; // Default slate gray
+                  let suffix = '';
+
+                  if (lastDateStr) {
+                    const lastDate = new Date(lastDateStr);
+                    if (!isNaN(lastDate.getTime())) {
+                      const endDateTime = new Date(lastDate);
+                      if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
+                        endDateTime.setHours(23, 59, 59, 999);
+                      }
+                      const now = new Date();
+                      const timeDiff = endDateTime.getTime() - now.getTime();
+                      const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+                      if (timeDiff < 0) {
+                        dateColor = '#EF4444'; // Red for expired
+                        suffix = ' (Expired)';
+                      } else {
+                        suffix = ` (${daysLeft} days left)`;
+                        if (daysLeft <= 7) {
+                          dateColor = '#F97316'; // Orange for closing soon
+                        } else {
+                          dateColor = '#10B981'; // Green for active / safe
+                        }
+                      }
+                    }
+                  }
+
+                  return (
+                    <div
+                      className={`jd-hero-cell highlight-red relative ${!isCardVisible('lastDate') ? 'opacity-30 border-dashed border-red-300' : ''}`}
+                      style={{ position: 'relative' }}
+                    >
+                      {editable && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const isHidden = !isCardVisible('lastDate');
+                            const updated = isHidden
+                              ? hiddenHeroCards.filter((c: string) => c !== 'lastDate')
+                              : [...hiddenHeroCards, 'lastDate'];
+                            onUpdate("hiddenHeroCards", updated);
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '6px',
+                            right: '6px',
+                            border: 'none',
+                            borderRadius: '4px',
+                            fontSize: '9px',
+                            fontWeight: 'bold',
+                            padding: '2px 6px',
+                            cursor: 'pointer',
+                            zIndex: 10,
+                          }}
+                          className={!isCardVisible('lastDate') ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}
+                        >
+                          {!isCardVisible('lastDate') ? '✕ Hidden' : '✓ Visible'}
+                        </button>
+                      )}
+                      <div className="jd-hero-icon"><IconCalendar /></div>
+                      <div className="jd-hero-content">
+                        <div className="jd-hero-label">Last Date</div>
+                        <div className="jd-hero-value" style={{ color: dateColor }}>
+                          {dates.applicationLastDate ? (
+                            <>
+                              <span>{fmtDate(dates.applicationLastDate)}</span>
+                              {suffix && (
+                                <span style={{
+                                  display: 'inline-block',
+                                  whiteSpace: 'nowrap',
+                                  fontSize: '11px',
+                                  fontWeight: 500,
+                                  opacity: 0.9,
+                                  marginLeft: '4px'
+                                }}>
+                                  {suffix}
+                                </span>
+                              )}
+                            </>
+                          ) : "—"}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
-              {editable && (
-                <button
-                  onClick={() => {
-                    const isHidden = !isSecVisible('overview');
-                    const updated = isHidden
-                      ? hiddenSections.filter((s: string) => s !== 'overview')
-                      : [...hiddenSections, 'overview'];
-                    onUpdate("hiddenSections", updated);
-                  }}
-                  className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${
-                    !isSecVisible('overview')
+            );
+          })()}
+
+          {/* LEDE */}
+          {(job.description || job.shortInfo || editable) && (
+            <div className="jd-lede">
+              <Editable
+                editable={editable}
+                path="description"
+                value={job.description || job.shortInfo}
+                onUpdate={onUpdate}
+                type="textarea"
+              />
+            </div>
+          )}
+
+          {(isSecVisible('overview') || editable) && (
+            <>
+              <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="jd-section-icon"><IconBriefcase /></span>
+                  <span className="jd-section-title">Recruitment Overview</span>
+                </div>
+                {editable && (
+                  <button
+                    onClick={() => {
+                      const isHidden = !isSecVisible('overview');
+                      const updated = isHidden
+                        ? hiddenSections.filter((s: string) => s !== 'overview')
+                        : [...hiddenSections, 'overview'];
+                      onUpdate("hiddenSections", updated);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${!isSecVisible('overview')
                       ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
                       : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
-                  }`}
-                >
-                  {!isSecVisible('overview') ? '✕ Hidden' : '✓ Visible'}
-                </button>
-              )}
-            </div>
-            {isSecVisible('overview') && (
-              <table className="jd-table">
-              <tbody>
-                <tr><td className="label">Organisation</td><td><Editable editable={editable} path="organization" value={job.organization} onUpdate={onUpdate} /></td></tr>
-                <tr>
-                  <td className="label">Advt. No.</td>
-                  <td>
-                    <Editable editable={editable} path="advertisementNumber" value={job.advertisementNumber || "Phase-XIV/2026/Selection Posts"} onUpdate={onUpdate} />
-                  </td>
-                </tr>
-                {(job.department || editable) && (
-                  <tr><td className="label">Department</td><td><Editable editable={editable} path="department" value={job.department} onUpdate={onUpdate} /></td></tr>
+                      }`}
+                  >
+                    {!isSecVisible('overview') ? '✕ Hidden' : '✓ Visible'}
+                  </button>
                 )}
-                <tr><td className="label">Govt. Type</td><td><Editable editable={editable} path="type" value={job.type} onUpdate={onUpdate} /></td></tr>
-                <tr>
-                  <td className="label">Job Location</td>
-                  <td>
-                    <Editable
-                      editable={editable}
-                      path="location"
-                      value={Array.isArray(job.location) ? job.location.join(", ") : (job.location || "All India")}
-                      onUpdate={(path: string, val: string) => {
-                        const arr = val.split(",").map(s => s.trim()).filter(Boolean);
-                        onUpdate(path, arr);
-                      }}
-                    />
-                  </td>
-                </tr>
-                {(dates.notificationType || editable) && (
-                  <tr><td className="label">Notification Type</td><td><Editable editable={editable} path="importantDates.notificationType" value={dates.notificationType} onUpdate={onUpdate} /></td></tr>
-                )}
+              </div>
+              {isSecVisible('overview') && (
+                <table className="jd-table">
+                  <tbody>
+                    <tr><td className="label">Organisation</td><td><Editable editable={editable} path="organization" value={job.organization} onUpdate={onUpdate} /></td></tr>
+                    <tr>
+                      <td className="label">Advt. No.</td>
+                      <td>
+                        <Editable editable={editable} path="advertisementNumber" value={job.advertisementNumber || "Phase-XIV/2026/Selection Posts"} onUpdate={onUpdate} />
+                      </td>
+                    </tr>
+                    {(job.department || editable) && (
+                      <tr><td className="label">Department</td><td><Editable editable={editable} path="department" value={job.department} onUpdate={onUpdate} /></td></tr>
+                    )}
+                    <tr><td className="label">Govt. Type</td><td><Editable editable={editable} path="type" value={job.type} onUpdate={onUpdate} /></td></tr>
+                    <tr>
+                      <td className="label">Job Location</td>
+                      <td>
+                        <Editable
+                          editable={editable}
+                          path="location"
+                          value={Array.isArray(job.location) ? job.location.join(", ") : (job.location || "All India")}
+                          onUpdate={(path: string, val: string) => {
+                            const arr = val.split(",").map(s => s.trim()).filter(Boolean);
+                            onUpdate(path, arr);
+                          }}
+                        />
+                      </td>
+                    </tr>
+                    {(dates.notificationType || editable) && (
+                      <tr><td className="label">Notification Type</td><td><Editable editable={editable} path="importantDates.notificationType" value={dates.notificationType} onUpdate={onUpdate} /></td></tr>
+                    )}
 
-                {/* Salary shown in overview if consistent across posts */}
-                {allSameSalary && (heroSal.payLevel || heroSal.min || heroSal.max) && (
-                  <>
-                    {heroSal.payLevel && <tr><td className="label">Pay Level</td><td className="bold">Level {heroSal.payLevel}</td></tr>}
-                    {(heroSal.min || heroSal.max) && (
+                    {/* Salary shown in overview if consistent across posts */}
+                    {allSameSalary && (heroSal.payLevel || heroSal.min || heroSal.max) && (
+                      <>
+                        {heroSal.payLevel && <tr><td className="label">Pay Level</td><td className="bold">Level {heroSal.payLevel}</td></tr>}
+                        {(heroSal.min || heroSal.max) && (
+                          <tr>
+                            <td className="label">Salary</td>
+                            <td className="bold">
+                              {heroSal.min ? fmtMoney(heroSal.min) : ""}
+                              {heroSal.min && heroSal.max ? " – " : ""}
+                              {heroSal.max ? fmtMoney(heroSal.max) : ""}
+                              {" INR"}
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    )}
+
+                    {/* Eligibility Flags */}
+                    {(job.categoryEligibility?.length > 0 || editable) && (
                       <tr>
-                        <td className="label">Salary</td>
-                        <td className="bold">
-                          {heroSal.min ? fmtMoney(heroSal.min) : ""}
-                          {heroSal.min && heroSal.max ? " – " : ""}
-                          {heroSal.max ? fmtMoney(heroSal.max) : ""}
-                          {" INR"}
+                        <td className="label">Category Eligibility</td>
+                        <td>
+                          <Editable
+                            editable={editable}
+                            path="categoryEligibility"
+                            value={Array.isArray(job.categoryEligibility) ? job.categoryEligibility.join(", ") : (job.categoryEligibility || "")}
+                            onUpdate={(path: string, val: string) => {
+                              const arr = val.split(",").map(s => s.trim()).filter(Boolean);
+                              onUpdate(path, arr);
+                            }}
+                          />
                         </td>
                       </tr>
                     )}
-                  </>
-                )}
+                    <tr>
+                      <td className="label">PwBD Eligible</td>
+                      <td>
+                        {editable ? (
+                          <button onClick={() => {
+                            onFocusPath?.('pwdEligible');
+                            onUpdate('pwdEligible', !job.pwdEligible);
+                          }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.pwdEligible ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+                            {job.pwdEligible ? 'YES' : 'NO'}
+                          </button>
+                        ) : (
+                          job.pwdEligible ? <span style={{ color: "var(--green)", fontWeight: 600 }}>Yes</span> : "No"
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="label">Female Only</td>
+                      <td>
+                        {editable ? (
+                          <button onClick={() => {
+                            onFocusPath?.('femaleOnly');
+                            onUpdate('femaleOnly', !job.femaleOnly);
+                          }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.femaleOnly ? 'bg-crimson/10 text-crimson' : 'bg-gray-100 text-gray-400'}`}>
+                            {job.femaleOnly ? 'YES' : 'NO'}
+                          </button>
+                        ) : (
+                          job.femaleOnly ? <span style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</span> : "No"
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="label">Ex-Serviceman Quota</td>
+                      <td>
+                        {editable ? (
+                          <button onClick={() => {
+                            onFocusPath?.('exServicemanQuota');
+                            onUpdate('exServicemanQuota', !job.exServicemanQuota);
+                          }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.exServicemanQuota ? 'bg-navy/10 text-navy' : 'bg-gray-100 text-gray-400'}`}>
+                            {job.exServicemanQuota ? 'YES' : 'NO'}
+                          </button>
+                        ) : (
+                          job.exServicemanQuota ? <span style={{ fontWeight: 600 }}>Yes</span> : "No"
+                        )}
+                      </td>
+                    </tr>
+                    {(job.eligibleGender?.length > 0 || editable) && (
+                      <tr>
+                        <td className="label">Eligible Gender</td>
+                        <td>
+                          <Editable
+                            editable={editable}
+                            path="eligibleGender"
+                            value={Array.isArray(job.eligibleGender) ? job.eligibleGender.join(", ") : (job.eligibleGender || "All")}
+                            onUpdate={(path: string, val: string) => {
+                              const arr = val.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+                              onUpdate(path, arr);
+                            }}
+                            placeholder="e.g. Male, Female"
+                          />
+                        </td>
+                      </tr>
+                    )}
 
-                {/* Eligibility Flags */}
-                {(job.categoryEligibility?.length > 0 || editable) && (
-                  <tr>
-                    <td className="label">Category Eligibility</td>
-                    <td>
-                      <Editable
-                        editable={editable}
-                        path="categoryEligibility"
-                        value={Array.isArray(job.categoryEligibility) ? job.categoryEligibility.join(", ") : (job.categoryEligibility || "")}
-                        onUpdate={(path: string, val: string) => {
-                          const arr = val.split(",").map(s => s.trim()).filter(Boolean);
-                          onUpdate(path, arr);
-                        }}
-                      />
-                    </td>
-                  </tr>
-                )}
-                <tr>
-                  <td className="label">PwBD Eligible</td>
-                  <td>
-                    {editable ? (
-                      <button onClick={() => {
-                        onFocusPath?.('pwdEligible');
-                        onUpdate('pwdEligible', !job.pwdEligible);
-                      }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.pwdEligible ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                        {job.pwdEligible ? 'YES' : 'NO'}
-                      </button>
-                    ) : (
-                      job.pwdEligible ? <span style={{ color: "var(--green)", fontWeight: 600 }}>Yes</span> : "No"
+                    {/* Links in Overview */}
+                    {dates.officialWebsite && (
+                      <tr>
+                        <td className="label">Official Website</td>
+                        <td>
+                          <a href={dates.officialWebsite} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            {dates.officialWebsite} <IconExternalLink />
+                          </a>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="label">Female Only</td>
-                  <td>
-                    {editable ? (
-                      <button onClick={() => {
-                        onFocusPath?.('femaleOnly');
-                        onUpdate('femaleOnly', !job.femaleOnly);
-                      }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.femaleOnly ? 'bg-crimson/10 text-crimson' : 'bg-gray-100 text-gray-400'}`}>
-                        {job.femaleOnly ? 'YES' : 'NO'}
-                      </button>
-                    ) : (
-                      job.femaleOnly ? <span style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</span> : "No"
+                    {dates.notificationPdfLink && (
+                      <tr>
+                        <td className="label">PDF Notification</td>
+                        <td>
+                          <a href={dates.notificationPdfLink} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            Official PDF <IconExternalLink />
+                          </a>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="label">Ex-Serviceman Quota</td>
-                  <td>
-                    {editable ? (
-                      <button onClick={() => {
-                        onFocusPath?.('exServicemanQuota');
-                        onUpdate('exServicemanQuota', !job.exServicemanQuota);
-                      }} className={`text-[10px] font-bold px-2 py-1 rounded ${job.exServicemanQuota ? 'bg-navy/10 text-navy' : 'bg-gray-100 text-gray-400'}`}>
-                        {job.exServicemanQuota ? 'YES' : 'NO'}
-                      </button>
-                    ) : (
-                      job.exServicemanQuota ? <span style={{ fontWeight: 600 }}>Yes</span> : "No"
-                    )}
-                  </td>
-                </tr>
-                {(job.eligibleGender?.length > 0 || editable) && (
-                  <tr>
-                    <td className="label">Eligible Gender</td>
-                    <td>
-                      <Editable
-                        editable={editable}
-                        path="eligibleGender"
-                        value={Array.isArray(job.eligibleGender) ? job.eligibleGender.join(", ") : (job.eligibleGender || "All")}
-                        onUpdate={(path: string, val: string) => {
-                          const arr = val.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
-                          onUpdate(path, arr);
-                        }}
-                        placeholder="e.g. Male, Female"
-                      />
-                    </td>
-                  </tr>
-                )}
-
-                {/* Links in Overview */}
-                {dates.officialWebsite && (
-                  <tr>
-                    <td className="label">Official Website</td>
-                    <td>
-                      <a href={dates.officialWebsite} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        {dates.officialWebsite} <IconExternalLink />
-                      </a>
-                    </td>
-                  </tr>
-                )}
-                {dates.notificationPdfLink && (
-                  <tr>
-                    <td className="label">PDF Notification</td>
-                    <td>
-                      <a href={dates.notificationPdfLink} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        Official PDF <IconExternalLink />
-                      </a>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
-        </>
-      )}
 
-        {/* FEE */}
-        {(isSecVisible('fee') || editable) && (
-          <>
+          {/* FEE */}
+          {(isSecVisible('fee') || editable) && (
+            <>
+              <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="jd-section-icon"><IconCreditCard /></span>
+                  <span className="jd-section-title">Application Fee</span>
+                </div>
+                {editable && (
+                  <button
+                    onClick={() => {
+                      const isHidden = !isSecVisible('fee');
+                      const updated = isHidden
+                        ? hiddenSections.filter((s: string) => s !== 'fee')
+                        : [...hiddenSections, 'fee'];
+                      onUpdate("hiddenSections", updated);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${!isSecVisible('fee')
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
+                      }`}
+                  >
+                    {!isSecVisible('fee') ? '✕ Hidden' : '✓ Visible'}
+                  </button>
+                )}
+              </div>
+              {isSecVisible('fee') && (
+                <table className="jd-table">
+                  <thead><tr><th>Category</th><th className="center">Fee Amount</th></tr></thead>
+                  <tbody>
+                    {Object.entries(feeMap).map(([amount, cats]) => (
+                      <tr key={amount}>
+                        <td className="label">{cats.join(", ")}</td>
+                        <td className="center bold">{amount === "0" ? "Free / Exempted" : fmtMoney(parseInt(amount))}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          )}
+
+          {/* VACANCIES */}
+          {(isSecVisible('vacancy') || editable) && (
             <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span className="jd-section-icon"><IconCreditCard /></span>
-                <span className="jd-section-title">Application Fee</span>
+                <span className="jd-section-icon"><IconUsers /></span>
+                <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
               </div>
               {editable && (
                 <button
                   onClick={() => {
-                    const isHidden = !isSecVisible('fee');
+                    const isHidden = !isSecVisible('vacancy');
                     const updated = isHidden
-                      ? hiddenSections.filter((s: string) => s !== 'fee')
-                      : [...hiddenSections, 'fee'];
+                      ? hiddenSections.filter((s: string) => s !== 'vacancy')
+                      : [...hiddenSections, 'vacancy'];
                     onUpdate("hiddenSections", updated);
                   }}
-                  className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${
-                    !isSecVisible('fee')
-                      ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
-                  }`}
-                >
-                  {!isSecVisible('fee') ? '✕ Hidden' : '✓ Visible'}
-                </button>
-              )}
-            </div>
-            {isSecVisible('fee') && (
-              <table className="jd-table">
-                <thead><tr><th>Category</th><th className="center">Fee Amount</th></tr></thead>
-                <tbody>
-                  {Object.entries(feeMap).map(([amount, cats]) => (
-                    <tr key={amount}>
-                      <td className="label">{cats.join(", ")}</td>
-                      <td className="center bold">{amount === "0" ? "Free / Exempted" : fmtMoney(parseInt(amount))}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </>
-        )}
-
-        {/* VACANCIES */}
-        {(isSecVisible('vacancy') || editable) && (
-          <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span className="jd-section-icon"><IconUsers /></span>
-              <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
-            </div>
-            {editable && (
-              <button
-                onClick={() => {
-                  const isHidden = !isSecVisible('vacancy');
-                  const updated = isHidden
-                    ? hiddenSections.filter((s: string) => s !== 'vacancy')
-                    : [...hiddenSections, 'vacancy'];
-                  onUpdate("hiddenSections", updated);
-                }}
-                className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${
-                  !isSecVisible('vacancy')
+                  className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${!isSecVisible('vacancy')
                     ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
                     : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
-                }`}
-              >
-                {!isSecVisible('vacancy') ? '✕ Hidden' : '✓ Visible'}
-              </button>
-            )}
-          </div>
-        )}
-
-        {editable && (
-          <div className="mb-4 p-3.5 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col gap-3 text-[11px] md:text-xs">
-            {/* Table Option Toggles */}
-            <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/60 pb-3">
-              <span className="font-bold text-navy/60 uppercase tracking-widest mr-2">Table Options:</span>
-              <button
-                onClick={() => onUpdate("hideVacancyTable", !job.hideVacancyTable)}
-                className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                  job.hideVacancyTable
-                    ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'
-                    : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                }`}
-              >
-                {job.hideVacancyTable ? '✕ Default Table Hidden' : '✓ Default Table Visible'}
-              </button>
-
-              {job.hideVacancyTable && (
-                <button
-                  onClick={() => {
-                    if (job.customVacancyTable) {
-                      if (window.confirm("Remove custom table?")) {
-                        onUpdate("customVacancyTable", undefined);
-                      }
-                    } else {
-                      onUpdate("customVacancyTable", {
-                        headers: ["Post Name", "Total Vacancies", "Qualification Specifics"],
-                        rows: [["General Post", "12", "Graduate"]]
-                      });
-                    }
-                  }}
-                  className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                    job.customVacancyTable
-                      ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                      : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-                  }`}
+                    }`}
                 >
-                  {job.customVacancyTable ? '✕ Remove Custom Table' : '＋ Add Custom Table for Show'}
+                  {!isSecVisible('vacancy') ? '✕ Hidden' : '✓ Visible'}
                 </button>
               )}
             </div>
+          )}
 
-            {/* Toggle Table Columns (Only visible if default table is not hidden) */}
-            {!job.hideVacancyTable && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-bold text-navy/60 uppercase tracking-widest mr-2">Toggle Table Columns:</span>
-                {[
-                  { id: 'total', label: 'Total Vacancy' },
-                  { id: 'category', label: 'Category Vacancy' },
-                  { id: 'age', label: 'Age Limit' },
-                  { id: 'salary', label: 'Salary / Pay Level' },
-                  { id: 'qualification', label: 'Qualification' },
-                ].map(col => {
-                  const isHidden = !isColVisible(col.id);
-                  return (
-                    <button
-                      key={col.id}
-                      onClick={() => {
-                        const updated = isHidden
-                          ? hiddenCols.filter((c: string) => c !== col.id)
-                          : [...hiddenCols, col.id];
-                        onUpdate("hiddenColumns", updated);
-                      }}
-                      className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${
-                        isHidden
+          {editable && (
+            <div className="mb-4 p-3.5 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col gap-3 text-[11px] md:text-xs">
+              {/* Table Option Toggles */}
+              <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/60 pb-3">
+                <span className="font-bold text-navy/60 uppercase tracking-widest mr-2">Table Options:</span>
+                <button
+                  onClick={() => onUpdate("hideVacancyTable", !job.hideVacancyTable)}
+                  className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${job.hideVacancyTable
+                    ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'
+                    : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                    }`}
+                >
+                  {job.hideVacancyTable ? '✕ Default Table Hidden' : '✓ Default Table Visible'}
+                </button>
+
+                {job.hideVacancyTable && (
+                  <button
+                    onClick={() => {
+                      if (job.customVacancyTable) {
+                        if (window.confirm("Remove custom table?")) {
+                          onUpdate("customVacancyTable", undefined);
+                        }
+                      } else {
+                        onUpdate("customVacancyTable", {
+                          headers: ["Post Name", "Total Vacancies", "Qualification Specifics"],
+                          rows: [["General Post", "12", "Graduate"]]
+                        });
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${job.customVacancyTable
+                      ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                      : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                      }`}
+                  >
+                    {job.customVacancyTable ? '✕ Remove Custom Table' : '＋ Add Custom Table for Show'}
+                  </button>
+                )}
+              </div>
+
+              {/* Toggle Table Columns (Only visible if default table is not hidden) */}
+              {!job.hideVacancyTable && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-bold text-navy/60 uppercase tracking-widest mr-2">Toggle Table Columns:</span>
+                  {[
+                    { id: 'total', label: 'Total Vacancy' },
+                    { id: 'category', label: 'Category Vacancy' },
+                    { id: 'age', label: 'Age Limit' },
+                    { id: 'salary', label: 'Salary / Pay Level' },
+                    { id: 'qualification', label: 'Qualification' },
+                  ].map(col => {
+                    const isHidden = !isColVisible(col.id);
+                    return (
+                      <button
+                        key={col.id}
+                        onClick={() => {
+                          const updated = isHidden
+                            ? hiddenCols.filter((c: string) => c !== col.id)
+                            : [...hiddenCols, col.id];
+                          onUpdate("hiddenColumns", updated);
+                        }}
+                        className={`px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer ${isHidden
                           ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'
                           : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                      }`}
-                    >
-                      {col.label} {isHidden ? '✕ Hidden' : '✓ Visible'}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                          }`}
+                      >
+                        {col.label} {isHidden ? '✕ Hidden' : '✓ Visible'}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
-        {isSecVisible('vacancy') && (job.hideVacancyTable ? (
-          job.customVacancyTable ? (
+          {isSecVisible('vacancy') && (job.hideVacancyTable ? (
+            job.customVacancyTable ? (
+              <div className="tbl-scroll">
+                <table className="jd-table">
+                  <thead>
+                    <tr>
+                      {job.customVacancyTable.headers.map((h: string, hIdx: number) => (
+                        <th key={hIdx}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                            <Editable
+                              editable={editable}
+                              value={h}
+                              path={`customVacancyTable.headers.${hIdx}`}
+                              onUpdate={onUpdate}
+                            />
+                            {editable && (
+                              <button
+                                onClick={() => {
+                                  const newHeaders = [...job.customVacancyTable.headers];
+                                  newHeaders.splice(hIdx, 1);
+                                  const newRows = job.customVacancyTable.rows.map((r: string[]) => {
+                                    const nr = [...r];
+                                    nr.splice(hIdx, 1);
+                                    return nr;
+                                  });
+                                  onUpdate("customVacancyTable", { headers: newHeaders, rows: newRows });
+                                }}
+                                style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                                title="Delete Column"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        </th>
+                      ))}
+                      {editable && (
+                        <th className="center" style={{ width: 60 }}>
+                          <button
+                            onClick={() => {
+                              const newHeaders = [...job.customVacancyTable.headers, "New Column"];
+                              const newRows = job.customVacancyTable.rows.map((r: string[]) => [...r, ""]);
+                              onUpdate("customVacancyTable", { headers: newHeaders, rows: newRows });
+                            }}
+                            className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-2 py-0.5 rounded text-[10px] font-bold"
+                            title="Add Column"
+                          >
+                            + Col
+                          </button>
+                        </th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {job.customVacancyTable.rows.map((row: string[], rIdx: number) => (
+                      <tr key={rIdx}>
+                        {row.map((cell: string, cIdx: number) => (
+                          <td key={cIdx}>
+                            <Editable
+                              editable={editable}
+                              value={cell}
+                              path={`customVacancyTable.rows.${rIdx}.${cIdx}`}
+                              onUpdate={onUpdate}
+                            />
+                          </td>
+                        ))}
+                        {editable && (
+                          <td className="center" style={{ verticalAlign: 'middle', border: '1px solid var(--border)' }}>
+                            <button
+                              onClick={() => {
+                                const newRows = [...job.customVacancyTable.rows];
+                                newRows.splice(rIdx, 1);
+                                onUpdate("customVacancyTable.rows", newRows);
+                              }}
+                              className="bg-red-50 text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"
+                              title="Delete Row"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                    {editable && (
+                      <tr>
+                        <td colSpan={job.customVacancyTable.headers.length + (editable ? 1 : 0)} className="center" style={{ padding: '16px', border: '1px solid var(--border)' }}>
+                          <button
+                            onClick={() => {
+                              const emptyRow = Array(job.customVacancyTable.headers.length).fill("");
+                              onUpdate("customVacancyTable.rows", [...job.customVacancyTable.rows, emptyRow]);
+                            }}
+                            className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-5 py-2 rounded-md font-bold text-sm transition-all"
+                          >
+                            + Add Row
+                          </button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-12 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-center">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Vacancy Table Hidden</p>
+              </div>
+            )
+          ) : (
             <div className="tbl-scroll">
               <table className="jd-table">
                 <thead>
                   <tr>
-                    {job.customVacancyTable.headers.map((h: string, hIdx: number) => (
-                      <th key={hIdx}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                          <Editable
-                            editable={editable}
-                            value={h}
-                            path={`customVacancyTable.headers.${hIdx}`}
-                            onUpdate={onUpdate}
-                          />
+                    <th style={{ minWidth: 180 }}>Post / Designation</th>
+                    {isColVisible('total') && (
+                      <th className="center" style={{ width: 80 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <span>Total</span>
                           {editable && (
                             <button
-                              onClick={() => {
-                                const newHeaders = [...job.customVacancyTable.headers];
-                                newHeaders.splice(hIdx, 1);
-                                const newRows = job.customVacancyTable.rows.map((r: string[]) => {
-                                  const nr = [...r];
-                                  nr.splice(hIdx, 1);
-                                  return nr;
-                                });
-                                onUpdate("customVacancyTable", { headers: newHeaders, rows: newRows });
-                              }}
+                              onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'total'])}
                               style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                              title="Delete Column"
+                              title="Hide Column"
                             >
                               ✕
                             </button>
                           )}
                         </div>
                       </th>
-                    ))}
-                    {editable && (
-                      <th className="center" style={{ width: 60 }}>
-                        <button
-                          onClick={() => {
-                            const newHeaders = [...job.customVacancyTable.headers, "New Column"];
-                            const newRows = job.customVacancyTable.rows.map((r: string[]) => [...r, ""]);
-                            onUpdate("customVacancyTable", { headers: newHeaders, rows: newRows });
-                          }}
-                          className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-2 py-0.5 rounded text-[10px] font-bold"
-                          title="Add Column"
-                        >
-                          + Col
-                        </button>
+                    )}
+                    {isColVisible('category') && (
+                      <th className="center" style={{ minWidth: 170 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <span>Category Vacancy</span>
+                          {editable && (
+                            <button
+                              onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'category'])}
+                              style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                              title="Hide Column"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
                       </th>
                     )}
+                    {isColVisible('age') && (
+                      <th className="center" style={{ minWidth: 130 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <span>Age Limit (incl. Relaxation)</span>
+                          {editable && (
+                            <button
+                              onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'age'])}
+                              style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                              title="Hide Column"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColVisible('salary') && (
+                      <th className="center" style={{ minWidth: 120 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <span>Salary / Pay Level</span>
+                          {editable && (
+                            <button
+                              onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'salary'])}
+                              style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                              title="Hide Column"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColVisible('qualification') && (
+                      <th style={{ minWidth: 280 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                          <span>Qualification & Requirements</span>
+                          {editable && (
+                            <button
+                              onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'qualification'])}
+                              style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                              title="Hide Column"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {editable && <th className="center" style={{ width: 60 }}>Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {job.customVacancyTable.rows.map((row: string[], rIdx: number) => (
-                    <tr key={rIdx}>
-                      {row.map((cell: string, cIdx: number) => (
-                        <td key={cIdx}>
+                  {rawPosts.map((p: any, idx: number) => {
+                    const isGeneral = !(job.posts || []).length;
+                    return (
+                      <tr key={idx}>
+                        <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
                           <Editable
                             editable={editable}
-                            value={cell}
-                            path={`customVacancyTable.rows.${rIdx}.${cIdx}`}
+                            value={p.name}
+                            path={isGeneral ? "title" : `posts.${idx}.name`}
                             onUpdate={onUpdate}
                           />
                         </td>
-                      ))}
-                      {editable && (
-                        <td className="center" style={{ verticalAlign: 'middle', border: '1px solid var(--border)' }}>
-                          <button
-                            onClick={() => {
-                              const newRows = [...job.customVacancyTable.rows];
-                              newRows.splice(rIdx, 1);
-                              onUpdate("customVacancyTable.rows", newRows);
-                            }}
-                            className="bg-red-50 text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"
-                            title="Delete Row"
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
+                        {isColVisible('total') && (
+                          <td className="center bold mono" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
+                            <Editable
+                              editable={editable}
+                              value={p.totalVacancy != null ? String(p.totalVacancy) : ""}
+                              path={isGeneral ? "totalVacancy" : `posts.${idx}.totalVacancy`}
+                              onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)}
+                            />
+                          </td>
+                        )}
+                        {isColVisible('category') && <CatVacCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
+                        {isColVisible('age') && <AgeCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
+                        {isColVisible('salary') && <SalaryCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
+                        {isColVisible('qualification') && <QualCell post={p} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
+                        {editable && (
+                          <td className="center" style={{ verticalAlign: "middle", border: "1px solid var(--border)" }}>
+                            <button
+                              onClick={() => {
+                                if (window.confirm("Are you sure you want to delete this post?")) {
+                                  const newPosts = [...rawPosts];
+                                  newPosts.splice(idx, 1);
+                                  onUpdate("posts", newPosts);
+                                }
+                              }}
+                              className="bg-red-50 text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"
+                              title="Delete Post"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                  <tr className="tr-total">
+                    <td>Total (All Posts)</td>
+                    {isColVisible('total') && (
+                      <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
+                        {editable ? (
+                          <Editable
+                            editable={editable}
+                            value={job.totalVacancy != null ? String(job.totalVacancy) : ""}
+                            path="totalVacancy"
+                            onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)}
+                          />
+                        ) : (
+                          job.totalVacancy?.toLocaleString("en-IN") ?? "—"
+                        )}
+                      </td>
+                    )}
+                    {isColVisible('category') && <td />}
+                    {isColVisible('age') && <td />}
+                    {isColVisible('salary') && <td />}
+                    {isColVisible('qualification') && <td />}
+                    {editable && <td />}
+                  </tr>
                   {editable && (
                     <tr>
-                      <td colSpan={job.customVacancyTable.headers.length + (editable ? 1 : 0)} className="center" style={{ padding: '16px', border: '1px solid var(--border)' }}>
+                      <td colSpan={1 + ['total', 'category', 'age', 'salary', 'qualification'].filter(isColVisible).length + (editable ? 1 : 0)} className="center" style={{ padding: "16px", border: "1px solid var(--border)" }}>
                         <button
                           onClick={() => {
-                            const emptyRow = Array(job.customVacancyTable.headers.length).fill("");
-                            onUpdate("customVacancyTable.rows", [...job.customVacancyTable.rows, emptyRow]);
+                            const newPost = {
+                              name: "New Post",
+                              totalVacancy: 0,
+                              ageLimit: { min: null, max: null, asOnDate: null, relaxation: {} },
+                              salary: { payLevel: null, min: null, max: null },
+                              categoryWiseVacancy: { general: null, ews: null, obc: null, sc: null, st: null, pwd: null },
+                              qualification: { courses: [], extraQualificationText: "" },
+                              prerequisite: [],
+                              appearingEligible: false,
+                              appearingConditions: ""
+                            };
+                            onUpdate("posts", [...rawPosts, newPost]);
                           }}
-                          className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-5 py-2 rounded-md font-bold text-sm transition-all"
+                          className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-5 py-2 rounded-md font-bold text-sm transition-all inline-flex items-center gap-2"
                         >
-                          + Add Row
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                          Add New Post
                         </button>
                       </td>
                     </tr>
@@ -1589,481 +1783,287 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
                 </tbody>
               </table>
             </div>
-          ) : (
-            <div className="py-12 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-center">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Vacancy Table Hidden</p>
-            </div>
-          )
-        ) : (
-          <div className="tbl-scroll">
-            <table className="jd-table">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: 180 }}>Post / Designation</th>
-                  {isColVisible('total') && (
-                    <th className="center" style={{ width: 80 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                        <span>Total</span>
-                        {editable && (
-                          <button
-                            onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'total'])}
-                            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                            title="Hide Column"
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </th>
-                  )}
-                  {isColVisible('category') && (
-                    <th className="center" style={{ minWidth: 170 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                        <span>Category Vacancy</span>
-                        {editable && (
-                          <button
-                            onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'category'])}
-                            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                            title="Hide Column"
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </th>
-                  )}
-                  {isColVisible('age') && (
-                    <th className="center" style={{ minWidth: 130 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                        <span>Age Limit (incl. Relaxation)</span>
-                        {editable && (
-                          <button
-                            onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'age'])}
-                            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                            title="Hide Column"
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </th>
-                  )}
-                  {isColVisible('salary') && (
-                    <th className="center" style={{ minWidth: 120 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                        <span>Salary / Pay Level</span>
-                        {editable && (
-                          <button
-                            onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'salary'])}
-                            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                            title="Hide Column"
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </th>
-                  )}
-                  {isColVisible('qualification') && (
-                    <th style={{ minWidth: 280 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-                        <span>Qualification & Requirements</span>
-                        {editable && (
-                          <button
-                            onClick={() => onUpdate("hiddenColumns", [...hiddenCols, 'qualification'])}
-                            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                            title="Hide Column"
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </th>
-                  )}
-                  {editable && <th className="center" style={{ width: 60 }}>Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {rawPosts.map((p: any, idx: number) => {
-                  const isGeneral = !(job.posts || []).length;
-                  return (
-                    <tr key={idx}>
-                      <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
-                        <Editable 
-                          editable={editable} 
-                          value={p.name} 
-                          path={isGeneral ? "title" : `posts.${idx}.name`} 
-                          onUpdate={onUpdate} 
-                        />
-                      </td>
-                      {isColVisible('total') && (
-                        <td className="center bold mono" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
-                          <Editable 
-                            editable={editable} 
-                            value={p.totalVacancy != null ? String(p.totalVacancy) : ""} 
-                            path={isGeneral ? "totalVacancy" : `posts.${idx}.totalVacancy`} 
-                            onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
-                          />
-                        </td>
-                      )}
-                      {isColVisible('category') && <CatVacCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
-                      {isColVisible('age') && <AgeCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
-                      {isColVisible('salary') && <SalaryCell post={p} job={job} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
-                      {isColVisible('qualification') && <QualCell post={p} editable={editable} onUpdate={onUpdate} postIndex={idx} isGeneral={isGeneral} />}
-                      {editable && (
-                        <td className="center" style={{ verticalAlign: "middle", border: "1px solid var(--border)" }}>
-                          <button
-                            onClick={() => {
-                              if (window.confirm("Are you sure you want to delete this post?")) {
-                                const newPosts = [...rawPosts];
-                                newPosts.splice(idx, 1);
-                                onUpdate("posts", newPosts);
-                              }
-                            }}
-                            className="bg-red-50 text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"
-                            title="Delete Post"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-                <tr className="tr-total">
-                  <td>Total (All Posts)</td>
-                  {isColVisible('total') && (
-                    <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                      {editable ? (
-                        <Editable 
-                          editable={editable} 
-                          value={job.totalVacancy != null ? String(job.totalVacancy) : ""} 
-                          path="totalVacancy" 
-                          onUpdate={(path: string, val: string) => onUpdate(path, val ? parseInt(val) : null)} 
-                        />
-                      ) : (
-                        job.totalVacancy?.toLocaleString("en-IN") ?? "—"
-                      )}
-                    </td>
-                  )}
-                  {isColVisible('category') && <td />}
-                  {isColVisible('age') && <td />}
-                  {isColVisible('salary') && <td />}
-                  {isColVisible('qualification') && <td />}
-                  {editable && <td />}
-                </tr>
-                {editable && (
-                  <tr>
-                    <td colSpan={1 + ['total', 'category', 'age', 'salary', 'qualification'].filter(isColVisible).length + (editable ? 1 : 0)} className="center" style={{ padding: "16px", border: "1px solid var(--border)" }}>
+          ))}
+
+          {/* RECRUITMENT PROCEDURES */}
+          {(() => {
+            const getSteps = (primary: any, secondary?: any, tertiary?: any) => {
+              const val = primary || secondary || tertiary;
+              if (!val) return [];
+              if (Array.isArray(val)) return val;
+              if (typeof val === 'string') return val.split(/\n|,|;/).map(s => s.trim()).filter(Boolean);
+              return [];
+            };
+
+            const selSteps = getSteps(job.selectionProcess, (job as any).selection_process, (job as any).selectionStages);
+            const appSteps = getSteps(job.applicationProcess, (job as any).application_process, (job as any).howToApply);
+            const hasProcedures = selSteps.length > 0 || appSteps.length > 0;
+
+            if (!hasProcedures && !editable) return null;
+
+            return (
+              <>
+                {(isSecVisible('procedure') || editable) && hasProcedures && (
+                  <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span className="jd-section-icon"><IconBriefcase /></span>
+                      <span className="jd-section-title">Selection & Apply Process</span>
+                    </div>
+                    {editable && (
                       <button
                         onClick={() => {
-                          const newPost = { 
-                            name: "New Post", 
-                            totalVacancy: 0, 
-                            ageLimit: { min: null, max: null, asOnDate: null, relaxation: {} }, 
-                            salary: { payLevel: null, min: null, max: null }, 
-                            categoryWiseVacancy: { general: null, ews: null, obc: null, sc: null, st: null, pwd: null },
-                            qualification: { courses: [], extraQualificationText: "" },
-                            prerequisite: [],
-                            appearingEligible: false,
-                            appearingConditions: ""
-                          };
-                          onUpdate("posts", [...rawPosts, newPost]);
+                          const isHidden = !isSecVisible('procedure');
+                          const updated = isHidden
+                            ? hiddenSections.filter((s: string) => s !== 'procedure')
+                            : [...hiddenSections, 'procedure'];
+                          onUpdate("hiddenSections", updated);
                         }}
-                        className="bg-navy/10 text-navy hover:bg-navy hover:text-white px-5 py-2 rounded-md font-bold text-sm transition-all inline-flex items-center gap-2"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Add New Post
-                      </button>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        ))}
-
-        {/* RECRUITMENT PROCEDURES */}
-        {(() => {
-          const getSteps = (primary: any, secondary?: any, tertiary?: any) => {
-            const val = primary || secondary || tertiary;
-            if (!val) return [];
-            if (Array.isArray(val)) return val;
-            if (typeof val === 'string') return val.split(/\n|,|;/).map(s => s.trim()).filter(Boolean);
-            return [];
-          };
-
-          const selSteps = getSteps(job.selectionProcess, (job as any).selection_process, (job as any).selectionStages);
-          const appSteps = getSteps(job.applicationProcess, (job as any).application_process, (job as any).howToApply);
-          const hasProcedures = selSteps.length > 0 || appSteps.length > 0;
-
-          if (!hasProcedures && !editable) return null;
-
-          return (
-            <>
-              {(isSecVisible('procedure') || editable) && hasProcedures && (
-                <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span className="jd-section-icon"><IconBriefcase /></span>
-                    <span className="jd-section-title">Selection & Apply Process</span>
-                  </div>
-                  {editable && (
-                    <button
-                      onClick={() => {
-                        const isHidden = !isSecVisible('procedure');
-                        const updated = isHidden
-                          ? hiddenSections.filter((s: string) => s !== 'procedure')
-                          : [...hiddenSections, 'procedure'];
-                        onUpdate("hiddenSections", updated);
-                      }}
-                      className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${
-                        !isSecVisible('procedure')
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${!isSecVisible('procedure')
                           ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
                           : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
-                      }`}
-                    >
-                      {!isSecVisible('procedure') ? '✕ Hidden' : '✓ Visible'}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {isSecVisible('procedure') && (
-                <>
-                  {selSteps.length > 0 && (
-                    <>
-                      <div className="text-[13px] font-bold text-navy uppercase tracking-wider mb-2.5 mt-5 ml-1">Selection Stages</div>
-                      <div className="jd-stages">
-                        {selSteps.map((stage: string, idx: number) => {
-                          const match = stage.match(/^([^(]+)(?:\(([^)]+)\))?/);
-                          const title = match ? match[1].trim() : stage;
-                          const desc = match && match[2] ? match[2].trim() : null;
-                          return (
-                            <React.Fragment key={idx}>
-                              <div className="jd-stage">
-                                <div className="jd-stage-num">{idx + 1}</div>
-                                <div className="jd-stage-content">
-                                  <div className="jd-stage-title">{title}</div>
-                                  {desc && <div className="jd-stage-desc">{desc}</div>}
-                                </div>
-                              </div>
-                              {idx < selSteps.length - 1 && (
-                                <div className="jd-stage-arrow"><IconArrow /></div>
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-
-                  {appSteps.length > 0 && (
-                    <>
-                      <div className="text-[13px] font-bold text-navy uppercase tracking-wider mb-2.5 mt-5 ml-1">How to Apply Steps</div>
-                      <div style={{ padding: "0 4px", fontSize: 14 }}>
-                        {appSteps.map((step: string, idx: number) => (
-                          <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
-                            <div style={{ width: "20px", height: "20px", borderRadius: "4px", background: "var(--paper-alt)", border: "1px solid var(--border)", color: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0, fontWeight: 700 }}>{idx + 1}</div>
-                            <div style={{ color: "var(--ink-light)", lineHeight: "1.5" }}>{step}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          );
-        })()}
-
-        {/* TIMELINE */}
-        {(isSecVisible('timeline') || editable) && (
-          <>
-            <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span className="jd-section-icon"><IconCalendar /></span>
-                <span className="jd-section-title">Timeline / Important Dates</span>
-              </div>
-              {editable && (
-                <button
-                  onClick={() => {
-                    const isHidden = !isSecVisible('timeline');
-                    const updated = isHidden
-                      ? hiddenSections.filter((s: string) => s !== 'timeline')
-                      : [...hiddenSections, 'timeline'];
-                    onUpdate("hiddenSections", updated);
-                  }}
-                  className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${
-                    !isSecVisible('timeline')
-                      ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
-                  }`}
-                >
-                  {!isSecVisible('timeline') ? '✕ Hidden' : '✓ Visible'}
-                </button>
-              )}
-            </div>
-            {isSecVisible('timeline') && (
-              <div className="tbl-scroll">
-                <table className="jd-table jd-timeline-table">
-          <tbody>
-            {timelineRows.map(row => {
-              const val = dates[row.key as keyof typeof dates];
-              // Show all rows as per institutional standard
-              return (
-                <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
-                  <td className="label">{row.label}</td>
-                  <td className={val ? "bold" : "red bold"}>
-                    {editable ? (
-                      <>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ flex: 1 }}>
-                            <Editable
-                              editable={true}
-                              path={`importantDates.${row.key}`}
-                              value={val || ""}
-                              onUpdate={onUpdate}
-                            />
-                          </div>
-                          <button
-                            onClick={() => onUpdate(`importantDates.${row.key}`, undefined)}
-                            style={{
-                              width: '24px',
-                              height: '24px',
-                              borderRadius: '50%',
-                              background: '#fee2e2',
-                              color: '#ef4444',
-                              border: '1px solid #fecaca',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '16px',
-                              cursor: 'pointer',
-                              flexShrink: 0
-                            }}
-                            title="Remove row"
-                          >
-                            ×
-                          </button>
-                        </div>
-                        <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
-                      </>
-                    ) : (
-                      (() => {
-                        const raw = dates[row.key as keyof typeof dates];
-                        if (!raw) return "Not available";
-                        const val = typeof raw === 'string' ? raw.trim() : raw;
-
-                        if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
-                          const href = val.startsWith('www.') ? `https://${val}` : val;
-                          return (
-                            <a href={href} target="_blank" rel="noreferrer" style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
-                              Link
-                            </a>
-                          );
-                        }
-                        const d = new Date(val as string);
-                        if (!isNaN(d.getTime())) return fmtDate(val as string);
-                        return val;
-                      })()
+                          }`}
+                      >
+                        {!isSecVisible('procedure') ? '✕ Hidden' : '✓ Visible'}
+                      </button>
                     )}
-                  </td>
-                </tr>
-              );
-            })}
-            {/* Custom Milestone Addition */}
-            {(dates.customDates || []).map((cd: any, idx: number) => (
-              <tr key={`custom-${idx}`}>
-                <td className="label">
-                  <Editable
-                    editable={editable}
-                    path={`importantDates.customDates.${idx}.label`}
-                    value={cd.label}
-                    onUpdate={onUpdate}
-                  />
-                </td>
-                <td className="bold" style={{ position: 'relative' }}>
-                  {editable ? (
-                    <>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ flex: 1 }}>
-                          <Editable
-                            editable={true}
-                            path={`importantDates.customDates.${idx}.date`}
-                            value={cd.date || ""}
-                            onUpdate={onUpdate}
-                          />
+                  </div>
+                )}
+
+                {isSecVisible('procedure') && (
+                  <>
+                    {selSteps.length > 0 && (
+                      <>
+                        <div className="text-[13px] font-bold text-navy uppercase tracking-wider mb-2.5 mt-5 ml-1">Selection Stages</div>
+                        <div className="jd-stages">
+                          {selSteps.map((stage: string, idx: number) => {
+                            const match = stage.match(/^([^(]+)(?:\(([^)]+)\))?/);
+                            const title = match ? match[1].trim() : stage;
+                            const desc = match && match[2] ? match[2].trim() : null;
+                            return (
+                              <React.Fragment key={idx}>
+                                <div className="jd-stage">
+                                  <div className="jd-stage-num">{idx + 1}</div>
+                                  <div className="jd-stage-content">
+                                    <div className="jd-stage-title">{title}</div>
+                                    {desc && <div className="jd-stage-desc">{desc}</div>}
+                                  </div>
+                                </div>
+                                {idx < selSteps.length - 1 && (
+                                  <div className="jd-stage-arrow"><IconArrow /></div>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
                         </div>
-                        <button
-                          onClick={() => {
-                            const current = [...(dates.customDates || [])];
-                            current.splice(idx, 1);
-                            onUpdate('importantDates.customDates', current);
-                          }}
-                          style={{
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '50%',
-                            background: '#fee2e2',
-                            color: '#ef4444',
-                            border: '1px solid #fecaca',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '16px',
-                            cursor: 'pointer',
-                            flexShrink: 0
-                          }}
-                          title="Remove row"
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
-                    </>
-                  ) : (
-                    (() => {
-                      const val = cd.date;
-                      if (!val) return "—";
-                      if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
-                        const href = val.startsWith('www.') ? `https://${val}` : val;
-                        return (
-                          <a href={href} target="_blank" rel="noreferrer" style={{ color: "var(--blue)", textDecoration: "underline", fontWeight: 600 }}>
-                            Link
-                          </a>
-                        );
-                      }
-                      const d = new Date(val as string);
-                      if (!isNaN(d.getTime())) return fmtDate(val as string);
-                      return val;
-                    })()
-                  )}
-                </td>
-              </tr>
-            ))}
-            {editable && (
-              <tr>
-                <td colSpan={2} style={{ textAlign: 'center', padding: '12px' }}>
+                      </>
+                    )}
+
+                    {appSteps.length > 0 && (
+                      <>
+                        <div className="text-[13px] font-bold text-navy uppercase tracking-wider mb-2.5 mt-5 ml-1">How to Apply Steps</div>
+                        <div style={{ padding: "0 4px", fontSize: 14 }}>
+                          {appSteps.map((step: string, idx: number) => (
+                            <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
+                              <div style={{ width: "20px", height: "20px", borderRadius: "4px", background: "var(--paper-alt)", border: "1px solid var(--border)", color: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0, fontWeight: 700 }}>{idx + 1}</div>
+                              <div style={{ color: "var(--ink-light)", lineHeight: "1.5" }}>{step}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            );
+          })()}
+
+          {/* TIMELINE */}
+          {(isSecVisible('timeline') || editable) && (
+            <>
+              <div className="jd-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="jd-section-icon"><IconCalendar /></span>
+                  <span className="jd-section-title">Timeline / Important Dates</span>
+                </div>
+                {editable && (
                   <button
                     onClick={() => {
-                      const currentCustom = dates.customDates || [];
-                      onUpdate('importantDates.customDates', [...currentCustom, { label: 'New Milestone', date: '' }]);
+                      const isHidden = !isSecVisible('timeline');
+                      const updated = isHidden
+                        ? hiddenSections.filter((s: string) => s !== 'timeline')
+                        : [...hiddenSections, 'timeline'];
+                      onUpdate("hiddenSections", updated);
                     }}
-                    className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-full border border-blue-100"
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${!isSecVisible('timeline')
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500/30'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500/30'
+                      }`}
                   >
-                    + Add New Milestone
+                    {!isSecVisible('timeline') ? '✕ Hidden' : '✓ Visible'}
                   </button>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                )}
               </div>
-            )}
-          </>
-        )}
+              {isSecVisible('timeline') && (
+                <div className="tbl-scroll">
+                  <table className="jd-table jd-timeline-table">
+                    <tbody>
+                      {timelineRows.map(row => {
+                        const val = dates[row.key as keyof typeof dates];
+                        // Show all rows as per institutional standard
+                        return (
+                          <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
+                            <td className="label">{row.label}</td>
+                            <td className={val ? "bold" : "red bold"}>
+                              {editable ? (
+                                <>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{ flex: 1 }}>
+                                      <Editable
+                                        editable={true}
+                                        path={`importantDates.${row.key}`}
+                                        value={val || ""}
+                                        onUpdate={onUpdate}
+                                      />
+                                    </div>
+                                    <button
+                                      onClick={() => onUpdate(`importantDates.${row.key}`, undefined)}
+                                      style={{
+                                        width: '24px',
+                                        height: '24px',
+                                        borderRadius: '50%',
+                                        background: '#fee2e2',
+                                        color: '#ef4444',
+                                        border: '1px solid #fecaca',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '16px',
+                                        cursor: 'pointer',
+                                        flexShrink: 0
+                                      }}
+                                      title="Remove row"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                  <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
+                                </>
+                              ) : (
+                                (() => {
+                                  const raw = dates[row.key as keyof typeof dates];
+                                  if (!raw) return "Not available";
+                                  const val = typeof raw === 'string' ? raw.trim() : raw;
+
+                                  if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
+                                    const href = val.startsWith('www.') ? `https://${val}` : val;
+                                    return (
+                                      <a href={href} target="_blank" rel="noreferrer" style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
+                                        Link
+                                      </a>
+                                    );
+                                  }
+                                  const d = new Date(val as string);
+                                  if (!isNaN(d.getTime())) return fmtDate(val as string);
+                                  return val;
+                                })()
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {/* Custom Milestone Addition */}
+                      {(dates.customDates || []).map((cd: any, idx: number) => (
+                        <tr key={`custom-${idx}`}>
+                          <td className="label">
+                            <Editable
+                              editable={editable}
+                              path={`importantDates.customDates.${idx}.label`}
+                              value={cd.label}
+                              onUpdate={onUpdate}
+                            />
+                          </td>
+                          <td className="bold" style={{ position: 'relative' }}>
+                            {editable ? (
+                              <>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ flex: 1 }}>
+                                    <Editable
+                                      editable={true}
+                                      path={`importantDates.customDates.${idx}.date`}
+                                      value={cd.date || ""}
+                                      onUpdate={onUpdate}
+                                    />
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      const current = [...(dates.customDates || [])];
+                                      current.splice(idx, 1);
+                                      onUpdate('importantDates.customDates', current);
+                                    }}
+                                    style={{
+                                      width: '24px',
+                                      height: '24px',
+                                      borderRadius: '50%',
+                                      background: '#fee2e2',
+                                      color: '#ef4444',
+                                      border: '1px solid #fecaca',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '16px',
+                                      cursor: 'pointer',
+                                      flexShrink: 0
+                                    }}
+                                    title="Remove row"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                                <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
+                              </>
+                            ) : (
+                              (() => {
+                                const val = cd.date;
+                                if (!val) return "—";
+                                if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
+                                  const href = val.startsWith('www.') ? `https://${val}` : val;
+                                  return (
+                                    <a href={href} target="_blank" rel="noreferrer" style={{ color: "var(--blue)", textDecoration: "underline", fontWeight: 600 }}>
+                                      Link
+                                    </a>
+                                  );
+                                }
+                                const d = new Date(val as string);
+                                if (!isNaN(d.getTime())) return fmtDate(val as string);
+                                return val;
+                              })()
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                      {editable && (
+                        <tr>
+                          <td colSpan={2} style={{ textAlign: 'center', padding: '12px' }}>
+                            <button
+                              onClick={() => {
+                                const currentCustom = dates.customDates || [];
+                                onUpdate('importantDates.customDates', [...currentCustom, { label: 'New Milestone', date: '' }]);
+                              }}
+                              className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-full border border-blue-100"
+                            >
+                              + Add New Milestone
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
     </EditableFocusContext.Provider>
   );
 }

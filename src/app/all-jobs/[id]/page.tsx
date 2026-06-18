@@ -297,14 +297,14 @@ const styles = `
   .jd-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 16px;
+    font-size: 22px;
     border: 1px solid var(--border);
   }
   .jd-table th {
     background: #f1f5f9;
     color: var(--navy);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 700;
     text-align: left;
     padding: 10px 12px;
@@ -317,7 +317,7 @@ const styles = `
     border: 1px solid var(--border);
     vertical-align: middle;
     color: var(--ink);
-    font-size: 17px;
+    font-size: 22px;
     word-break: break-word;
     overflow-wrap: break-word;
   }
@@ -992,6 +992,14 @@ function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
           })}
         </div>
 
+        {extra && courses.length > 0 && (
+          <div className="qual-or-sep" style={{ marginTop: '12px' }}>
+            <div className="qual-or-sep-line"></div>
+            <div className="qual-or-sep-badge" style={{ color: '#b45309', background: '#fef3c7', borderColor: '#f59e0b' }}>AND</div>
+            <div className="qual-or-sep-line"></div>
+          </div>
+        )}
+
         {extra && (
           <div className="qual-extra">
             <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
@@ -1269,10 +1277,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 )}
                 {showLastDate && (() => {
                   const lastDateStr = dates.applicationLastDate;
-                  
+
                   let dateColor = '#64748B'; // Default slate gray
                   let suffix = '';
-                  
+
                   if (lastDateStr) {
                     const lastDate = new Date(lastDateStr);
                     if (!isNaN(lastDate.getTime())) {
@@ -1283,7 +1291,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       const now = new Date();
                       const timeDiff = endDateTime.getTime() - now.getTime();
                       const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                      
+
                       if (timeDiff < 0) {
                         dateColor = '#EF4444'; // Red for expired
                         suffix = ' (Expired)';
@@ -1297,7 +1305,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       }
                     }
                   }
-                  
+
                   return (
                     <div className="jd-hero-cell highlight-red">
                       <div className="jd-hero-icon"><IconCalendar /></div>
@@ -1308,7 +1316,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                             <>
                               <span>{fmtDate(dates.applicationLastDate)}</span>
                               {suffix && (
-                                <span style={{ 
+                                <span style={{
                                   display: 'inline-block',
                                   whiteSpace: 'nowrap',
                                   fontSize: '11px',
@@ -1620,114 +1628,114 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </div>
               <div className="tbl-scroll">
                 <table className="jd-table jd-timeline-table">
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                const standardKeys = [
-                  "notificationRelease", "applicationStartDate", "applicationLastDate",
-                  "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate",
-                  "examDate", "resultDate", "interviewDate", "documentVerificationDate",
-                  "notificationType", "officialWebsite", "applyOnline", "applyLink",
-                  "notificationPdfLink", "checkResult"
-                ];
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const standardKeys = [
+                        "notificationRelease", "applicationStartDate", "applicationLastDate",
+                        "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate",
+                        "examDate", "resultDate", "interviewDate", "documentVerificationDate",
+                        "notificationType", "officialWebsite", "applyOnline", "applyLink",
+                        "notificationPdfLink", "checkResult"
+                      ];
 
-                const tableRows: { label: string; key: string; val: any; highlight?: boolean }[] = [];
+                      const tableRows: { label: string; key: string; val: any; highlight?: boolean }[] = [];
 
-                // 1. Standard keys (if present)
-                const standardDefs = [
-                  { label: "Notification Released", key: "notificationRelease" },
-                  { label: "Application Start Date", key: "applicationStartDate" },
-                  { label: "Application Last Date", key: "applicationLastDate", highlight: true },
-                  { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
-                  { label: "Correction Window Last Date", key: "correctionWindowLastDate" },
-                  { label: "Admit Card Released", key: "admitCardDate" },
-                  { label: "Examination Date", key: "examDate", highlight: true },
-                  { label: "Result Announced", key: "resultDate" },
-                  { label: "Interview Date", key: "interviewDate" },
-                  { label: "DV Date", key: "documentVerificationDate" },
-                  { label: "Notification Type", key: "notificationType" },
-                  { label: "Official Website", key: "officialWebsite" },
-                  { label: "Apply Online", key: "applyOnline" },
-                  { label: "Apply Link", key: "applyLink" },
-                  { label: "Notification Pdf Link", key: "notificationPdfLink" },
-                  { label: "Check Result", key: "checkResult" },
-                ];
+                      // 1. Standard keys (if present)
+                      const standardDefs = [
+                        { label: "Notification Released", key: "notificationRelease" },
+                        { label: "Application Start Date", key: "applicationStartDate" },
+                        { label: "Application Last Date", key: "applicationLastDate", highlight: true },
+                        { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
+                        { label: "Correction Window Last Date", key: "correctionWindowLastDate" },
+                        { label: "Admit Card Released", key: "admitCardDate" },
+                        { label: "Examination Date", key: "examDate", highlight: true },
+                        { label: "Result Announced", key: "resultDate" },
+                        { label: "Interview Date", key: "interviewDate" },
+                        { label: "DV Date", key: "documentVerificationDate" },
+                        { label: "Notification Type", key: "notificationType" },
+                        { label: "Official Website", key: "officialWebsite" },
+                        { label: "Apply Online", key: "applyOnline" },
+                        { label: "Apply Link", key: "applyLink" },
+                        { label: "Notification Pdf Link", key: "notificationPdfLink" },
+                        { label: "Check Result", key: "checkResult" },
+                      ];
 
-                standardDefs.forEach(def => {
-                  const val = (dates as any)[def.key];
-                  if (val !== undefined && val !== null) {
-                    tableRows.push({ ...def, val });
-                  }
-                });
+                      standardDefs.forEach(def => {
+                        const val = (dates as any)[def.key];
+                        if (val !== undefined && val !== null) {
+                          tableRows.push({ ...def, val });
+                        }
+                      });
 
-                // 2. Extra keys (Dates and Links)
-                const excludeKeys = [...standardKeys, "customDates", "_id"];
-                Object.keys(dates).forEach(key => {
-                  if (!excludeKeys.includes(key)) {
-                    const prettify = (str: string) => str.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
-                    tableRows.push({ label: prettify(key), key, val: (dates as any)[key] });
-                  }
-                });
+                      // 2. Extra keys (Dates and Links)
+                      const excludeKeys = [...standardKeys, "customDates", "_id"];
+                      Object.keys(dates).forEach(key => {
+                        if (!excludeKeys.includes(key)) {
+                          const prettify = (str: string) => str.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+                          tableRows.push({ label: prettify(key), key, val: (dates as any)[key] });
+                        }
+                      });
 
-                return (
-                  <>
-                    {tableRows.map((row) => (
-                      <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
-                        <td className="label">{row.label}</td>
-                        <td>
-                          {(() => {
-                            const val = typeof row.val === 'string' ? row.val.trim() : row.val;
-                            if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
-                              const href = val.startsWith('www.') ? `https://${val}` : val;
-                              return (
-                                <a href={href} target="_blank" rel="noreferrer"
-                                  style={{ color: "#2563eb", textDecoration: "underline", wordBreak: "break-all", fontWeight: 600 }}>
-                                  Link
-                                </a>
-                              );
-                            }
-                            // Date check: format if it looks like a date, otherwise show as is
-                            const d = new Date(val);
-                            if (val && !isNaN(d.getTime())) {
-                              return <span style={{ fontWeight: 600 }}>{fmtDate(val)}</span>;
-                            }
-                            return val ? <span style={{ fontWeight: 600 }}>{val}</span> : "—";
-                          })()}
-                        </td>
-                      </tr>
-                    ))}
-                    {/* 3. Custom Milestones */}
-                    {((dates as any).customDates || []).map((cd: any, idx: number) => {
-                      const val = cd.date;
-                      const isUrl = typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'));
                       return (
-                        <tr key={`custom-${idx}`}>
-                          <td className="label">{cd.label}</td>
-                          <td>
-                            {isUrl ? (
-                              <a href={val.startsWith('www.') ? `https://${val}` : val} target="_blank" rel="noreferrer"
-                                style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
-                                Link
-                              </a>
-                            ) : (
-                              <span style={{ fontWeight: 600 }}>{val ? fmtDate(val) : "—"}</span>
-                            )}
-                          </td>
-                        </tr>
+                        <>
+                          {tableRows.map((row) => (
+                            <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
+                              <td className="label">{row.label}</td>
+                              <td>
+                                {(() => {
+                                  const val = typeof row.val === 'string' ? row.val.trim() : row.val;
+                                  if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
+                                    const href = val.startsWith('www.') ? `https://${val}` : val;
+                                    return (
+                                      <a href={href} target="_blank" rel="noreferrer"
+                                        style={{ color: "#2563eb", textDecoration: "underline", wordBreak: "break-all", fontWeight: 600 }}>
+                                        Link
+                                      </a>
+                                    );
+                                  }
+                                  // Date check: format if it looks like a date, otherwise show as is
+                                  const d = new Date(val);
+                                  if (val && !isNaN(d.getTime())) {
+                                    return <span style={{ fontWeight: 600 }}>{fmtDate(val)}</span>;
+                                  }
+                                  return val ? <span style={{ fontWeight: 600 }}>{val}</span> : "—";
+                                })()}
+                              </td>
+                            </tr>
+                          ))}
+                          {/* 3. Custom Milestones */}
+                          {((dates as any).customDates || []).map((cd: any, idx: number) => {
+                            const val = cd.date;
+                            const isUrl = typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'));
+                            return (
+                              <tr key={`custom-${idx}`}>
+                                <td className="label">{cd.label}</td>
+                                <td>
+                                  {isUrl ? (
+                                    <a href={val.startsWith('www.') ? `https://${val}` : val} target="_blank" rel="noreferrer"
+                                      style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
+                                      Link
+                                    </a>
+                                  ) : (
+                                    <span style={{ fontWeight: 600 }}>{val ? fmtDate(val) : "—"}</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </>
                       );
-                    })}
-                  </>
-                );
-              })()}
-            </tbody>
-          </table>
-          </div>
-          </>
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
 
           {/* ── APPLY CTA ── */}

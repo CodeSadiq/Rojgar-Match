@@ -114,13 +114,8 @@ export default function ForYouPage() {
             prerequisite: post.prerequisite || [],
             "qualification.extraQualificationText": post.qualification?.extraQualificationText || "",
             extraQualificationText: post.qualification?.extraQualificationText || "",
-            qualification: {
-              course: Array.isArray(post.qualification?.course)
-                ? post.qualification.course
-                : (post.qualification?.course ? [post.qualification.course] : []),
-              branch: post.qualification?.branch || [],
-              extraQualificationText: post.qualification?.extraQualificationText || ""
-            }
+            qualification: post.qualification || {},
+            educationRequirementForMatch: post.educationRequirementForMatch || []
           }))
       );
 

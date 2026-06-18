@@ -186,12 +186,12 @@ function findClosingBrace(json: string, start: number): number {
     pos++;
   }
   if (pos === json.length) return json.length;
-  
+
   let depth = 1;
   let inString = false;
   let escape = false;
   pos++;
-  
+
   while (pos < json.length) {
     const char = json[pos];
     if (escape) {
@@ -225,7 +225,7 @@ function skipJsonValue(json: string, start: number): number {
   let pos = start;
   while (pos < json.length && /\s/.test(json[pos])) pos++;
   if (pos === json.length) return pos;
-  
+
   const char = json[pos];
   if (char === '"') {
     let inString = true;
@@ -269,26 +269,26 @@ function findPathIndex(json: string, path: string): number {
   try {
     const parts = path.split('.');
     let currentIndex = 0;
-    
+
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       const isIndex = /^\d+$/.test(part);
-      
+
       if (isIndex) {
         const targetIdx = parseInt(part, 10);
         const arrayStart = json.indexOf('[', currentIndex);
         if (arrayStart === -1) return currentIndex;
-        
+
         let pos = arrayStart + 1;
         let itemCount = 0;
-        
+
         while (pos < json.length && itemCount < targetIdx) {
           while (pos < json.length && /\s/.test(json[pos])) pos++;
           if (json[pos] === ']') break;
-          
+
           pos = skipJsonValue(json, pos);
           itemCount++;
-          
+
           while (pos < json.length && /\s/.test(json[pos])) pos++;
           if (json[pos] === ',') {
             pos++;
@@ -336,6 +336,18 @@ function EditorContent() {
   const [success, setSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(!!jobId);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyJson = async () => {
+    if (!jsonInput) return;
+    try {
+      await navigator.clipboard.writeText(jsonInput);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
 
   const [existingJobs, setExistingJobs] = useState<any[]>([]);
   const isInternalUpdate = React.useRef(false);
@@ -604,6 +616,13 @@ function EditorContent() {
           className="relative bg-gray-50 border-gray-100 flex flex-col transition-all duration-500 ease-in-out border-b lg:border-b-0 lg:border-r-[6px] overflow-hidden w-full lg:w-[30%] opacity-100"
         >
           <div className="absolute top-2 left-4 text-[8px] font-black text-navy/20 uppercase tracking-widest z-10 pointer-events-none whitespace-nowrap">JSON Source</div>
+          <button
+            onClick={handleCopyJson}
+            disabled={!jsonInput}
+            className="absolute top-2 right-4 text-[8px] font-black text-navy/40 hover:text-navy disabled:opacity-30 disabled:pointer-events-none uppercase tracking-widest z-20 bg-white hover:bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 shadow-sm transition-all active:scale-95 cursor-pointer"
+          >
+            {copied ? '✓ Copied' : 'Copy'}
+          </button>
           <div className="flex-1 w-full min-w-[300px]">
             <textarea
               ref={textareaRef}

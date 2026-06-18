@@ -52,10 +52,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "ITI",
     label: "ITI Certificate",
     branches: [
-      { value: "Cable Jointer", label: "Cable Jointer" },
-      { value: "Sanitary Inspector", label: "Sanitary Inspector" },
-      { value: "Hospital Management", label: "Hospital Management" },
-      { value: "Dental Technology", label: "Dental Technology" },
       {
         value: "ECE",
         label: "ECE"
@@ -315,8 +311,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "Diploma",
     label: "Diploma / Polytechnic",
     branches: [
-      { value: "Special Education", label: "Special Education" },
-      { value: "Elementary Education", label: "Elementary Education" },
       {
         value: "Electronics",
         label: "Electronics"
@@ -623,7 +617,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "B.Ed",
     label: "B.Ed (Education)",
     branches: [
-      { value: "Elementary Education", label: "Elementary Education" },
       {
         value: "Education",
         label: "Education (General)"
@@ -926,9 +919,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "B.Tech",
     label: "B.Tech / BE (Engineering)",
     branches: [
-      { value: "Electronic Instrumentation and Control", label: "Electronic Instrumentation and Control" },
-      { value: "Telecommunications and Instrumentation", label: "Telecommunications and Instrumentation" },
-      { value: "Electrical and Electronics", label: "Electrical and Electronics" },
       {
         value: "Electronics",
         label: "Electronics"
@@ -1092,7 +1082,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "B.Sc",
     label: "B.Sc (Science)",
     branches: [
-      { value: "Information Technology", label: "Information Technology" },
       {
         value: "Home Science",
         label: "Home Science"
@@ -1929,10 +1918,6 @@ export const QUAL_TREE: QualNode[] = [
         label: "Physical Education (MA)"
       },
       {
-        value: "Development Studies",
-        label: "Development Studies"
-      },
-      {
         value: "Rural Development",
         label: "Rural Development"
       },
@@ -2222,7 +2207,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "M.Com",
     label: "M.Com (Commerce PG)",
     branches: [
-      { value: "Commerce", label: "Commerce" },
       {
         value: "Accounting",
         label: "Accounting & Finance"
@@ -2262,8 +2246,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "M.Sc",
     label: "M.Sc (Science PG)",
     branches: [
-      { value: "Information Technology", label: "Information Technology" },
-      { value: "Mathematical Statistics", label: "Mathematical Statistics" },
       {
         value: "Physics",
         label: "Physics"
@@ -2454,10 +2436,6 @@ export const QUAL_TREE: QualNode[] = [
     name: "M.Tech",
     label: "M.Tech / ME (Engineering PG)",
     branches: [
-      { value: "Electronics and Instrumentation", label: "Electronics and Instrumentation" },
-      { value: "Electronics and Telecommunication", label: "Electronics and Telecommunication" },
-      { value: "Electrical and Electronics", label: "Electrical and Electronics" },
-      { value: "Electronics and Communication", label: "Electronics and Communication" },
       {
         value: "CSE",
         label: "Computer Science & Engineering"

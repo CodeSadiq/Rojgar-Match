@@ -11,7 +11,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
     // 1. Fetch all registered users who have a physical profile
     const users = await User.find({ 
       profile: { $exists: true },
-      email: { $exists: true } 
+      email: { $ne: null, $ne: "", $exists: true } 
     }).lean();
 
     if (!users || users.length === 0) {
@@ -61,35 +61,36 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
         const jobUrl = `https://rojgar-match.vercel.app/all-jobs/${newJob.id}`;
 
         const mailOptions = {
-          from: `"RojgarMatch Alerts" <${process.env.SMTP_USER}>`,
+          from: `"RojgarMatch" <${process.env.SMTP_USER}>`,
           to: user.email,
-          subject: `New Recruitment Opportunity for you`,
+          subject: `[RojgarMatch] New Match: ${newJob.title}`,
+          text: `Hello ${user.fullName},\n\nA new recruitment matching your profile has been posted.\n\nJob: ${newJob.title}\nOrganization: ${newJob.organization || 'National Registry'}\nLast Date: ${newJob.importantDates?.applicationLastDate || "Details Awaited"}\n\nView details: ${jobUrl}\n\n---\nTo unsubscribe from these alerts, reply "UNSUBSCRIBE" or update your profile settings.\nNational Recruitment Registry, RojgarMatch Office`,
           html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e1e4e8; border-radius: 12px; overflow: hidden;">
-              <div style="background-color: #0D244D; color: white; padding: 24px; text-align: center;">
-                <h1 style="margin: 0; font-size: 20px;">Job Match Notification</h1>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 550px; margin: 0 auto; color: #1f2328; line-height: 1.5; font-size: 14px;">
+              <p>Hello <strong>${user.fullName}</strong>,</p>
+              <p>We found a new job match matching your qualification profile: (${match.matchedOn}).</p>
+              
+              <div style="margin: 20px 0; padding: 15px; border-left: 3px solid #0D244D; background-color: #f6f8fa;">
+                <strong style="font-size: 16px; color: #0D244D;">${newJob.title}</strong><br />
+                <span style="color: #57606a;">${newJob.organization || 'National Registry'}</span><br />
+                <span style="color: #cf222e; font-size: 13px;">Last Date: ${newJob.importantDates?.applicationLastDate || "Details Awaited"}</span>
               </div>
-              <div style="padding: 30px;">
-                <p style="font-size: 16px; color: #344163;">Hello <strong>${user.fullName}</strong>,</p>
-                <p style="font-size: 15px; color: #586069; line-height: 1.6;">
-                  We've identified a new government recruitment that matches your qualifications (${match.matchedOn}).
-                </p>
-                
-                <div style="background-color: #f6f8fa; border-radius: 8px; padding: 20px; margin: 24px 0; border-left: 4px solid #0D244D;">
-                  <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #0D244D;">${newJob.title}</h2>
-                  <p style="margin: 0 0 5px 0; font-size: 14px; color: #586069;">Organization: ${newJob.organization || 'National Registry'}</p>
-                  <p style="margin: 0; font-size: 14px; color: #d93025; font-weight: bold;">Last Date: ${newJob.importantDates?.applicationLastDate || "Details Awaited"}</p>
-                </div>
-
-                <div style="text-align: center; margin: 30px 0;">
-                  <a href="${jobUrl}" style="background-color: #0D244D; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Details & Apply</a>
-                </div>
-                
-                <hr style="border: 0; border-top: 1px solid #e1e4e8; margin: 30px 0;" />
-                <p style="font-size: 12px; color: #959da5; text-align: center;">You are receiving this because your qualification profile is active on RojgarMatch.</p>
-              </div>
+              
+              <p>You can view the full details and apply at the following link:<br />
+              <a href="${jobUrl}" style="color: #0969da; text-decoration: underline;">${jobUrl}</a></p>
+              
+              <hr style="border: 0; border-top: 1px solid #d0d7de; margin: 24px 0;" />
+              <p style="font-size: 12px; color: #57606a;">
+                You are receiving this because your profile is registered on RojgarMatch.<br />
+                To unsubscribe, reply to this email with "UNSUBSCRIBE".
+              </p>
             </div>
           `,
+          headers: {
+            'List-Unsubscribe': `<mailto:${process.env.SMTP_USER}?subject=unsubscribe>`,
+            'Precedence': 'list',
+            'X-Auto-Response-Suppress': 'OOF, AutoReply',
+          }
         };
 
         try {

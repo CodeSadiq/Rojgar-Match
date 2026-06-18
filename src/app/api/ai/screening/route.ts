@@ -26,23 +26,24 @@ export async function POST(req: Request) {
 
       STRICT RULES:
       1. COMPREHENSIVE SCAN: You MUST thoroughly scan and read ALL posts and details provided in the MATCHED POST DETAILS list. Analyze every single post's qualifications, prerequisites, and extra qualification text completely without missing or skipping any details.
-      2. SOURCE-LOCKED: ONLY use text found in "prerequisite" and "qualification.extraQualificationText". 
+      2. SOURCE-LOCKED: ONLY use text and requirements found in "prerequisite", "qualification.extraQualificationText", "qualification", and "educationRequirementForMatch".
       3. NO INFERENCE: Do NOT use the job titles/designations to guess or infer requirements from your internal knowledge. If a requirement is not explicitly written in the source fields, it does not exist.
-      4. IGNORE GENERIC TEXT: Ignore sentences that are just document references (e.g., "As per SSB Notification", "According to advertisement", "See website for details", "As per Recruitment 2026 Notification"). 
+      4. IGNORE GENERIC TEXT: Ignore sentences that are just document references (e.g., "As per SSB Notification", "According to advertisement", "See website for details", "As per Recruitment 2026 Notification").
       5. NULL CASE: If you find no academic gaps, specialized certifications, physical standards, or experience gaps to check (e.g. because the user's qualifications already match all criteria or the source fields are empty), you MUST generate ZERO questions.
-      6. EXCLUSION RULE: Only skip requirements that are EXACTLY and EXPLICITLY matched in the USER PROFILE "qualifications" array. 
-      7. GAP ANALYSIS: If a post requires a specific degree, diploma, or certificate (e.g., B.Ed, D.El.Ed, BTC, ITI) and the user has not listed that EXACT qualification in their profile, you MUST generate a question for it. 
-      8. SUBJECT/BRANCH CHECK: If the extra qualification text or prerequisites specify a particular subject, stream, branch, or coursework (e.g. Statistics, Physics, Mathematics at 12th standard, etc.) that the candidate must have studied, and that exact subject/stream is NOT listed in the candidate's profile qualifications branch field, you MUST generate a question for it.
-      9. EXTRA CONDITIONS & MARKS CHECK: Even if the candidate's primary degree (course and branch) matches the post's general qualification requirements, if the "prerequisite" or "extraQualificationText" contains specific conditions like minimum marks/percentages (e.g., "60% marks"), specific subjects at school/other levels (e.g., "Mathematics at 12th standard"), or specific subjects not explicitly defined as the degree branch (e.g., "Statistics as one of the subjects"), you MUST generate a question for them unless the candidate's profile qualifications explicitly specify those exact details (including the minimum marks and the specific school/degree level subjects).
-      10. AVOID DUPLICATES: Do NOT generate questions for requirements already mentioned in USER PROFILE, already answered in "screeningAnswers", or ALREADY ASKED in "existingQuestions".
-      11. PHASED SCREENING: Generate a MAXIMUM of 5 questions. Focus on:
+      6. EXCLUSION RULE: Only skip requirements that are EXACTLY and EXPLICITLY matched in the USER PROFILE "qualifications" array.
+      7. NO BASIC COURSE OR BRANCH QUESTIONS: Do NOT generate screening questions asking if the user has a basic degree, course, or branch (e.g., B.Tech, BCA, B.Sc, Graduation, etc.) that is part of the core educational requirements. These basic courses are already matched by the backend parser.
+      8. HANDLE ALTERNATIVE 'OR' QUALIFICATIONS: If a post offers multiple alternative paths/qualifications (e.g., 'Graduation with PGDCA OR B.Tech in CS/IT OR BCA'), and the user already possesses AT LEAST ONE of these alternative degrees in their profile, DO NOT generate questions asking if they have the other alternative degrees (e.g., do not ask if they have PGDCA if they already have BCA/B.Tech). They only need to satisfy one path.
+      9. SUBJECT/BRANCH CHECK: If the extra qualification text or prerequisites specify a particular subject, stream, branch, or coursework (e.g. Statistics, Physics, Mathematics at 12th standard, etc.) that the candidate must have studied, and that exact subject/stream is NOT listed in the candidate's profile qualifications branch field, you MUST generate a question for it.
+      10. EXTRA CONDITIONS & MARKS CHECK: Even if the candidate's primary degree (course and branch) matches the post's general qualification requirements, if the "prerequisite" or "extraQualificationText" contains specific conditions like minimum marks/percentages (e.g., "60% marks"), specific subjects at school/other levels (e.g., "Mathematics at 12th standard"), or specific subjects not explicitly defined as the degree branch (e.g., "Statistics as one of the subjects"), you MUST generate a question for them unless the candidate's profile qualifications explicitly specify those exact details (including the minimum marks and the specific school/degree level subjects).
+      11. AVOID DUPLICATES: Do NOT generate questions for requirements already mentioned in USER PROFILE, already answered in "screeningAnswers", or ALREADY ASKED in "existingQuestions".
+      12. PHASED SCREENING: Generate a MAXIMUM of 5 questions. Focus on:
          a) Major academic gaps (e.g., if B.Ed is required but missing from profile).
          b) Specialized certifications (CCC, NCC, O-Level).
          c) Physical standards and work experience.
-      12. Generate ONE separate question for EACH distinct specialized requirement.
-      13. Do NOT merge or combine different requirements into a single question.
-      14. Return a JSON array of objects with: "id", "text", "category", and "impactedPostNames".
-      15. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
+      13. Generate ONE separate question for EACH distinct specialized requirement.
+      14. Do NOT merge or combine different requirements into a single question.
+      15. Return a JSON array of objects with: "id", "text", "category", and "impactedPostNames".
+      16. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
     `;
 
     // Calling OpenRouter API with a cost-effective & fast model

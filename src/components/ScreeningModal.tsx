@@ -222,7 +222,7 @@ export default function ScreeningModal({
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain modal-scroll-container">
+          <div className="flex-1 overflow-y-auto overscroll-contain modal-scroll-container bg-[#F8FAFC]">
             {isUploading || (isLoading && questions.length === 0) ? (
               <div className="py-20 flex flex-col items-center justify-center space-y-5 text-center px-8">
                 <div className="w-12 h-12 border-4 border-navy/10 border-t-navy rounded-full animate-spin" />
@@ -328,7 +328,7 @@ export default function ScreeningModal({
                 </div>
               </div>
             ) : (
-              <div className="px-4 md:px-8 py-3 md:py-6 space-y-2 md:space-y-3">
+              <div className="px-4 md:px-8 py-5 md:py-8 space-y-4 md:space-y-5">
                 {questions.length === 0 && !isLoading ? (
                   <div className="py-20 flex flex-col items-center justify-center space-y-4 text-center px-8">
                     <div className="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-2">
@@ -342,7 +342,7 @@ export default function ScreeningModal({
                 ) : (
                   <>
                     <div ref={topRef} />
-
+ 
                     {questions.map((q, idx) => {
                       const currentAnswer = answers[q.id];
                       const isAnswered = currentAnswer !== undefined;
@@ -352,25 +352,25 @@ export default function ScreeningModal({
                           key={q.id}
                           id={`q-container-${q.id}`}
                           className={`flex flex-col gap-4 p-5 md:p-6 rounded-2xl border transition-all duration-300 ${isInfo
-                            ? 'bg-green-50/20 border-green-100 shadow-sm'
+                            ? 'bg-green-50 border-green-200 shadow-sm'
                             : isAnswered
-                              ? 'bg-slate-50/50 border-slate-100 opacity-80'
-                              : 'bg-white border-slate-200/80 shadow-sm hover:border-slate-300 hover:shadow-md'
+                              ? 'bg-slate-100/60 border-slate-200 opacity-75 shadow-sm'
+                              : 'bg-white border-slate-300 border-[1.5px] shadow-[0_4px_16px_rgba(15,23,42,0.08)] hover:border-navy/30 hover:shadow-[0_8px_24px_rgba(15,23,42,0.12)]'
                             } ${idx > 0 ? 'mt-3' : ''}`}
                         >
                           <div className="flex flex-col">
                             {isInfo ? (
-                              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-green-600 uppercase tracking-widest mb-1.5">
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-green-600 uppercase tracking-widest mb-1.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                                 Requirement Verified
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-navy/40 uppercase tracking-widest mb-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-navy/35" />
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-blue-600 uppercase tracking-widest mb-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                 Question {idx + 1}
                               </span>
                             )}
-                            <p className="text-[14px] md:text-[16px] font-semibold text-[#1e293b] leading-relaxed">
+                            <p className="text-[15px] md:text-[17px] font-extrabold text-slate-900 leading-relaxed">
                               {q.text}
                             </p>
                           </div>

@@ -102,6 +102,7 @@ function AdminPageContent() {
   const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
 
+
   const fetchBulletins = async () => {
     const data = await getRegistryData(true);
     setDynamicRegistry(data);
@@ -269,6 +270,12 @@ function AdminPageContent() {
           </div>
 
           <div className="flex gap-3">
+            <Link
+              href="/admin/users"
+              className="px-6 py-2.5 bg-navy text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all flex items-center gap-2 shadow-md no-underline"
+            >
+              📊 Analyse Users
+            </Link>
             <Link
               href="/admin/registry"
               className="px-6 py-2.5 bg-white border border-gray-200 text-navy text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all no-underline flex items-center gap-2 shadow-sm"
