@@ -11,6 +11,7 @@ import { getCachedData, setCachedData } from "@/lib/cache";
 import ZoomControl from "@/components/ZoomControl";
 import ForceScrollTop from "@/components/ForceScrollTop";
 import JobMatchHighlighter from "@/components/JobMatchHighlighter";
+import { getPostCode } from "@/lib/matching";
 
 export const viewport = {
   width: 'device-width',
@@ -1497,7 +1498,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     </thead>
                     <tbody>
                       {rawPosts.map((p: any, idx: number) => (
-                        <tr key={idx} data-post-name={p.name}>
+                        <tr key={idx} data-post-name={p.name} data-post-code={getPostCode(job.id || job._id || '', p.name)}>
                           {/* Post name */}
                           <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>

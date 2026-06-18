@@ -7,7 +7,7 @@ import JobDetailModal from '@/components/JobDetailModal';
 import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import { getEligibleJobs, CandidateProfile, getPostCode } from '@/lib/matching';
 import { getTimeAgo, fmtDate } from '@/lib/helpers';
 import { CardSkeleton } from '@/components/LoadingState';
 import { getCachedJobs, setCachedJobs, getCachedRegistry, setCachedRegistry } from '@/lib/store';
@@ -272,6 +272,7 @@ export default function Home() {
           })
           .map((post: any) => ({
             name: post.name,
+            code: getPostCode(job.id || job._id || '', post.name),
             jobTitle: job.title,
             prerequisite: post.prerequisite || [],
             "qualification.extraQualificationText": post.qualification?.extraQualificationText || "",
@@ -385,10 +386,12 @@ export default function Home() {
     if (!userProfile) return;
     setIsScreeningLoading(true);
     try {
-      const allMatchedPosts = recommendedJobs.flatMap(job =>
-        job.matchedPosts.map((post: any) => ({
+      const baseMatched = getEligibleJobs(userProfile, dbJobs);
+      const allMatchedPosts = baseMatched.flatMap(m =>
+        m.matchedPosts.map((post: any) => ({
           name: post.name,
-          jobTitle: job.title,
+          code: getPostCode(m.job.id || m.job._id || '', post.name),
+          jobTitle: m.job.title,
           prerequisite: post.prerequisite,
           qualification: post.qualification,
           course: post.course
@@ -404,11 +407,12 @@ export default function Home() {
       if (!res.ok) throw new Error('Filter failed');
       const data = await res.json();
 
-      if (data.blockedPostNames) {
+      if (data.blockedPostCodes || data.blockedPostNames) {
         const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
         const updatedProfile = {
           ...existingProfile,
-          blockedPostNames: data.blockedPostNames
+          blockedPostCodes: data.blockedPostCodes || [],
+          blockedPostNames: data.blockedPostNames || []
         };
 
         setUserProfile(updatedProfile);
@@ -443,7 +447,8 @@ export default function Home() {
         ...existingProfile,
         screeningQuestions: [],
         screeningAnswers: {},
-        blockedPostNames: []
+        blockedPostNames: [],
+        blockedPostCodes: []
       };
 
       setUserProfile(updatedProfile);
@@ -472,15 +477,18 @@ export default function Home() {
     // 🛡️ STAGE 2: AI Soft Filter (Screening)
     filtered = filtered.map(job => {
       const activePosts = job.matchedPosts.filter((post: any) => {
+        const postCode = getPostCode(job.id || job._id || '', post.name);
         const isBlockedByQuestion = screeningQuestions.some((q: any) => {
           const isNo = screeningAnswers[q.id] === false;
           if (!isNo) return false;
+          const postCodes = q.impactedPostCodes || [];
           const postNames = q.impactedPostNames || [];
-          return postNames.some((name: string) => 
+          return postCodes.includes(postCode) || postNames.some((name: string) =>
             name.toLowerCase().trim() === post.name?.toLowerCase().trim()
           );
         });
-        const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
+        const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) || 
+          (userProfile.blockedPostNames || []).includes(post.name);
         return !isBlockedByQuestion && !isBlockedByText;
       });
       return { ...job, matchedPosts: activePosts };
@@ -612,7 +620,9 @@ export default function Home() {
     return matchesSearch && matchesType;
   });
 
-  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || 
+    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || 
+    (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
 
 
   return (
@@ -793,7 +803,7 @@ export default function Home() {
                       onClearAll={handleClearScreening}
                       onGenerateQuestions={runAIScreening}
                       onFilterByText={handleFilterByText}
-                      hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
+                      hasTextFilter={(userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0)}
                       hasMoreToScreen={hasMoreToScreen}
                     />
                     {isLoading ? (

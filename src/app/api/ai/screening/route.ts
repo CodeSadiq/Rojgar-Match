@@ -42,7 +42,8 @@ export async function POST(req: Request) {
          c) Physical standards and work experience.
       13. Generate ONE separate question for EACH distinct specialized requirement.
       14. Do NOT merge or combine different requirements into a single question.
-      15. Return a JSON array of objects with: "id", "text", "category", and "impactedPostNames".
+      15. Return a JSON array of objects with: "id", "text", "category", and "impactedPostCodes".
+          The "impactedPostCodes" array MUST contain the exact string values from the "code" field of the MATCHED POST DETAILS list.
       16. RETURN ONLY THE JSON ARRAY. No explanation, no markdown.
     `;
 

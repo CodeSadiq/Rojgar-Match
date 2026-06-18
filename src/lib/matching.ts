@@ -18,6 +18,7 @@ export interface CandidateProfile {
   screeningQuestions?: any[];
   screenedJobIds?: string;
   blockedPostNames?: string[];
+  blockedPostCodes?: string[];
 }
 
 export interface MatchedJob {
@@ -153,4 +154,16 @@ function evaluatePost(qEntry: QualificationEntry, post: Post): boolean {
   const isBranchMatch = jobBranches.length === 0 || jobBranches.includes(cBranch);
 
   return isCourseMatch && isBranchMatch;
+}
+
+export function getPostCode(jobId: string, postName: string): string {
+  const cleanId = String(jobId || '');
+  const cleanName = String(postName || '').trim().toLowerCase();
+  const str = `${cleanId}_${cleanName}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const code = Math.abs(hash % 900000) + 100000;
+  return code.toString();
 }

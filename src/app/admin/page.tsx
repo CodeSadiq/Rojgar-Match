@@ -271,6 +271,12 @@ function AdminPageContent() {
 
           <div className="flex gap-3">
             <Link
+              href="/admin/limits"
+              className="px-6 py-2.5 bg-white border border-gray-200 text-navy text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all no-underline flex items-center gap-2 shadow-sm"
+            >
+              ⚙️ System Limits
+            </Link>
+            <Link
               href="/admin/users"
               className="px-6 py-2.5 bg-navy text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all flex items-center gap-2 shadow-md no-underline"
             >

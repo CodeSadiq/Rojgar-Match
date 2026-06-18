@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       6. Be lenient otherwise. Only block if there is a clear mismatch.
       
       OUTPUT FORMAT:
-      Return a JSON object with a single key "blockedPostNames" which is an array of names of the posts the user is definitely NOT eligible for.
+      Return a JSON object with a single key "blockedPostCodes" which is an array of string codes of the posts (from the "code" field of the MATCHED POSTS list) the user is definitely NOT eligible for.
       
       RETURN ONLY THE JSON.
     `;

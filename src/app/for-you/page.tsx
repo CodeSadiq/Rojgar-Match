@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import { getEligibleJobs, CandidateProfile, getPostCode } from '@/lib/matching';
 import Navbar from '@/components/Navbar';
 import RecruitmentCard from '@/components/RecruitmentCard';
 import BackButton from '@/components/BackButton';
@@ -65,22 +65,25 @@ export default function ForYouPage() {
         let finalJobs = matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn }));
 
         // 🛡️ AI Screening Filter
-        if ((profile.screeningAnswers && Object.keys(profile.screeningAnswers).length > 0) || (profile.blockedPostNames && profile.blockedPostNames.length > 0)) {
+        if ((profile.screeningAnswers && Object.keys(profile.screeningAnswers).length > 0) || (profile.blockedPostCodes && profile.blockedPostCodes.length > 0) || (profile.blockedPostNames && profile.blockedPostNames.length > 0)) {
           const answers = profile.screeningAnswers || {};
           const questions = profile.screeningQuestions || [];
+          const blockedCodes = profile.blockedPostCodes || [];
           const blockedPosts = profile.blockedPostNames || [];
 
           finalJobs = finalJobs.map(job => {
             const activePosts = (job as any).matchedPosts.filter((post: any) => {
+              const postCode = getPostCode(job.id || job._id || '', post.name);
               const isBlockedByQuestion = questions.some(q => {
                 const isNo = answers[q.id] === false;
                 if (!isNo) return false;
+                const postCodes = q.impactedPostCodes || [];
                 const postNames = q.impactedPostNames || [];
-                return postNames.some((name: string) => 
+                return postCodes.includes(postCode) || postNames.some((name: string) =>
                   name.toLowerCase().trim() === post.name?.toLowerCase().trim()
                 );
               });
-              const isBlockedByText = blockedPosts.includes(post.name);
+              const isBlockedByText = blockedCodes.includes(postCode) || blockedPosts.includes(post.name);
               return !isBlockedByQuestion && !isBlockedByText;
             });
             return { ...job, matchedPosts: activePosts };
@@ -115,6 +118,7 @@ export default function ForYouPage() {
           })
           .map((post: any) => ({
             name: post.name,
+            code: getPostCode(job.id || job._id || '', post.name),
             jobTitle: job.title,
             prerequisite: post.prerequisite || [],
             "qualification.extraQualificationText": post.qualification?.extraQualificationText || "",
@@ -220,10 +224,13 @@ export default function ForYouPage() {
     if (!userProfile) return;
     setIsScreeningLoading(true);
     try {
-      const allMatchedPosts = jobs.flatMap(job =>
-        job.matchedPosts.map((post: any) => ({
+      const cached = getCachedJobs() || [];
+      const baseMatched = getEligibleJobs(userProfile, cached);
+      const allMatchedPosts = baseMatched.flatMap(m =>
+        m.matchedPosts.map((post: any) => ({
           name: post.name,
-          jobTitle: job.title,
+          code: getPostCode(m.job.id || m.job._id || '', post.name),
+          jobTitle: m.job.title,
           prerequisite: post.prerequisite,
           qualification: post.qualification,
           course: post.course
@@ -245,11 +252,12 @@ export default function ForYouPage() {
       if (!res.ok) throw new Error('Filter failed');
       const data = await res.json();
 
-      if (data.blockedPostNames) {
+      if (data.blockedPostCodes || data.blockedPostNames) {
         const existingProfile = JSON.parse(localStorage.getItem('rojgarmatch_profile') || '{}');
         const updatedProfile = {
           ...existingProfile,
-          blockedPostNames: data.blockedPostNames
+          blockedPostCodes: data.blockedPostCodes || [],
+          blockedPostNames: data.blockedPostNames || []
         };
 
         setUserProfile(updatedProfile);
@@ -284,7 +292,8 @@ export default function ForYouPage() {
         ...existingProfile,
         screeningQuestions: [],
         screeningAnswers: {},
-        blockedPostNames: []
+        blockedPostNames: [],
+        blockedPostCodes: []
       };
 
       setUserProfile(updatedProfile);
@@ -326,17 +335,25 @@ export default function ForYouPage() {
         let finalJobs = matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn }));
 
         // Apply AI Filter to cache
-        if ((profile.screeningAnswers && Object.keys(profile.screeningAnswers).length > 0) || (profile.blockedPostNames && profile.blockedPostNames.length > 0)) {
+        if ((profile.screeningAnswers && Object.keys(profile.screeningAnswers).length > 0) || (profile.blockedPostCodes && profile.blockedPostCodes.length > 0) || (profile.blockedPostNames && profile.blockedPostNames.length > 0)) {
           const answers = profile.screeningAnswers || {};
           const questions = profile.screeningQuestions || [];
+          const blockedCodes = profile.blockedPostCodes || [];
           const blockedPosts = profile.blockedPostNames || [];
 
           finalJobs = finalJobs.map(job => {
             const activePosts = (job as any).matchedPosts.filter((post: any) => {
-              const isBlockedByQuestion = questions.some((q: any) =>
-                q.impactedPostNames?.includes(post.name) && answers[q.id] === false
-              );
-              const isBlockedByText = blockedPosts.includes(post.name);
+              const postCode = getPostCode(job.id || job._id || '', post.name);
+              const isBlockedByQuestion = questions.some((q: any) => {
+                const isNo = answers[q.id] === false;
+                if (!isNo) return false;
+                const postCodes = q.impactedPostCodes || [];
+                const postNames = q.impactedPostNames || [];
+                return postCodes.includes(postCode) || postNames.some((name: string) =>
+                  name.toLowerCase().trim() === post.name?.toLowerCase().trim()
+                );
+              });
+              const isBlockedByText = blockedCodes.includes(postCode) || blockedPosts.includes(post.name);
               return !isBlockedByQuestion && !isBlockedByText;
             });
             return { ...job, matchedPosts: activePosts };
@@ -362,7 +379,9 @@ export default function ForYouPage() {
     );
   }, [jobs]);
 
-  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || 
+    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || 
+    (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
 
 
   return (
@@ -421,7 +440,7 @@ export default function ForYouPage() {
           onClearAll={handleClearScreening}
           onGenerateQuestions={runAIScreening}
           onFilterByText={handleFilterByText}
-          hasTextFilter={userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0}
+          hasTextFilter={(userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0)}
           hasMoreToScreen={hasMoreToScreen}
         />
 
@@ -462,3 +481,4 @@ export default function ForYouPage() {
     </div>
   );
 }
+

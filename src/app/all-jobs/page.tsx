@@ -8,7 +8,7 @@ import { NOTIFICATIONS } from '@/lib/data';
 
 import RecruitmentCard from '@/components/RecruitmentCard';
 import BackButton from '@/components/BackButton';
-import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import { getEligibleJobs, CandidateProfile, getPostCode } from '@/lib/matching';
 import { CardSkeleton, GlobalLoading } from '@/components/LoadingState';
 import { getCachedJobs, setCachedJobs } from '@/lib/store';
 
@@ -84,15 +84,18 @@ function JobsPageContent() {
       if (matchData) {
         // Filter out posts that are blocked by screening answers or text block filters
         const activePosts = matchData.matchedPosts.filter(post => {
+          const postCode = getPostCode(job._id || job.id || '', post.name);
           const isBlockedByQuestion = userProfile.screeningQuestions?.some(q => {
             const isNo = userProfile.screeningAnswers?.[q.id] === false;
             if (!isNo) return false;
+            const postCodes = q.impactedPostCodes || [];
             const postNames = q.impactedPostNames || [];
-            return postNames.some((name: string) => 
+            return postCodes.includes(postCode) || postNames.some((name: string) =>
               name.toLowerCase().trim() === post.name?.toLowerCase().trim()
             );
           });
-          const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
+          const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) || 
+            (userProfile.blockedPostNames || []).includes(post.name);
           return !isBlockedByQuestion && !isBlockedByText;
         });
 

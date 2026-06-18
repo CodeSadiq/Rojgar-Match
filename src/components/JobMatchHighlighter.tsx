@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getEligibleJobs } from '@/lib/matching';
+import { getEligibleJobs, getPostCode } from '@/lib/matching';
 
 export default function JobMatchHighlighter({ job }: { job: any }) {
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
 
     try {
       const profile = JSON.parse(savedProfile);
-      
+
       // Parse questions and answers safely, merging profile and independent storage
       const localAnswers = savedAnswers ? JSON.parse(savedAnswers) : {};
       const profileAnswers = profile.screeningAnswers || {};
@@ -31,10 +31,17 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
 
       // 2. Identify posts invalidated by AI screening or text filter (Stage 2)
       const ineligiblePostNames = new Set<string>();
+      const ineligiblePostCodes = new Set<string>();
 
       questions.forEach((q: any) => {
         // If the user answered "No" (false) to this question
         if (answers[q.id] === false) {
+          if (Array.isArray(q.impactedPostCodes)) {
+            q.impactedPostCodes.forEach((code: string) => {
+              ineligiblePostCodes.add(code);
+            });
+          }
+          // Backward compatibility fallback
           if (Array.isArray(q.impactedPostNames)) {
             q.impactedPostNames.forEach((name: string) => {
               ineligiblePostNames.add(name.toLowerCase().trim());
@@ -43,7 +50,11 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
         }
       });
 
-      // Add blocked post names from text filtering
+      // Add blocked post names/codes from text filtering
+      const blockedPostCodes = profile.blockedPostCodes || [];
+      blockedPostCodes.forEach((code: string) => {
+        ineligiblePostCodes.add(code);
+      });
       const blockedPostNames = profile.blockedPostNames || [];
       blockedPostNames.forEach((name: string) => {
         ineligiblePostNames.add(name.toLowerCase().trim());
@@ -52,10 +63,13 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
       // 3. Update UI
       const rows = document.querySelectorAll('tr[data-post-name]');
       const jobTitleLower = job.title?.toLowerCase().trim();
+      const jobId = job.id || job._id;
 
       rows.forEach(row => {
         const rawName = row.getAttribute('data-post-name');
         const postName = rawName?.toLowerCase().trim();
+        const rawCode = row.getAttribute('data-post-code');
+        const postCode = rawCode || (postName ? getPostCode(jobId, postName) : '');
         const badge = row.querySelector('.match-badge') as HTMLElement;
 
         if (badge && postName) {
@@ -64,8 +78,9 @@ export default function JobMatchHighlighter({ job }: { job: any }) {
           const isBaseMatch = baseMatchedNames.includes(postName) || 
             (postName === 'general cadre' && baseMatchedNames.includes(jobTitleLower));
             
-          const isInvalidatedByAI = ineligiblePostNames.has(postName) || 
-            (postName === 'general cadre' && ineligiblePostNames.has(jobTitleLower));
+          const isInvalidatedByAI = ineligiblePostCodes.has(postCode) ||
+            ineligiblePostNames.has(postName) ||
+            (postName === 'general cadre' && (ineligiblePostNames.has(jobTitleLower) || ineligiblePostCodes.has(getPostCode(jobId, job.title))));
 
           if (isBaseMatch && !isInvalidatedByAI) {
             badge.style.display = 'inline-flex';
