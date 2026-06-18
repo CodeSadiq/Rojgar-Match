@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { fmtDate } from '@/lib/helpers';
+import { fmtDate, daysFromNow } from '@/lib/helpers';
 
 interface RecruitmentCardProps {
   job: any;
@@ -15,26 +15,14 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
   const lastDateVal = fmtDate(rawLastDate);
   const isFallback = !rawLastDate?.toString().includes('202');
 
-  const end = rawLastDate ? new Date(rawLastDate) : null;
-  const isValidDate = end && !isNaN(end.getTime()) && rawLastDate.toString().includes('202');
-  
+  const daysLeft = daysFromNow(rawLastDate);
   let dateColor = '#64748B'; // Default slate gray for unknown or details awaited
-  
-  if (isValidDate && end) {
-    const endDateTime = new Date(end);
-    if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
-      endDateTime.setHours(23, 59, 59, 999);
-    }
-    const now = new Date();
-    const timeDiff = endDateTime.getTime() - now.getTime();
-    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    
+
+  if (daysLeft !== null && !isFallback) {
     if (daysLeft < 0) {
       dateColor = '#EF4444'; // Red for expired
-    } else if (daysLeft <= 7) {
-      dateColor = '#F97316'; // Orange for closing soon
     } else {
-      dateColor = '#10B981'; // Green for safe / active
+      dateColor = '#10B981'; // Green for normally active
     }
   }
 

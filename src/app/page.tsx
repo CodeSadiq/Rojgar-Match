@@ -8,7 +8,7 @@ import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile, getPostCode } from '@/lib/matching';
-import { getTimeAgo, fmtDate } from '@/lib/helpers';
+import { getTimeAgo, fmtDate, daysFromNow } from '@/lib/helpers';
 import { CardSkeleton } from '@/components/LoadingState';
 import { getCachedJobs, setCachedJobs, getCachedRegistry, setCachedRegistry } from '@/lib/store';
 import ScreeningModal from '@/components/ScreeningModal';
@@ -1151,25 +1151,14 @@ export default function Home() {
                           const isFallback = rawLastDate && !rawLastDate.toString().includes('202');
                           const displayLastDate = isFallback && lastDateVal === "DETAILS AWAITED" ? "Pending" : lastDateVal;
 
-                          const end = rawLastDate ? new Date(rawLastDate) : null;
-                          const isValidDate = end && !isNaN(end.getTime()) && rawLastDate.toString().includes('202');
+                          const daysLeft = daysFromNow(rawLastDate);
                           let dateColor = '#64748B'; // Default slate gray
 
-                          if (isValidDate && end) {
-                            const endDateTime = new Date(end);
-                            if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
-                              endDateTime.setHours(23, 59, 59, 999);
-                            }
-                            const now = new Date();
-                            const timeDiff = endDateTime.getTime() - now.getTime();
-                            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
+                          if (daysLeft !== null && !isFallback) {
                             if (daysLeft < 0) {
                               dateColor = '#EF4444'; // Red for expired
-                            } else if (daysLeft <= 7) {
-                              dateColor = '#F97316'; // Orange for closing soon
                             } else {
-                              dateColor = '#10B981'; // Green for active / safe
+                              dateColor = '#10B981'; // Green for normally active
                             }
                           }
 

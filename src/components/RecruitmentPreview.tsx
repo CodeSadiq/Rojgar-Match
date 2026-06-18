@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { fmtDate, fmtMoney } from "@/lib/helpers";
+import { fmtDate, fmtMoney, daysFromNow } from "@/lib/helpers";
 
 // ── ICONS ────────────────────────────────────────────────────────────────────
 const IconInfo = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>;
@@ -1066,26 +1066,14 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
                   let suffix = '';
 
                   if (lastDateStr) {
-                    const lastDate = new Date(lastDateStr);
-                    if (!isNaN(lastDate.getTime())) {
-                      const endDateTime = new Date(lastDate);
-                      if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
-                        endDateTime.setHours(23, 59, 59, 999);
-                      }
-                      const now = new Date();
-                      const timeDiff = endDateTime.getTime() - now.getTime();
-                      const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-                      if (timeDiff < 0) {
+                    const daysLeft = daysFromNow(lastDateStr);
+                    if (daysLeft !== null) {
+                      if (daysLeft < 0) {
                         dateColor = '#EF4444'; // Red for expired
                         suffix = ' (Expired)';
                       } else {
                         suffix = ` (${daysLeft} days left)`;
-                        if (daysLeft <= 7) {
-                          dateColor = '#F97316'; // Orange for closing soon
-                        } else {
-                          dateColor = '#10B981'; // Green for active / safe
-                        }
+                        dateColor = '#10B981'; // Green for normally active
                       }
                     }
                   }

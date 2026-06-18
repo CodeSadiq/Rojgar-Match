@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import dbConnect from "@/lib/mongodb";
 import Job from "@/models/Job";
 import { JobPost } from "@/types/job";
-import { fmtDate, fmtMoney } from "@/lib/helpers";
+import { fmtDate, fmtMoney, daysFromNow } from "@/lib/helpers";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { getCachedData, setCachedData } from "@/lib/cache";
@@ -1283,26 +1283,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   let suffix = '';
 
                   if (lastDateStr) {
-                    const lastDate = new Date(lastDateStr);
-                    if (!isNaN(lastDate.getTime())) {
-                      const endDateTime = new Date(lastDate);
-                      if (endDateTime.getHours() === 0 && endDateTime.getMinutes() === 0) {
-                        endDateTime.setHours(23, 59, 59, 999);
-                      }
-                      const now = new Date();
-                      const timeDiff = endDateTime.getTime() - now.getTime();
-                      const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-                      if (timeDiff < 0) {
+                    const daysLeft = daysFromNow(lastDateStr);
+                    if (daysLeft !== null) {
+                      if (daysLeft < 0) {
                         dateColor = '#EF4444'; // Red for expired
                         suffix = ' (Expired)';
                       } else {
                         suffix = ` (${daysLeft} days left)`;
-                        if (daysLeft <= 7) {
-                          dateColor = '#F97316'; // Orange for closing soon
-                        } else {
-                          dateColor = '#10B981'; // Green for active / safe
-                        }
+                        dateColor = '#10B981'; // Green for normally active
                       }
                     }
                   }
