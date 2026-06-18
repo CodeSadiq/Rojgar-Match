@@ -161,6 +161,29 @@ function UsersAnalysisContent() {
                             <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">⚠ Candidate has 0 eligible job listings</p>
                           )}
                         </div>
+
+                        {/* Delete User Action */}
+                        <div className="flex justify-end pt-2 border-t border-gray-100">
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Are you sure you want to permanently delete candidate "${user.fullName}"? This action is irreversible.`)) return;
+                              try {
+                                const res = await fetch(`/api/admin/users?id=${user.id}`, { method: 'DELETE' });
+                                if (res.ok) {
+                                  alert("Candidate deleted successfully.");
+                                  fetchUserAnalysis();
+                                } else {
+                                  alert("Failed to delete user.");
+                                }
+                              } catch (e) {
+                                alert("Error deleting user.");
+                              }
+                            }}
+                            className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-red-100 cursor-pointer"
+                          >
+                            ✕ Delete Candidate Account
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
