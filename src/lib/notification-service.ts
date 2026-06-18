@@ -11,7 +11,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
     // 1. Fetch all registered users who have a physical profile
     const users = await User.find({ 
       profile: { $exists: true },
-      email: { $ne: null, $ne: "", $exists: true } 
+      email: { $nin: [null, ""], $exists: true } 
     }).lean();
 
     if (!users || users.length === 0) {
