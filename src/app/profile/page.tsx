@@ -186,12 +186,21 @@ export default function ProfilePage() {
           };
         });
 
+      const oldQuals = userProfile.qualifications || [];
+      const isDifferent = qualifications.length !== oldQuals.length || qualifications.some(newQ => {
+        const oldQ = oldQuals.find((o: any) => o.name === newQ.name);
+        if (!oldQ) return true;
+        return oldQ.branch !== newQ.branch;
+      });
+
       const profileData = {
         gender: userProfile.gender,
         qualifications,
-        screeningQuestions: userProfile.screeningQuestions,
-        screeningAnswers: userProfile.screeningAnswers,
-        screenedJobIds: userProfile.screenedJobIds
+        screeningQuestions: isDifferent ? [] : (userProfile.screeningQuestions || []),
+        screeningAnswers: isDifferent ? {} : (userProfile.screeningAnswers || {}),
+        screenedJobIds: isDifferent ? '' : (userProfile.screenedJobIds || ''),
+        blockedPostNames: isDifferent ? [] : (userProfile.blockedPostNames || []),
+        blockedPostCodes: isDifferent ? [] : (userProfile.blockedPostCodes || [])
       };
 
       if (!userProfile.gender) {
@@ -202,6 +211,16 @@ export default function ProfilePage() {
 
       if (userProfile.email === 'guest@rojgarmatch.local') {
         localStorage.setItem('rojgarmatch_profile', JSON.stringify(profileData));
+        if (isDifferent) {
+          localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+          setScreeningResults([]);
+          setUserProfile((prev: any) => ({
+            ...prev,
+            ...profileData
+          }));
+        } else {
+          setUserProfile((prev: any) => ({ ...prev, qualifications }));
+        }
         window.dispatchEvent(new Event('rojgarmatch_auth_change'));
         setCompleted(qualifications.length > 0);
         showToast('Guest profile updated!', 'success');
@@ -226,6 +245,9 @@ export default function ProfilePage() {
           fullName: authData.fullName,
           email: authData.email
         }));
+        if (isDifferent) {
+          localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+        }
         window.dispatchEvent(new Event('rojgarmatch_auth_change'));
       }
 
@@ -531,23 +553,23 @@ export default function ProfilePage() {
 
       {toast && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white border border-gray-100 rounded-lg md:rounded-2xl max-w-xs w-full p-6 shadow-2xl space-y-4 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
+          <div className="bg-white border border-gray-100 rounded-lg md:rounded-2xl max-w-xs w-full p-6 shadow-2xl space-y-5 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
               toast.type === 'error' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
               }`}>
               {toast.type === 'success' && (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               )}
               {toast.type === 'error' && (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               )}
               {toast.type === 'warning' && (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                 </svg>
@@ -555,17 +577,21 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-md font-bold text-navy">
+              <h3 className={`text-3xl font-black tracking-tight ${
+                toast.type === 'success' ? 'text-emerald-600' :
+                toast.type === 'error' ? 'text-rose-600' :
+                'text-amber-500'
+              }`}>
                 {toast.type === 'success' ? 'Success' : toast.type === 'error' ? 'Error' : 'Warning'}
               </h3>
-              <p className="text-xs font-semibold text-navy/70 leading-relaxed">
+              <p className="text-xs font-semibold text-slate-500 leading-relaxed max-w-[200px] mx-auto">
                 {toast.message}
               </p>
             </div>
 
             <button
               onClick={() => setToast(null)}
-              className="w-full py-2 bg-navy hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 text-center"
+              className="w-full py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-500 hover:text-slate-700 font-bold text-[10px] uppercase tracking-widest rounded-xl transition-all active:scale-[0.97] text-center"
             >
               OK
             </button>

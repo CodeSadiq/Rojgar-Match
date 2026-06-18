@@ -487,7 +487,7 @@ export default function Home() {
             name.toLowerCase().trim() === post.name?.toLowerCase().trim()
           );
         });
-        const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) || 
+        const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) ||
           (userProfile.blockedPostNames || []).includes(post.name);
         return !isBlockedByQuestion && !isBlockedByText;
       });
@@ -620,8 +620,8 @@ export default function Home() {
     return matchesSearch && matchesType;
   });
 
-  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || 
-    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || 
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 ||
+    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) ||
     (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
 
 

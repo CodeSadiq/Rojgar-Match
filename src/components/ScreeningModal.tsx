@@ -95,8 +95,9 @@ export default function ScreeningModal({
 
   if (!isOpen) return null;
 
-  const answeredCount = Object.keys(answers).length;
-  const totalCount = questions.length;
+  const realQuestions = questions.filter(q => q.category !== 'info');
+  const totalCount = realQuestions.length;
+  const answeredCount = realQuestions.filter(q => answers[q.id] !== undefined).length;
   const progressPercent = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
 
   const handleTextSubmit = async (textToUse?: string) => {

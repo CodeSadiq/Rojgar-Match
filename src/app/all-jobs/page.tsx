@@ -94,7 +94,7 @@ function JobsPageContent() {
               name.toLowerCase().trim() === post.name?.toLowerCase().trim()
             );
           });
-          const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) || 
+          const isBlockedByText = (userProfile.blockedPostCodes || []).includes(postCode) ||
             (userProfile.blockedPostNames || []).includes(post.name);
           return !isBlockedByQuestion && !isBlockedByText;
         });

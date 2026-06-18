@@ -113,18 +113,60 @@ export default function QualificationForm() {
     setShowBranchesFor(null);
   }
 
-  function saveProfile() {
+  async function saveProfile() {
     const existing = localStorage.getItem('rojgarmatch_profile');
     let profile: any = { qualifications: registry };
+    let isDifferent = true;
+
     if (existing) {
       try {
         const parsed = JSON.parse(existing);
-        profile = { ...parsed, qualifications: registry };
+        const oldQuals = parsed.qualifications || [];
+        isDifferent = registry.length !== oldQuals.length || registry.some(newQ => {
+          const oldQ = oldQuals.find((o: any) => o.name === newQ.name);
+          if (!oldQ) return true;
+          return oldQ.branch !== newQ.branch;
+        });
+
+        if (isDifferent) {
+          profile = {
+            ...parsed,
+            qualifications: registry,
+            screeningQuestions: [],
+            screeningAnswers: {},
+            blockedPostNames: [],
+            blockedPostCodes: [],
+            screenedJobIds: ''
+          };
+        } else {
+          profile = { ...parsed, qualifications: registry };
+        }
       } catch (e) { }
     }
 
     localStorage.setItem('rojgarmatch_profile', JSON.stringify(profile));
+    if (isDifferent) {
+      localStorage.setItem('rojgarmatch_screening_answers', JSON.stringify({}));
+    }
     window.dispatchEvent(new Event('rojgarmatch_auth_change'));
+
+    // Sync to DB if logged in and not guest
+    const isAuth = localStorage.getItem('rojgarmatch_auth');
+    if (isAuth) {
+      try {
+        const authData = JSON.parse(isAuth);
+        if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
+          await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: authData.email, profile }),
+          });
+        }
+      } catch (e) {
+        console.error('Remote sync failed on save:', e);
+      }
+    }
+
     alert("Full Registry Saved! Every level will now be matched separately. ✅");
     window.location.href = '/';
   }
