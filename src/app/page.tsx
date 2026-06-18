@@ -1030,30 +1030,41 @@ export default function Home() {
 
                             return (
                               <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-5 py-2.5">
-                                <div
-                                  className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
-                                  style={{
-                                    animationDuration: `${Math.max(items.length * 4, 15)}s`,
-                                    animationPlayState: (!isAutoPlaying || (isMounted && windowWidth < 768 && !isInViewport)) ? 'paused' : 'running'
-                                  }}
-                                >
-                                  {/* Duplicate items for seamless marquee */}
-                                  {[...items, ...((isInViewport && items.length > 4) ? items : [])].map((n: any, i: number) => (
-                                    <Link
-                                      href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
-                                      key={`${n.id}-${i}`}
-                                      className="group block p-4 mb-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-[#0D244D]/25 hover:bg-[#0D244D]/[0.01] hover:shadow-md transition-all no-underline mx-0.5"
-                                    >
-                                      <div className="text-[13.5px] font-sans font-bold text-navy/80 leading-snug group-hover:text-[#0D244D] transition-colors line-clamp-2 mb-2">
-                                        {n.text}
+                                {isLoading ? (
+                                  <div className="space-y-3">
+                                    {[1, 2, 3, 4].map(i => (
+                                      <div key={i} className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm animate-pulse space-y-2.5">
+                                        <div className="h-3.5 bg-gray-200 rounded w-5/6"></div>
+                                        <div className="h-2.5 bg-gray-100 rounded w-1/4"></div>
                                       </div>
-                                      <div className="flex items-center gap-2">
-                                        <div className="text-[9px] font-bold uppercase tracking-wider text-navy/40 group-hover:text-navy/55">{n.time}</div>
-                                      </div>
-                                    </Link>
-                                  ))}
-                                </div>
-                                {items.length === 0 && (
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div
+                                    className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
+                                    style={{
+                                      animationDuration: `${Math.max(items.length * 4, 15)}s`,
+                                      animationPlayState: (!isAutoPlaying || (isMounted && windowWidth < 768 && !isInViewport)) ? 'paused' : 'running'
+                                    }}
+                                  >
+                                    {/* Duplicate items for seamless marquee */}
+                                    {[...items, ...((isInViewport && items.length > 4) ? items : [])].map((n: any, i: number) => (
+                                      <Link
+                                        href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                                        key={`${n.id}-${i}`}
+                                        className="group block p-4 mb-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-[#0D244D]/25 hover:bg-[#0D244D]/[0.01] hover:shadow-md transition-all no-underline mx-0.5"
+                                      >
+                                        <div className="text-[13.5px] font-sans font-bold text-navy/80 leading-snug group-hover:text-[#0D244D] transition-colors line-clamp-2 mb-2">
+                                          {n.text}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <div className="text-[9px] font-bold uppercase tracking-wider text-navy/40 group-hover:text-navy/55">{n.time}</div>
+                                        </div>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                                {items.length === 0 && !isLoading && (
                                   <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
                                 )}
                               </div>
@@ -1109,7 +1120,16 @@ export default function Home() {
                         </Link>
                       </div>
                       <div className="p-4">
-                        {category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => {
+                        {isLoading ? (
+                          <div className="space-y-2">
+                            {[1, 2, 3].map(i => (
+                              <div key={i} className="p-3 bg-white border border-gray-100 rounded-lg shadow-sm animate-pulse space-y-2">
+                                <div className="h-3.5 bg-gray-200 rounded w-5/6"></div>
+                                <div className="h-2.5 bg-gray-100 rounded w-1/4"></div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : category.items.length > 0 ? category.items.slice(0, 10).map((n: any, i: number) => {
                           const isJob = n.isJob;
                           const rawLastDate = n.lastDate;
                           const lastDateVal = rawLastDate ? fmtDate(rawLastDate) : '';
