@@ -84,9 +84,14 @@ function JobsPageContent() {
       if (matchData) {
         // Filter out posts that are blocked by screening answers or text block filters
         const activePosts = matchData.matchedPosts.filter(post => {
-          const isBlockedByQuestion = userProfile.screeningQuestions?.some(q =>
-            q.impactedPostNames?.includes(post.name) && userProfile.screeningAnswers?.[q.id] === false
-          );
+          const isBlockedByQuestion = userProfile.screeningQuestions?.some(q => {
+            const isNo = userProfile.screeningAnswers?.[q.id] === false;
+            if (!isNo) return false;
+            const postNames = q.impactedPostNames || [];
+            return postNames.some((name: string) => 
+              name.toLowerCase().trim() === post.name?.toLowerCase().trim()
+            );
+          });
           const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
           return !isBlockedByQuestion && !isBlockedByText;
         });

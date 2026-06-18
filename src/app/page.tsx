@@ -472,9 +472,14 @@ export default function Home() {
     // 🛡️ STAGE 2: AI Soft Filter (Screening)
     filtered = filtered.map(job => {
       const activePosts = job.matchedPosts.filter((post: any) => {
-        const isBlockedByQuestion = screeningQuestions.some((q: any) =>
-          q.impactedPostNames?.includes(post.name) && screeningAnswers[q.id] === false
-        );
+        const isBlockedByQuestion = screeningQuestions.some((q: any) => {
+          const isNo = screeningAnswers[q.id] === false;
+          if (!isNo) return false;
+          const postNames = q.impactedPostNames || [];
+          return postNames.some((name: string) => 
+            name.toLowerCase().trim() === post.name?.toLowerCase().trim()
+          );
+        });
         const isBlockedByText = userProfile.blockedPostNames?.includes(post.name);
         return !isBlockedByQuestion && !isBlockedByText;
       });

@@ -72,9 +72,14 @@ export default function ForYouPage() {
 
           finalJobs = finalJobs.map(job => {
             const activePosts = (job as any).matchedPosts.filter((post: any) => {
-              const isBlockedByQuestion = questions.some(q =>
-                q.impactedPostNames?.includes(post.name) && answers[q.id] === false
-              );
+              const isBlockedByQuestion = questions.some(q => {
+                const isNo = answers[q.id] === false;
+                if (!isNo) return false;
+                const postNames = q.impactedPostNames || [];
+                return postNames.some((name: string) => 
+                  name.toLowerCase().trim() === post.name?.toLowerCase().trim()
+                );
+              });
               const isBlockedByText = blockedPosts.includes(post.name);
               return !isBlockedByQuestion && !isBlockedByText;
             });
