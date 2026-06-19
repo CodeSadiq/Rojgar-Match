@@ -22,7 +22,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
     if (daysLeft < 0) {
       dateColor = '#EF4444'; // Red for expired
     } else {
-      dateColor = '#10B981'; // Green for normally active
+      dateColor = '#16A34A'; // Light green for normally active
     }
   }
 
@@ -61,7 +61,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
 
           <div className="flex items-center md:hidden whitespace-nowrap">
             <span className="text-[9px] font-medium text-gray-500 mr-1">Last Date:</span>
-            <span style={{ 
+            <span style={{
               color: dateColor,
               fontWeight: 'bold',
               fontSize: '9px'
@@ -76,7 +76,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
         <div className="flex flex-col items-end">
           <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Last Date</div>
           <div className="text-xl font-serif font-black leading-none italic text-right">
-            <span style={{ 
+            <span style={{
               color: dateColor
             }}>
               {isFallback && lastDateVal === "DETAILS AWAITED" ? "PENDING" : lastDateVal}

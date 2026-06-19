@@ -347,7 +347,7 @@ export default function ProfilePage() {
           </div>
 
           {/* DESKTOP VIEW HEADER CARD */}
-          <div className="hidden md:flex bg-white border-2 border-gray-200/80 rounded-[32px] p-8 md:p-10 flex-row items-center justify-between gap-8 text-left transition-all shadow-md hover:shadow-lg">
+          <div className="hidden md:flex bg-white border-2 border-gray-200 rounded-[32px] p-8 md:p-10 flex-row items-center justify-between gap-8 text-left transition-all shadow-md hover:shadow-lg">
             <div className="space-y-1">
               {userProfile.email === 'guest@rojgarmatch.local' ? (
                 <>
@@ -367,7 +367,7 @@ export default function ProfilePage() {
           </div>
  
           {/* MOBILE VIEW HEADER CARD */}
-          <div className="md:hidden bg-white border-2 border-gray-200/80 rounded-2xl p-5 flex flex-col transition-all shadow-md hover:shadow-lg">
+          <div className="md:hidden bg-white border-2 border-gray-200 rounded-2xl p-5 flex flex-col transition-all shadow-md hover:shadow-lg">
             {/* Top Row: Profile Metadata */}
             <div className="min-w-0 flex-1">
               <h1 className="text-base font-bold text-navy tracking-tight truncate leading-snug">
@@ -399,7 +399,7 @@ export default function ProfilePage() {
                 <h2 className="text-base md:text-xl font-bold text-navy">Select Gender <span className="text-red-500">*</span></h2>
                 <div className="grid grid-cols-3 gap-2">
                   {['Male', 'Female', 'Other'].map((g) => (
-                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-10 md:h-14 rounded-lg text-[9px] md:text-[11px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-white text-navy/50 border-gray-200 hover:border-navy hover:text-navy hover:bg-navy/[0.02]"}`}>
+                    <button key={g} onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))} className={`h-10 md:h-14 rounded-lg text-[9px] md:text-[11px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g ? "bg-navy text-white border-navy" : "bg-slate-50 text-navy/70 border-gray-200 hover:border-navy hover:text-navy hover:bg-slate-100"}`}>
                       {g}
                     </button>
                   ))}
@@ -422,7 +422,7 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={group.id}
-                      className={`p-3.5 md:p-6 rounded-lg border transition-all duration-300 space-y-3 md:space-y-4 shadow-sm hover:shadow-md ${levelState.qual ? "bg-green-50/80 border-green-400" : "bg-slate-50/50 border-gray-300"}`}
+                      className={`p-3.5 md:p-6 rounded-lg border transition-all duration-300 space-y-3 md:space-y-4 shadow-sm hover:shadow-md ${levelState.qual ? "bg-[#ECFDF5] border-green-400" : "bg-slate-50 border-gray-300"}`}
                     >
                       <div className="flex items-center gap-2">
                         <h3 className={`text-[10px] md:text-sm font-black uppercase tracking-wider transition-colors ${levelState.qual ? "text-[#166534]" : "text-navy"}`}>

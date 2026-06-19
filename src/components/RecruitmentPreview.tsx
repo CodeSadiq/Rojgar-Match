@@ -1073,7 +1073,7 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
                         suffix = ' (Expired)';
                       } else {
                         suffix = ` (${daysLeft} days left)`;
-                        dateColor = '#10B981'; // Green for normally active
+                        dateColor = '#16A34A'; // Light green for normally active
                       }
                     }
                   }
@@ -1122,8 +1122,7 @@ export default function RecruitmentPreview({ job, editable, onUpdate, onFocusPat
                                   display: 'inline-block',
                                   whiteSpace: 'nowrap',
                                   fontSize: '11px',
-                                  fontWeight: 500,
-                                  opacity: 0.9,
+                                  fontWeight: 'inherit',
                                   marginLeft: '4px'
                                 }}>
                                   {suffix}

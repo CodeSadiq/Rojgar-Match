@@ -379,8 +379,8 @@ export default function ForYouPage() {
     );
   }, [jobs]);
 
-  const isFilterApplied = Object.keys(screeningAnswers).length > 0 || 
-    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) || 
+  const isFilterApplied = Object.keys(screeningAnswers).length > 0 ||
+    (userProfile?.blockedPostCodes && userProfile.blockedPostCodes.length > 0) ||
     (userProfile?.blockedPostNames && userProfile.blockedPostNames.length > 0);
 
 

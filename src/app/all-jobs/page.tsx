@@ -53,11 +53,17 @@ function JobsPageContent() {
   }, [initialQuery]);
 
   useEffect(() => {
-    // Load profile for matching
-    const savedProfile = localStorage.getItem('rojgarmatch_profile');
-    if (savedProfile) {
-      try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
-    }
+    const handleAuthChange = () => {
+      const savedProfile = localStorage.getItem('rojgarmatch_profile');
+      if (savedProfile) {
+        try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
+      } else {
+        setUserProfile(null);
+      }
+    };
+
+    window.addEventListener('rojgarmatch_auth_change', handleAuthChange);
+    handleAuthChange();
 
     // Check cache
     const cached = getCachedJobs();
@@ -67,6 +73,10 @@ function JobsPageContent() {
     } else {
       fetchJobs(false);
     }
+
+    return () => {
+      window.removeEventListener('rojgarmatch_auth_change', handleAuthChange);
+    };
   }, [fetchJobs]);
 
   // ── RECRUITMENT MATCHING LOGIC ──
@@ -77,16 +87,26 @@ function JobsPageContent() {
 
     // Get matched list to identify which ones are eligible
     const matched = getEligibleJobs(userProfile, dbJobs);
-    const matchedMap = new Map(matched.map(m => [m.job._id || m.job.id, m]));
+    const matchedMap = new Map(matched.map(m => [m.job.id || m.job._id, m]));
+
+    // Load screening answers directly from local storage if available for fallback/robustness
+    let storedAnswers: Record<string, boolean | null> = {};
+    if (typeof window !== 'undefined') {
+      const savedAnswers = localStorage.getItem('rojgarmatch_screening_answers');
+      if (savedAnswers) {
+        try { storedAnswers = JSON.parse(savedAnswers); } catch (e) {}
+      }
+    }
+    const mergedAnswers = { ...userProfile.screeningAnswers, ...storedAnswers };
 
     return dbJobs.map(job => {
-      const matchData = matchedMap.get(job._id || job.id);
+      const matchData = matchedMap.get(job.id || job._id);
       if (matchData) {
         // Filter out posts that are blocked by screening answers or text block filters
         const activePosts = matchData.matchedPosts.filter(post => {
-          const postCode = getPostCode(job._id || job.id || '', post.name);
+          const postCode = getPostCode(job.id || job._id || '', post.name);
           const isBlockedByQuestion = userProfile.screeningQuestions?.some(q => {
-            const isNo = userProfile.screeningAnswers?.[q.id] === false;
+            const isNo = mergedAnswers[q.id] === false;
             if (!isNo) return false;
             const postCodes = q.impactedPostCodes || [];
             const postNames = q.impactedPostNames || [];

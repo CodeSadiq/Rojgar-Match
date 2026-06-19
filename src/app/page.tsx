@@ -1158,7 +1158,7 @@ export default function Home() {
                             if (daysLeft < 0) {
                               dateColor = '#EF4444'; // Red for expired
                             } else {
-                              dateColor = '#10B981'; // Green for normally active
+                              dateColor = '#16A34A'; // Light green for normally active
                             }
                           }
 
