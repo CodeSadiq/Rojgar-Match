@@ -28,6 +28,7 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBulletinLoading, setIsBulletinLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [currentCatIndex, setCurrentCatIndex] = useState(1); // 1 is the first real category (after the clone of last)
@@ -149,6 +150,9 @@ export default function Home() {
 
   const fetchJobs = React.useCallback(async (isManual = false) => {
     setIsRefreshing(true); // Always spin when fetching from DB
+    if (isManual) {
+      setIsBulletinLoading(true);
+    }
     try {
       const res = await fetch('/api/jobs');
       if (!res.ok) return;
@@ -168,6 +172,7 @@ export default function Home() {
       console.error(e);
     } finally {
       setIsLoading(false);
+      setIsBulletinLoading(false);
       // Keep spinning for at least 600ms for visual feedback
       setTimeout(() => setIsRefreshing(false), 600);
     }
@@ -175,6 +180,14 @@ export default function Home() {
 
   useEffect(() => {
     setIsMounted(true);
+
+    const cachedJobs = getCachedJobs();
+    const cachedRegistry = getCachedRegistry();
+
+    if (cachedJobs && cachedRegistry) {
+      setIsBulletinLoading(false);
+    }
+
     async function loadMetadata() {
       const cached = getCachedRegistry();
       if (cached) {
@@ -185,7 +198,25 @@ export default function Home() {
       setRegistry(registryData);
       setCachedRegistry(registryData);
     }
-    loadMetadata();
+
+    async function initData() {
+      const promises: Promise<any>[] = [];
+      if (!cachedJobs) {
+        promises.push(fetchJobs(false));
+      }
+      if (!cachedRegistry) {
+        promises.push(loadMetadata());
+      }
+      if (promises.length > 0) {
+        try {
+          await Promise.all(promises);
+        } catch (e) {
+          console.error("Error during initial data fetch:", e);
+        }
+      }
+      setIsBulletinLoading(false);
+    }
+    initData();
 
     const savedToken = localStorage.getItem('rojgarmatch_token');
     const savedProfile = localStorage.getItem('rojgarmatch_profile');
@@ -207,13 +238,10 @@ export default function Home() {
     }
 
     // Check cache before fetching jobs
-    const cachedJobs = getCachedJobs();
     if (cachedJobs) {
       setDbJobs(cachedJobs);
       setIsLoading(false);
       setIsRefreshing(false);
-    } else {
-      fetchJobs(false);
     }
 
     // Load screening answers from localStorage
@@ -1045,7 +1073,7 @@ export default function Home() {
 
                             return (
                               <div key={itemKey} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-5 py-2.5">
-                                {isLoading ? (
+                                {isBulletinLoading ? (
                                   <div className="space-y-3">
                                     {[1, 2, 3, 4].map(i => (
                                       <div key={i} className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm animate-pulse space-y-2.5">
@@ -1079,7 +1107,7 @@ export default function Home() {
                                     ))}
                                   </div>
                                 )}
-                                {items.length === 0 && !isLoading && (
+                                {items.length === 0 && !isBulletinLoading && (
                                   <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
                                 )}
                               </div>
@@ -1135,7 +1163,7 @@ export default function Home() {
                         </Link>
                       </div>
                       <div className="p-4">
-                        {isLoading ? (
+                        {isBulletinLoading ? (
                           <div className="space-y-2">
                             {[1, 2, 3].map(i => (
                               <div key={i} className="p-3 bg-white border border-gray-100 rounded-lg shadow-sm animate-pulse space-y-2">
