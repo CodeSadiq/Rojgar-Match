@@ -865,7 +865,8 @@ export default function Home() {
                                   Eligible Jobs
                                 </h4>
                                 <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
-                                  See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.
+                                  <span className="hidden md:inline">See jobs that you are exactly eligible for based on your specific Course and Branch, plus AI Filter for specialized requirements.</span>
+                                  <span className="inline md:hidden">See recommended jobs matching your qualification.</span>
                                 </p>
                               </div>
                             </div>
@@ -880,7 +881,8 @@ export default function Home() {
                                   All Jobs
                                 </h4>
                                 <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
-                                  Browse through all government jobs or see recommended ones that match your qualification.
+                                  <span className="hidden md:inline">Browse through all government jobs or see recommended ones that match your qualification.</span>
+                                  <span className="inline md:hidden">Browse through all government jobs.</span>
                                 </p>
                               </div>
                             </div>
@@ -895,7 +897,8 @@ export default function Home() {
                                   Email Alerts
                                 </h4>
                                 <p className="text-[11px] text-[#16a34a] md:text-navy/50 leading-relaxed font-medium">
-                                  Get a direct email alert the moment a government job matching your education is posted.
+                                  <span className="hidden md:inline">Get a direct email alert the moment a government job matching your education is posted.</span>
+                                  <span className="inline md:hidden">Get direct email alerts for matching jobs.</span>
                                 </p>
                               </div>
                             </div>
